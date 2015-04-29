@@ -65,6 +65,12 @@ io.on('connection', function (socket) {
   .on('goScreensaver', function(){
     io.emit('screensaver');
   })
+  .on('shootHands', function(){
+    io.emit('shootHands');
+  })
+  .on('tactileConnection', function(){
+    console.log('Tactile connexion'.bold.cyan);
+  })
   .on('shoot', function(data){
     io.emit('shoot', data);
   });
