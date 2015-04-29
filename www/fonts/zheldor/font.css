@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'Zheldor';
+  src: url('Art. Lebedev Studio - Zheldor.eot'); /* IE9 Compat Modes */
+  src: url('Art. Lebedev Studio - Zheldor.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('Art. Lebedev Studio - Zheldor.woff') format('woff'), /* Modern Browsers */
+       url('Art. Lebedev Studio - Zheldor.ttf')  format('truetype'), /* Safari, Android, iOS */
+       url('Art. Lebedev Studio - Zheldor.svg#e139b6ce407c13ad713a4e3e41760e96') format('svg'); /* Legacy iOS */
+       
+  font-style:   normal;
+  font-weight:  400;
+}
+

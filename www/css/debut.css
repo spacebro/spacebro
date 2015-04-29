@@ -1,0 +1,45 @@
+/****
+	DEBUT
+*****/
+
+.row.debut {
+	height: 100%;
+	width: 100%;
+}
+.row.debut .col .button.large {
+	background-color: #b21013;
+	border: none;
+	border-radius: 10px;
+	height: 117px;
+	margin: 255px 370px;
+	padding: 0;
+	position: relative;
+	width: 525px;
+}
+.row.debut .col .button.large .inner {
+	border: none;
+	background-color: #dd0b1c;
+	border-radius: 10px;
+	font-size: 47px;
+	height: 106px;
+	letter-spacing: 2px;
+	line-height: 106px;
+	padding: 0 50px;
+	position: absolute;
+	top: 0;
+	text-align: left;
+	width: 525px;
+}
+.row.debut .col .button.large .inner:after {
+	background-image: url(../img/check-mark.png);
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	content: "";
+	display: inline-block;
+	height: 54px;
+	position: relative;
+	top: 10px;
+	left: 10px;
+	width: 54px;
+}

@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'Gotham';
+  src: url('Gotham-Book.eot'); /* IE9 Compat Modes */
+  src: url('Gotham-Book.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('Gotham-Book.woff') format('woff'), /* Modern Browsers */
+       url('Gotham-Book.ttf')  format('truetype'), /* Safari, Android, iOS */
+       url('Gotham-Book.svg#7510147900d23fa3ad697e74bf146ea2') format('svg'); /* Legacy iOS */
+       
+  font-style:   normal;
+  font-weight:  400;
+}
+

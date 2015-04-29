@@ -1,0 +1,49 @@
+/****
+	SIDE MENU
+*****/
+
+.coke-menu {
+	background-color: #414042 ;
+}
+	.coke-menu .bar.bar-dark {
+		background-color: #343335;
+		border-color: rgba(255,255,255,0.1);
+		height: 60px;
+	}
+	.coke-menu .coke-menu-content .list .item {
+		background-color: #414042;
+		border: none;
+		border-bottom: 1px solid rgba(255,255,255,0.1);
+		height: 75px;
+		margin: 0;
+		padding: 0;
+	}
+		.coke-menu .coke-menu-content .list .item .logo {
+			color: #fff;
+			display: inline-block;
+			font-size: 42px;
+			font-family: 'Zheldor';
+			height: 100%;
+			line-height: 75px;
+			padding: 0 25px;
+			width: 75px;
+		}
+		.coke-menu .coke-menu-content .list .item.groupe-a .logo {
+			background-color: #73b865;
+		}
+		.coke-menu .coke-menu-content .list .item.groupe-b .logo {
+			background-color: #b3b4b3;
+		}
+		.coke-menu .coke-menu-content .list .item .groupe {
+			color: #fff;
+			float: right;
+			display: block;
+			font-size: 27px;
+			font-family: 'Zheldor';
+			height: 100%;
+			line-height: 75px;
+			padding: 0 25px;
+			top: 0;
+			left: 0;
+			width: calc(100% - 75px);			
+		}

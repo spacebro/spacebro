@@ -1,0 +1,46 @@
+<ion-pane>
+  <ion-content ng-controller="mainController as vm" ng-init="vm.reset()">
+      <div class="row cards">
+        <div class="col">
+          <ul ng-repeat="trigger in vm.triggers" ng-click="vm.triggerEvent(trigger)" class="list {{trigger.status}}">
+            <li class="item item-button-right fun-text" >
+              {{trigger.name}}
+              <button class="button button-dark" >
+                <i class="icon ion-paper-airplane"></i>
+              </button>
+            </li>
+            <div class="content">
+              <div class="check" ></div>
+              <p class="serious-text">{{trigger.message}}</p>
+            </div>
+          </ul>
+          <div class="current_page fun-text">{{group}}</div>
+        </div>
+      </div>
+      <div class="row bottom">
+        <div class="col">
+          <div class="partner_logo"></div>
+          <div class="button fun-text" ng-click="vm.restart()">
+            <div class="inner">restart</div>
+          </div>
+          <div class="page_indicator fun-text {{group}}">
+            <div class="page_a">A</div>
+            <div class="page_b">B*</div>
+          </div>
+        </div>
+      </div>
+      <div class="confirm-restart" ng-show="vm.backdrop">
+        <div class="inner">
+          <p>Etes-vous sur de vouloir <strong>redemarrer l'atelier ?</strong></p>
+          <div class="buttons">
+            <button class="button confirm" ng-click="vm.confirmRestart()">
+              <div class="inner">Oui</div>
+            </button>
+            <button class="button negate" ng-click="vm.negateRestart()">
+              <div class="inner">Non</div>
+            </button>
+          </div>
+        </div>
+      </div>
+  </ion-content>
+</ion-pane>
