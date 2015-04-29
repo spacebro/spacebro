@@ -65,11 +65,16 @@ io.on('connection', function (socket) {
   .on('goScreensaver', function(){
     io.emit('screensaver');
   })
-  .on('shootHands', function(){
+  .on('shootHands', function(){ 
     io.emit('shootHands');
   })
   .on('tactileConnection', function(){
     console.log('Tactile connexion'.bold.cyan);
+  })
+  .on('signature', function(data){
+    // data contains property img with the dataUrl of the signature
+    console.log(data);
+    io.emit('addSignature', data);
   })
   .on('shoot', function(data){
     io.emit('shoot', data);
