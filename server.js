@@ -28,11 +28,11 @@ io.on('connection', function (socket) {
     console.log('error'.bold.red);
     console.log(err);
   })
-  .on('fanzone-img', function(img){
+  .on('write-img', function(img){
     console.log('img'.cyan);
-    
-    var base64Data = img.replace(/^data:image\/jpg;base64,/, ""),
-    name = shortid.generate()+".jpg",
+
+    var base64Data = img.replace(/^data:image\/png;base64,/, ""),
+    name = shortid.generate()+".png",
     path = config.server.destinationPath,
     tmpPath = config.server.tmpDestinationPath,
     destinationFile = pathHelper.join(path, name);
@@ -54,7 +54,7 @@ io.on('connection', function (socket) {
         }));
       }
     });
-    socket.broadcast.emit('new-fan-img', img);
+    // socket.broadcast.emit('new-fan-img', img);
   })
   .on('new-media', function(data){
     io.emit('new-media', data);
@@ -65,7 +65,7 @@ io.on('connection', function (socket) {
   .on('goScreensaver', function(){
     io.emit('screensaver');
   })
-  .on('shootHands', function(){ 
+  .on('shootHands', function(){
     io.emit('shootHands');
   })
   .on('tactileConnection', function(){
@@ -73,7 +73,7 @@ io.on('connection', function (socket) {
   })
   .on('signature', function(data){
     // data contains property img with the dataUrl of the signature
-    console.log(data);
+    // console.log(data);
     io.emit('addSignature', data);
   })
   .on('shoot', function(data){
