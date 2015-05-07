@@ -77,6 +77,16 @@ io.on('connection', function (socket) {
     // console.log(data);
     io.emit('addSignature', data);
   })
+  .on('confirm-image', function(){
+    io.emit('confirm-image');
+  })
+  .on('retry', function(){
+    io.emit('retry');
+  })
+  .on('backHome', function(){
+    console.log('back home');
+    io.emit('backHome');
+  })
   .on('shoot', function(data){
     io.emit('shoot', data);
   });
