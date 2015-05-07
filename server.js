@@ -47,8 +47,8 @@ io.on('connection', function (socket) {
       } else {
         fs.writeFileSync(destinationFile, imagemagick.convert({
             srcData: fs.readFileSync(tmpDestinationFile),
-            width: 480,
-            height: 480,
+            width: 1920,
+            height: 1080,
             resizeStyle: 'aspectfill', // is the default, or 'aspectfit' or 'fill'
             gravity: 'Center' // optional: position crop area when using 'aspectfill'
         }));
@@ -66,6 +66,7 @@ io.on('connection', function (socket) {
     io.emit('screensaver');
   })
   .on('shootHands', function(){
+    console.log('shootHands');
     io.emit('shootHands');
   })
   .on('tactileConnection', function(){
