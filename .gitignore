@@ -2,7 +2,6 @@
 # http://git-scm.com/docs/gitignore
 
 node_modules/
-platforms/
-plugins/
 config.json
 config.js
+tmp/
