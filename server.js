@@ -84,8 +84,10 @@ io.on('connection', function (socket) {
     io.emit('retry');
   })
   .on('backHome', function(){
-    console.log('back home');
     io.emit('backHome');
+  })
+  .on('startTimer', function(){
+    io.emit('startTimer');
   })
   .on('shoot', function(data){
     io.emit('shoot', data);
