@@ -91,5 +91,8 @@ io.on('connection', function (socket) {
   })
   .on('shoot', function(data){
     io.emit('shoot', data);
+  })
+  .on('visuReady', function(){
+    io.emit('visuReady')
   });
 });
