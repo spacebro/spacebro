@@ -54,6 +54,6 @@ $ npm start
 
 You can test writing images with the [`dev/send-img.js`](/dev/send-img.js) script. Run `$ npm run send-img`.
 
-You can test sending events with the [`dev/send-img.js`](/dev/send-img.js) script. Run `$ npm run send-img`.
+You can test sending events with the [`dev/send-events.js`](/dev/send-events.js) script. Run `$ npm run send-events`.
 
 Please follow [standard style](https://github.com/feross/standard) conventions.
