@@ -59,42 +59,11 @@ io.on('connection', function (socket) {
         }
       })
     })
-    .on('new-media', function (data) {
-      io.emit('new-media', data)
+
+  for (let event of config.events) {
+    socket.on(event, function (datas) {
+      console.log('server.js - event %s triggered with datas: %s', event, datas)
+      io.emit(event, datas)
     })
-    .on('goLive', function () {
-      io.emit('live')
-    })
-    .on('goScreensaver', function () {
-      io.emit('screensaver')
-    })
-    .on('shootHands', function () {
-      console.log('shootHands')
-      io.emit('shootHands')
-    })
-    .on('tactileConnection', function () {
-      console.log('Tactile connexion'.bold.cyan)
-    })
-    .on('signature', function (data) {
-      // data contains property img with the dataURL of the signature
-      io.emit('addSignature', data)
-    })
-    .on('confirm-image', function () {
-      io.emit('confirm-image')
-    })
-    .on('retry', function () {
-      io.emit('retry')
-    })
-    .on('backHome', function () {
-      io.emit('backHome')
-    })
-    .on('startTimer', function () {
-      io.emit('startTimer')
-    })
-    .on('shoot', function (data) {
-      io.emit('shoot', data)
-    })
-    .on('visuReady', function () {
-      io.emit('visuReady')
-    })
+  }
 })

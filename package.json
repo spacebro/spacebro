@@ -4,7 +4,8 @@
   "description": "chywalry",
   "scripts": {
     "start": "node server.js",
-    "send-img": "node dev/send-img.js"
+    "send-img": "node dev/send-img.js",
+    "send-events": "node dev/send-events.js"
   },
   "dependencies": {
     "colors": "^1.1.2",

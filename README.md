@@ -2,7 +2,9 @@
 
 > Here comes the chywalry.
 
-Chywalry's here to help you connect your app together. You define a list of events, and make sure your client apps calls and listen to them. It also provide an image writer utility via the `write-img` event (see below).
+Chywalry's here to help you connect your apps together. You define a list of events, and make sure your client apps calls and listen to them.
+
+It also provides an image writer utility via the `write-img` event.
 
 ## Installation
 
@@ -50,6 +52,8 @@ $ npm start
 
 ## Develop
 
-You can test writing images with [`dev/send-img.js`](/dev/send-img.js) script. Run `$ npm run send-img`.
+You can test writing images with the [`dev/send-img.js`](/dev/send-img.js) script. Run `$ npm run send-img`.
+
+You can test sending events with the [`dev/send-img.js`](/dev/send-img.js) script. Run `$ npm run send-img`.
 
 Please follow [standard style](https://github.com/feross/standard) conventions.
