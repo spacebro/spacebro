@@ -11,8 +11,11 @@ It also provides an image writer utility via the `write-img` event.
 ## Prerequisites
 
 Chywalry uses:
+
 * [socket.io](http://socket.io) to broadcast events
+
 * [imagemagick-native](https://github.com/elad/node-imagemagick-native) to manipulate image before writing them to disk
+
 * [mdns](https://github.com/agnat/node_mdns) to allow your app to connect seamlessly
 
 It's compatible with node >= `v0.8.x`.
