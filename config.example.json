@@ -1,7 +1,7 @@
 {
-  "server":{
-    "port":8888,
-    "serviceName": "remote",
+  "server": {
+    "port": 8888,
+    "serviceName": "chywalry",
     "destinationPath": "path/to/save/img",
     "tmpDestinationPath": "path/to/tmp/file"
   }

@@ -6,7 +6,6 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "colors": "^1.0.3",
     "imagemagick-native": "elad/node-imagemagick-native.git#travis-4.1",
     "lodash": "^3.6.0",
     "mdns": "^2.2.8",
