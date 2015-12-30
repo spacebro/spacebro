@@ -1,8 +1,16 @@
 {
   "server": {
     "port": 8888,
-    "serviceName": "chywalry",
-    "destinationPath": "path/to/save/img",
-    "tmpDestinationPath": "path/to/tmp/file"
+    "serviceName": "chywalry"
+  },
+  "image": {
+    "path": {
+      "final": "./images",
+      "tmp": "/tmp"
+    },
+    "resized": {
+      "width": 1920,
+      "height": 1080
+    }
   }
 }

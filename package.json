@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "chywalry",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "send-img": "node dev/send-img.js"
   },
   "dependencies": {
+    "colors": "^1.1.2",
     "imagemagick-native": "elad/node-imagemagick-native.git#travis-4.1",
     "lodash": "^3.6.0",
     "mdns": "^2.2.8",
@@ -13,6 +15,7 @@
     "socket.io": "^1.3.5"
   },
   "devDependencies": {
-    "shelljs": "^0.3.0"
+    "shelljs": "^0.3.0",
+    "socket.io-client": "^1.3.7"
   }
 }

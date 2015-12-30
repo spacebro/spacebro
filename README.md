@@ -50,4 +50,6 @@ $ npm start
 
 ## Develop
 
+You can test writing images with [`dev/send-img.js`](/dev/send-img.js) script. Run `$ npm run send-img`.
+
 Please follow [standard style](https://github.com/feross/standard) conventions.

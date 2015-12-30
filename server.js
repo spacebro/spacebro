@@ -3,6 +3,7 @@
 const fs = require('fs')
 const _ = require('lodash')
 const mdns = require('mdns')
+const colors = require('colors')
 const shortid = require('shortid')
 const pathHelper = require('path')
 const config = require('./config.json')
@@ -27,15 +28,13 @@ io.on('connection', function (socket) {
     })
     .on('error', function (err) {
       console.log('error'.bold.red)
-      console.log(err)
+    // console.log(err)
     })
-    .on('write-img', function (img) {
-      console.log('img'.cyan)
-
-      let base64Data = img.replace(/^data:image\/png;base64,/, '')
+    .on('write-img', function (imgDataURL) {
+      let base64Data = imgDataURL.replace(/^data:image\/png;base64,/, '')
       let name = shortid.generate() + '.png'
-      let path = config.server.destinationPath
-      let tmpPath = config.server.tmpDestinationPath
+      let path = config.image.path.final
+      let tmpPath = config.image.path.tmp
       let destinationFile = pathHelper.join(path, name)
       let tmpDestinationFile = pathHelper.join(tmpPath, name)
 
@@ -48,10 +47,10 @@ io.on('connection', function (socket) {
         } else {
           fs.writeFileSync(destinationFile, imagemagick.convert({
             srcData: fs.readFileSync(tmpDestinationFile),
-            width: 1920,
-            height: 1080,
-            resizeStyle: 'aspectfill', // is the default, or 'aspectfit' or 'fill'
-            gravity: 'Center' // optional: position crop area when using 'aspectfill'
+            width: config.image.resized.width,
+            height: config.image.resized.height,
+            resizeStyle: config.image.resized.style, // is the default, or 'aspectfit' or 'fill'
+            gravity: config.image.resized.gravity // optional: position crop area when using 'aspectfill'
           }))
         }
       })
