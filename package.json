@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "description": "chywalry",
   "scripts": {
-    "start": "node server.js",
+    "start": "node index.js",
     "send-img": "node dev/send-img.js",
     "send-events": "node dev/send-events.js"
   },
   "dependencies": {
+    "cli-table": "^0.3.1",
     "colors": "^1.1.2",
     "lodash": "^3.6.0",
     "mdns": "^2.2.8",

@@ -4,8 +4,6 @@
 
 Chywalry's here to help you connect your apps together. You define a list of events, and make sure your client apps calls and listen to them.
 
-It also provides an image writer utility via the `write-img` event.
-
 ## Installation
 
 ## Prerequisites
