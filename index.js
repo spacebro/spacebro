@@ -8,6 +8,7 @@ const shortid = require('shortid')
 const pathHelper = require('path')
 const config = require('./config.json')
 let io = require('socket.io')(config.server.port)
+let defaultSocketEvent = [ 'disconnect', 'error', 'register' ] 
 
 console.log('Chywalry - listening on port', config.server.port)
 
@@ -37,6 +38,7 @@ io.on('connection', function (socket) {
       socket.clientName = (data.clientName === undefined) ? socket.id : data.clientName
       socket.eventsListRegistered = data.eventsList.join(',') || 'n.a'
       registerEventsAndAdd(data.eventsList, socket)
+      updateOtherSockets()
       updateTable()
     })
 
@@ -47,6 +49,23 @@ io.on('connection', function (socket) {
     })
   }
 })
+
+var keyNameToArray = function (obj) {
+  return Object.keys(obj).map(function (key) { return key })
+}
+
+var updateOtherSockets = function () {
+  for (let socket of io.sockets.sockets) {
+    var newEventList = _.difference(config.events, keyNameToArray(socket._events))
+    newEventList = _.difference(newEventList, defaultSocketEvent)
+    for (let triggerName of newEventList) {
+      socket.on(triggerName, function (datas) {
+        console.log('server.js - event %s triggered with datas: %s', triggerName, datas)
+        io.emit(triggerName, datas)
+      })
+    }
+  }
+}
 
 var registerEventsAndAdd = function (eventsList, socket) {
   if (eventsList !== undefined){
