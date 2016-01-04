@@ -43,7 +43,7 @@ var _initSocketIO = function (config) {
 
     for (let event of config.events) {
       socket.on(event, function (datas) {
-        console.log('server.js - event %s triggered with datas: %s', event, datas)
+        console.log('index.js - config event ' + event + ' triggered with datas: ', datas)
         io.emit(event, datas)
       })
     }
@@ -60,7 +60,7 @@ var updateOtherSockets = function () {
     newEventList = _.difference(newEventList, defaultSocketEvent)
     for (let triggerName of newEventList) {
       socket.on(triggerName, function (datas) {
-        console.log('server.js - event %s triggered with datas: %s', triggerName, datas)
+        console.log('index.js - registered event: ' + triggerName + ' triggered with datas: ', datas)
         io.emit(triggerName, datas)
       })
     }
@@ -69,10 +69,12 @@ var updateOtherSockets = function () {
 
 var registerEventsAndAdd = function (eventsList, socket) {
   if (eventsList !== undefined) {
-    for (let triggerName of eventsList) {
+    var newEventList = _.difference(eventsList, keyNameToArray(socket._events))
+    newEventList = _.difference(newEventList, defaultSocketEvent)
+    for (let triggerName of newEventList) {
       config.events = _.union(config.events, [triggerName])
       socket.on(triggerName, function (datas) {
-        console.log('index.js - event %s triggered with datas: %s', triggerName, datas)
+        console.log('index.js - event from client: ' + triggerName + ' triggered with datas: ', datas)
         io.emit(triggerName, datas)
       })
     }
