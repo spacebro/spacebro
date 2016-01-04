@@ -1,17 +1,7 @@
 {
   "server": {
     "port": 8888,
-    "serviceName": "chywalry"
-  },
-  "image": {
-    "path": {
-      "final": "./images",
-      "tmp": "/tmp"
-    },
-    "resized": {
-      "width": 1920,
-      "height": 1080
-    }
+    "serviceName": "spacebro"
   },
   "events": ["event-1", "event-2", "event-3"]
 }

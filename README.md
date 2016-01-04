@@ -1,59 +1,84 @@
-# chywalry
+# Spacebro
+> In reference to Spacebrew by Rockwell Lab (http://www.rockwellgroup.com/search/LAB) 
 
-> Here comes the chywalry.
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/) ![node](https://img.shields.io/badge/node-0.10.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-0.12.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-4.0.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-5.3.x-brightgreen.svg)](https://nodejs.org/en/)
 
-Chywalry's here to help you connect your apps together. You define a list of events, and make sure your client apps calls and listen to them.
 
-## Installation
+*Spacebro* automagically links apps between them. It binds them based on `events`. It is here to help you connect your apps together.
+You define a list of events, and make sure your client apps emits and listen to them.
+
+It follow a centralized model where each apps automagically connects thru zeroconf and socket.io to the Spacebro server.
+Then each of them register a supplementary list of events.
 
 ## Prerequisites
 
-Chywalry uses:
-
-* [socket.io](http://socket.io) to broadcast events
-
-* [imagemagick-native](https://github.com/elad/node-imagemagick-native) to manipulate image before writing them to disk
+Space bro use:
 
 * [mdns](https://github.com/agnat/node_mdns) to allow your app to connect seamlessly
-
-It's compatible with node >= `v0.8.x`.
+* [socket.io](http://socket.io) to broadcast events
+* [cli-table]() to display a list of connected clients
+* [lodash]() to easily handle array manipulation
 
 ### Linux
 
 ```
 $ sudo apt-get install avahi-daemon avahi-discover libnss-mdns libavahi-compat-libdnssd-dev curl build-essential
-$ sudo apt-get install imagemagick libmagick++-dev
 ```
 
-### OSX
+## Install Spacebro
 
 ```
-$ brew install imagemagick
+$ npm i --save spacebro
 ```
 
-## Install dependencies
+You can install globally by using :
 
 ```
-$ npm i
+$ npm i -g --save spacebro
 ```
+
 
 ## Configure
 
+Spacebro is awaiting a config file that looks like : 
+
 ```
-$ cp config.example.json config.json
+{
+  "server": {
+    "port": 8888,
+    "serviceName": "spacebro"
+  },
+  "events": ["event-1", "event-2", "event-3"]
+}
 ```
 
-And fill it with your own settings.
+The `port` define where Spacebro (socket.io) will listen.
+The `serviceName` is the name that Spacebro will use over Zeroconf.
+The `events` array allows you to define a list of events that you want
+to register.
+
+
 
 ## Usage
 
 ```
-$ npm start
+const config = require('../config.json')
+var spacebro = require('spacebro')
+spacebro.init(config)
 ```
 
-## Develop
+You can use the `bin` : 
 
-You can test writing images with the [`dev/send-img.js`](/dev/send-img.js) script. Run `$ npm run send-img`.
+`spacebro --port 8888`
+
+or
+`spacebro --port 8888 --servicename woowoo`
+
+By default the service name is `spacebro` 
+
+This is useful if you want to use the `spacebro-client` 
+
+## Develop
 
 You can test sending events with the [`dev/send-events.js`](/dev/send-events.js) script. Run `$ npm run send-events`.
 
