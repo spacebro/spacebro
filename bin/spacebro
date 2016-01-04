@@ -1,0 +1,43 @@
+#! /usr/bin/env node
+
+'use strict'
+
+var spacebro = require('../')
+var program = require('commander')
+const fs = require('fs')
+ 
+program
+  .version(JSON.parse(fs.readFileSync(__dirname + '/../package.json', 'utf8')).version)
+  .usage('[debug] [options] [files]')
+  .option('-S, --servicename [value]', "give the service a name")
+  .option('-P, --port <n>', 'give a port to spacebro')
+  .option('-C, --config [value]', 'give a path to config.json file')
+  
+
+program.name = 'spacebro';
+
+program.on('--help', function(){
+  console.log('  Examples:');
+  console.log('');
+  console.log('    $ spacebro --servicename spacebro --port 8888');
+  console.log('    $ spacebro --config ./config.json');
+  console.log('');
+});
+
+// init command
+
+program.parse(process.argv);
+if(program.config){
+  let config = require(program.config)
+  spacebro.init(config)
+} else if (program.port) {
+  spacebro.init({
+    "server": {
+      "port": Number(program.port),
+      "serviceName": program.servicename || 'spacebro'
+    },
+    "events": []
+  })
+} else {
+  console.log('You should at least provide a port number with --port')
+}
