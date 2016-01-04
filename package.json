@@ -39,7 +39,7 @@
     "url": "git://github.com/soixantecircuits/spacebro.git"
   },
   "bin" : { 
-    "spacebro" : "./bin/spacebro.js" 
+    "spacebro" : "./bin/spacebro" 
   },
   "author": "Soixante circuits",
   "license": "MIT"
