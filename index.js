@@ -83,7 +83,14 @@ var registerEventsAndAdd = function (eventsList, socket) {
 
 var updateTable = function () {
   table.length = 0
-  for (let socket of io.sockets.sockets) {
+  if (Array.isArray(io.sockets.sockets)) {
+    for (let socket of io.sockets.sockets) {
+      if (socket.clientName && socket.eventsListRegistered) {
+        table.push([socket.clientName, socket.eventsListRegistered, socket.connected ? 'online' : 'offline'])
+      }
+    }
+  } else {
+    let socket = io.sockets.sockets[Object.keys(io.sockets.sockets)[0]]
     if (socket.clientName && socket.eventsListRegistered) {
       table.push([socket.clientName, socket.eventsListRegistered, socket.connected ? 'online' : 'offline'])
     }
@@ -93,7 +100,7 @@ var updateTable = function () {
 
 var init = function (configOption) {
   config = configOption
-  if (config.events === undefined){
+  if (config.events === undefined) {
     config.events = []
   }
   process.title = config.server.serviceName
