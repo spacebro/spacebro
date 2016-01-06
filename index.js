@@ -55,14 +55,28 @@ var keyNameToArray = function (obj) {
 }
 
 var updateOtherSockets = function () {
-  for (let socket of io.sockets.sockets) {
-    var newEventList = _.difference(config.events, keyNameToArray(socket._events))
-    newEventList = _.difference(newEventList, defaultSocketEvent)
-    for (let triggerName of newEventList) {
-      socket.on(triggerName, function (datas) {
-        console.log('index.js - registered event: ' + triggerName + ' triggered with datas: ', datas)
-        io.emit(triggerName, datas)
-      })
+  if (Array.isArray(io.sockets.sockets)) {
+    for (let socket of io.sockets.sockets) {
+      var newEventList = _.difference(config.events, keyNameToArray(socket._events))
+      newEventList = _.difference(newEventList, defaultSocketEvent)
+      for (let triggerName of newEventList) {
+        socket.on(triggerName, function (datas) {
+          console.log('index.js - registered event: ' + triggerName + ' triggered with datas: ', datas)
+          io.emit(triggerName, datas)
+        })
+      }
+    }
+  } else {
+    let socket = io.sockets.sockets[Object.keys(io.sockets.sockets)[0]]
+    if (socket && socket.clientName && socket.eventsListRegistered) {
+      var newEventList = _.difference(config.events, keyNameToArray(socket._events))
+      newEventList = _.difference(newEventList, defaultSocketEvent)
+      for (let triggerName of newEventList) {
+        socket.on(triggerName, function (datas) {
+          console.log('index.js - registered event: ' + triggerName + ' triggered with datas: ', datas)
+          io.emit(triggerName, datas)
+        })
+      }
     }
   }
 }
@@ -85,13 +99,13 @@ var updateTable = function () {
   table.length = 0
   if (Array.isArray(io.sockets.sockets)) {
     for (let socket of io.sockets.sockets) {
-      if (socket.clientName && socket.eventsListRegistered) {
+      if (socket && socket.clientName && socket.eventsListRegistered) {
         table.push([socket.clientName, socket.eventsListRegistered, socket.connected ? 'online' : 'offline'])
       }
     }
   } else {
     let socket = io.sockets.sockets[Object.keys(io.sockets.sockets)[0]]
-    if (socket.clientName && socket.eventsListRegistered) {
+    if (socket && socket.clientName && socket.eventsListRegistered) {
       table.push([socket.clientName, socket.eventsListRegistered, socket.connected ? 'online' : 'offline'])
     }
   }
