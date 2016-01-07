@@ -30,14 +30,12 @@ program.parse(process.argv)
 if (program.config) {
   let config = require(process.cwd() + require('path').sep + program.config)
   spacebro.init(config)
-} else if (program.port) {
+} else {
   spacebro.init({
     'server': {
-      'port': Number(program.port),
+      'port': Number(program.port) || 8888,
       'serviceName': program.servicename || 'spacebro'
     },
     'events': []
   })
-} else {
-  console.log('You should at least provide a port number with --port')
 }
