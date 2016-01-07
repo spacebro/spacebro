@@ -4,8 +4,8 @@
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/) [![node](https://img.shields.io/badge/node-0.10.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-0.12.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-4.0.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-5.3.x-brightgreen.svg)](https://nodejs.org/en/)
 
 
-*Spacebro* automagically links apps between them. It binds them based on `events`. It is here to help you connect your apps together.
-You define a list of events, and make sure your client apps emits and listen to them.
+*Spacebro* automagically links apps between them. It binds them based on `events`.
+You just define a list of events and make sure your client apps emits and listen to them.
 
 It follow a centralized model where each apps automagically connects thru zeroconf and socket.io to the Spacebro server.
 Then each of them register a supplementary list of events.
@@ -25,13 +25,13 @@ Space bro use:
 $ sudo apt-get install avahi-daemon avahi-discover libnss-mdns libavahi-compat-libdnssd-dev curl build-essential
 ```
 
-## Install Spacebro
+## Install Spacebro to use it as a module
 
 ```
 $ npm i --save spacebro
 ```
 
-You can install globally by using :
+You can also install globally if you want to run the bin instead of developping your own app:
 
 ```
 $ npm i -g --save spacebro
@@ -59,7 +59,7 @@ to register.
 
 
 
-## Usage
+## Usage as a Module
 
 ```
 const config = require('../config.json')
@@ -67,19 +67,23 @@ var spacebro = require('spacebro')
 spacebro.init(config)
 ```
 
-You can use the `bin` : 
+## Usage as an app
 
+You just run the `bin` : 
+
+`spacebro`
+or
 `spacebro --port 8888`
-
 or
 `spacebro --port 8888 --servicename woowoo`
 
-By default the service name is `spacebro` 
+By default the service name is `spacebro` and the port number is `8888` 
 
-This is useful if you want to use the `spacebro-client` 
+This is useful if you want to use the `spacebro-client` as is. The spacebro client allow to connect your node application to spacebro server, just by requiring it.
+See [Spacebro Client](https://github.com/soixantecircuits/spacebro-client) on github to learn more.
 
 ## Develop
 
-You can test sending events with the [`dev/send-events.js`](/dev/send-events.js) script. Run `$ npm run send-events`.
+You can test sending events with the [`dev/send-events.js`](/dev/send-events.js) script. Run `npm run send-events`.
 
 Please follow [standard style](https://github.com/feross/standard) conventions.

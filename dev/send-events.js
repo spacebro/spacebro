@@ -1,18 +1,25 @@
 'use strict'
 
-const config = require('../config.json')
-let socket = require('socket.io-client')('http://localhost:' + config.server.port)
+const spacebroClient = require('spacebro-client')
 
-for (let event of config.events) {
-  socket.on(event, function (datas) {
-    console.log('send-events.js - event %s triggered with datas: %s', event, datas)
-  })
-
-  setTimeout(function () {
-    if (event === 'event-2') {
-      socket.emit(event, {event: 2})
-    } else {
-      socket.emit(event)
+var actionList = [
+  {
+    name: 'shoot',
+    trigger: function (data) {
+      console.log('shoot')
     }
-  }, 500)
-}
+  },
+  {
+    name: 'stop',
+    trigger: function (data) {
+      console.log('stop')
+    }
+  }
+]
+
+actionList.push({name: 'new-media'})
+spacebroClient.registerToMaster(actionList, 'spacebro-testclient')
+
+setInterval(function () {
+  spacebroClient.emit('new-media', {data: 'foo'})
+}, 2000)
