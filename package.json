@@ -23,7 +23,7 @@
     "commander": "2.3.0"
   },
   "devDependencies": {
-    "spacebro-client": "0.0.7"
+    "spacebro-client": "0.0.11"
   },
   "engines": {
     "node": ">=0.10.0"
