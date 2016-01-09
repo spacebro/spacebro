@@ -6,6 +6,7 @@ const colors = require('colors')
 let defaultSocketEvent = ['disconnect', 'error', 'register']
 let io
 let config
+let sockets = []
 
 var Table = require('cli-table')
 
@@ -24,9 +25,11 @@ var _initSocketIO = function (config) {
   io = require('socket.io')(config.server.port)
   io.on('connection', function (socket) {
     console.log('connection'.bold.green)
+    sockets.push(socket)
     socket
       .on('disconnect', function () {
         console.log('disconnect'.bold.red)
+        sockets.splice(sockets.indexOf(socket), 1)
         updateTable()
       })
       .on('error', function (err) {
@@ -55,6 +58,7 @@ var keyNameToArray = function (obj) {
 }
 
 var updateOtherSockets = function () {
+  /*
   if (Array.isArray(io.sockets.sockets)) {
     for (let socket of io.sockets.sockets) {
       var newEventList = _.difference(config.events, keyNameToArray(socket._events))
@@ -79,6 +83,17 @@ var updateOtherSockets = function () {
       }
     }
   }
+  */
+  sockets.forEach(function (socket) {
+    var newEventList = _.difference(config.events, keyNameToArray(socket._events))
+    newEventList = _.difference(newEventList, defaultSocketEvent)
+    for (let triggerName of newEventList) {
+      socket.on(triggerName, function (datas) {
+        console.log('index.js - registered event: ' + triggerName + ' triggered with datas: ', datas)
+        io.emit(triggerName, datas)
+      })
+    }
+  })
 }
 
 var registerEventsAndAdd = function (eventsList, socket) {
@@ -97,7 +112,9 @@ var registerEventsAndAdd = function (eventsList, socket) {
 
 var updateTable = function () {
   table.length = 0
+  /*
   if (Array.isArray(io.sockets.sockets)) {
+    console.log('array')
     for (let socket of io.sockets.sockets) {
       if (socket && socket.clientName && socket.eventsListRegistered) {
         table.push([socket.clientName, socket.eventsListRegistered, socket.connected ? 'online' : 'offline'])
@@ -109,6 +126,12 @@ var updateTable = function () {
       table.push([socket.clientName, socket.eventsListRegistered, socket.connected ? 'online' : 'offline'])
     }
   }
+  */
+  sockets.forEach(function (socket) {
+    if (socket && socket.clientName && socket.eventsListRegistered) {
+      table.push([socket.clientName, socket.eventsListRegistered, socket.connected ? 'online' : 'offline'])
+    }
+  })
   console.log(table.toString())
 }
 
