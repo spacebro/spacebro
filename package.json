@@ -1,6 +1,6 @@
 {
   "name": "spacebro",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "description": "Spacebro use Zeroconf and socket.io to bind apps together!",
   "keywords": [
     "zeroconf",
@@ -24,9 +24,8 @@
     "commander": "2.3.0"
   },
   "devDependencies": {
-    "snazzy": "^2.0.1",
-    "spacebro-client": "0.0.7",
-    "standard": "^5.4.1"
+    "standard": "^5.4.1",
+    "spacebro-client": "0.0.11"
   },
   "engines": {
     "node": ">=0.10.0"
