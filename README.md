@@ -21,19 +21,19 @@ Space bro use:
 
 ### Linux
 
-```
+```bash
 $ sudo apt-get install avahi-daemon avahi-discover libnss-mdns libavahi-compat-libdnssd-dev curl build-essential
 ```
 
 ## Install Spacebro to use it as a module
 
-```
+```bash
 $ npm i --save spacebro
 ```
 
 You can also install globally if you want to run the bin instead of developping your own app:
 
-```
+```bash
 $ npm i -g --save spacebro
 ```
 
@@ -42,7 +42,7 @@ $ npm i -g --save spacebro
 
 Spacebro is awaiting a config file that looks like : 
 
-```
+```js
 {
   "server": {
     "port": 8888,
@@ -61,7 +61,7 @@ to register.
 
 ## Usage as a Module
 
-```
+```js
 const config = require('../config.json')
 var spacebro = require('spacebro')
 spacebro.init(config)
