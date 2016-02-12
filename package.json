@@ -1,6 +1,6 @@
 {
   "name": "spacebro",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Spacebro use Zeroconf and socket.io to bind apps together!",
   "keywords": [
     "zeroconf",
@@ -10,9 +10,10 @@
   ],
   "scripts": {
     "start": "node dev/example.js",
-    "send-events": "node dev/send-events.js",
+    "client": "node dev/send-events.js",
     "example": "node dev/example.js",
-    "bin": "./bin/spacebro"
+    "bin": "./bin/spacebro",
+    "test": "snazzy"
   },
   "dependencies": {
     "cli-table": "0.3.1",
@@ -23,7 +24,8 @@
     "commander": "2.3.0"
   },
   "devDependencies": {
-    "spacebro-client": "0.0.7"
+    "standard": "^5.4.1",
+    "spacebro-client": "0.0.11"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -37,8 +39,8 @@
     "type": "git",
     "url": "git://github.com/soixantecircuits/spacebro.git"
   },
-  "bin" : { 
-    "spacebro" : "./bin/spacebro" 
+  "bin": {
+    "spacebro": "./bin/spacebro"
   },
   "author": "Soixante circuits",
   "license": "MIT"
