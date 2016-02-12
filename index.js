@@ -36,6 +36,13 @@ var _initSocketIO = function (config) {
         console.log('server.js - socket error: %s'.bold.red, err)
       })
       .on('register', function (data) {
+        if (typeof data === "string") {
+          try {
+            data = JSON.parse(data)
+          } catch (e) {
+            console.error(e)
+          }
+        }
         data.eventsList = data.eventsList || []
         socket.clientName = (data.clientName === undefined) ? socket.id : data.clientName
         socket.eventsListRegistered = data.eventsList.join(',') || 'n.a'
