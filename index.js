@@ -2,26 +2,27 @@
 
 const _ = require('lodash')
 const mdns = require('mdns')
-const colors = require('colors')
+require('colors')
+
 let defaultSocketEvent = ['disconnect', 'error', 'register']
 let io
 let config
 let sockets = []
 
-var Table = require('cli-table')
+const Table = require('cli-table')
 
 // instantiate
-var table = new Table({
+const table = new Table({
   head: ['Clients', 'Events registered', 'Status'],
   colWidths: [22, 30, 16]
 })
 
-var _initBroadcast = function (config) {
+function _initBroadcast (config) {
   var ad = mdns.createAdvertisement(mdns.tcp(config.server.serviceName), config.server.port)
   ad.start()
 }
 
-var _initSocketIO = function (config) {
+function _initSocketIO (config) {
   io = require('socket.io')(config.server.port)
   io.on('connection', function (socket) {
     console.log('connection'.bold.green)
@@ -36,7 +37,7 @@ var _initSocketIO = function (config) {
         console.log('server.js - socket error: %s'.bold.red, err)
       })
       .on('register', function (data) {
-        if (typeof data === "string") {
+        if (typeof data === 'string') {
           try {
             data = JSON.parse(data)
           } catch (e) {
@@ -60,11 +61,11 @@ var _initSocketIO = function (config) {
   })
 }
 
-var keyNameToArray = function (obj) {
+function keyNameToArray (obj) {
   return Object.keys(obj).map(function (key) { return key })
 }
 
-var updateOtherSockets = function () {
+function updateOtherSockets () {
   sockets.forEach(function (socket) {
     var newEventList = _.difference(config.events, keyNameToArray(socket._events))
     newEventList = _.difference(newEventList, defaultSocketEvent)
@@ -77,7 +78,7 @@ var updateOtherSockets = function () {
   })
 }
 
-var registerEventsAndAdd = function (eventsList, socket) {
+function registerEventsAndAdd (eventsList, socket) {
   if (eventsList !== undefined) {
     var newEventList = _.difference(eventsList, keyNameToArray(socket._events))
     newEventList = _.difference(newEventList, defaultSocketEvent)
@@ -91,7 +92,7 @@ var registerEventsAndAdd = function (eventsList, socket) {
   }
 }
 
-var updateTable = function () {
+function updateTable () {
   table.length = 0
   sockets.forEach(function (socket) {
     if (socket && socket.clientName && socket.eventsListRegistered) {
@@ -101,7 +102,7 @@ var updateTable = function () {
   console.log(table.toString())
 }
 
-var init = function (configOption) {
+function init (configOption) {
   config = configOption
   if (config.events === undefined) {
     config.events = []
@@ -112,6 +113,4 @@ var init = function (configOption) {
   console.log('Spacebro - ' + config.server.serviceName + ' - listening on port', config.server.port)
 }
 
-module.exports = {
-  init: init
-}
+module.exports = { init }
