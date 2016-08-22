@@ -10,6 +10,10 @@ var _socket = require('socket.io');
 
 var _socket2 = _interopRequireDefault(_socket);
 
+var _cliTable = require('cli-table');
+
+var _cliTable2 = _interopRequireDefault(_cliTable);
+
 var _mdns = require('mdns');
 
 var _mdns2 = _interopRequireDefault(_mdns);
@@ -35,6 +39,10 @@ var io = null;
 var sockets = [];
 
 var reservedEvents = ['register'];
+var table = new _cliTable2.default({
+  head: ['Clients', 'Channel', 'Status'],
+  colWidths: [25, 25, 15]
+});
 
 function init(configOption) {
   config = _lodash2.default.merge(config, configOption);
@@ -53,6 +61,7 @@ function initSocketIO() {
     socket.on('disconnect', function () {
       log(fullname(socket), 'disconnected');
       sockets.splice(sockets.indexOf(socket), 1);
+      updateTable();
     }).on('error', function (err) {
       log(fullname(socket), 'error:', err);
     }).on('register', function (data) {
@@ -61,6 +70,7 @@ function initSocketIO() {
       socket.channelName = data.channelName || 'default';
       socket.join(socket.channelName);
       log(fullname(socket), 'registered');
+      updateTable();
     }).on('*', function (_ref) {
       var data = _ref.data;
 
@@ -109,6 +119,17 @@ function log() {
   }
 
   (_console = console).log.apply(_console, ['SpaceBro -'].concat(args));
+}
+
+function updateTable() {
+  if (!config.verbose) return;
+  table.length = 0;
+  sockets.forEach(function (socket) {
+    if (socket && socket.clientName && socket.channelName) {
+      table.push([socket.clientName, socket.channelName, socket.connected ? 'online' : 'offline']);
+    }
+  });
+  console.log(table.toString());
 }
 
 function objectify(data) {

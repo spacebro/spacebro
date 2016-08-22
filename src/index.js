@@ -2,6 +2,7 @@
 
 import middlewareMaker from 'socketio-wildcard'
 import Server from 'socket.io'
+import Table from 'cli-table'
 import mdns from 'mdns'
 import _ from 'lodash'
 
@@ -22,6 +23,10 @@ let sockets = []
 const reservedEvents = [
   'register'
 ]
+const table = new Table({
+  head: ['Clients', 'Channel', 'Status'],
+  colWidths: [25, 25, 15]
+})
 
 function init (configOption) {
   config = _.merge(config, configOption)
@@ -41,6 +46,7 @@ function initSocketIO () {
       .on('disconnect', function () {
         log(fullname(socket), 'disconnected')
         sockets.splice(sockets.indexOf(socket), 1)
+        updateTable()
       })
       .on('error', function (err) {
         log(fullname(socket), 'error:', err)
@@ -51,6 +57,7 @@ function initSocketIO () {
         socket.channelName = data.channelName || 'default'
         socket.join(socket.channelName)
         log(fullname(socket), 'registered')
+        updateTable()
       })
       .on('*', function ({ data }) {
         let [eventName, args] = data
@@ -87,6 +94,17 @@ module.exports = { init }
 function log (...args) {
   if (!config.verbose) return
   console.log('SpaceBro -', ...args)
+}
+
+function updateTable () {
+  if (!config.verbose) return
+  table.length = 0
+  sockets.forEach(function (socket) {
+    if (socket && socket.clientName && socket.channelName) {
+      table.push([socket.clientName, socket.channelName, socket.connected ? 'online' : 'offline'])
+    }
+  })
+  console.log(table.toString())
 }
 
 function objectify (data) {
