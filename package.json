@@ -19,10 +19,11 @@
   "dependencies": {
     "cli-table": "0.3.1",
     "colors": "1.1.2",
+    "commander": "2.3.0",
     "lodash": "3.6.0",
     "mdns": "2.2.11",
     "socket.io": "1.3.5",
-    "commander": "2.3.0"
+    "socketio-wildcard": "^0.3.0"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.13.2",
