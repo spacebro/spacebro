@@ -58,7 +58,7 @@ function initSocketIO() {
     }).on('register', function (data) {
       data = objectify(data);
       socket.clientName = data.clientName || socket.id;
-      socket.channelName = data.channel || 'default';
+      socket.channelName = data.channelName || 'default';
       socket.join(socket.channelName);
       log(fullname(socket), 'registered');
     }).on('*', function (_ref) {
