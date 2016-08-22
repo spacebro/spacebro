@@ -60,6 +60,16 @@ function initSocketIO () {
           return
         }
         log(fullname(socket), 'triggered', eventName, 'with data:', args)
+        args._from = args._from || socket.clientName
+        if (args._to != null) {
+          let target = sockets.find(s => s.clientName === args._to && s.channelName === socket.channelName)
+          if (target) {
+            io.to(target.id).emit(eventName, args)
+            return
+          } else {
+            log('Target not found:', args._to)
+          }
+        }
         io.to(socket.channelName).emit(eventName, args)
       })
   })
