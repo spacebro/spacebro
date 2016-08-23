@@ -13,7 +13,8 @@ let config = {
     serviceName: 'spacebro'
   },
   verbose: true,
-  events: [] // Useless
+  events: [], // Useless
+  _isCLI: false // Should be private
 }
 
 // Variables
