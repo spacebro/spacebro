@@ -1,6 +1,7 @@
 'use strict'
 
 import middlewareMaker from 'socketio-wildcard'
+import dashboard from './dashboard'
 import Server from 'socket.io'
 import Table from 'cli-table'
 import mdns from 'mdns'
@@ -20,6 +21,7 @@ let config = {
 // Variables
 let io = null
 let sockets = []
+let infos = {}
 
 const reservedEvents = [
   'register'
@@ -34,6 +36,7 @@ function init (configOption) {
   process.title = config.server.serviceName
   initSocketIO()
   initBroadcast()
+  dashboard.init(config)
   log(config.server.serviceName, 'listening on port', config.server.port)
 }
 
@@ -45,8 +48,9 @@ function initSocketIO () {
     sockets.push(socket)
     socket
       .on('disconnect', function () {
-        log(fullname(socket), 'disconnected')
         sockets.splice(sockets.indexOf(socket), 1)
+        log(fullname(socket), 'disconnected')
+        quitChannel(socket, socket.channelName)
         updateTable()
       })
       .on('error', function (err) {
@@ -58,6 +62,7 @@ function initSocketIO () {
         socket.channelName = data.channelName || 'default'
         socket.join(socket.channelName)
         log(fullname(socket), 'registered')
+        joinChannel(socket, socket.channelName)
         updateTable()
       })
       .on('*', function ({ data }) {
@@ -68,6 +73,7 @@ function initSocketIO () {
           return
         }
         log(fullname(socket), 'triggered', eventName, 'with data:', args)
+        registerEvent(eventName, socket.channelName)
         args._from = args._from || socket.clientName
         if (args._to != null) {
           let target = sockets.find(s => s.clientName === args._to && s.channelName === socket.channelName)
@@ -89,16 +95,39 @@ function initBroadcast () {
     .start()
 }
 
-module.exports = { init }
+module.exports = { init, infos }
 
 // = Helpers ===
 function log (...args) {
   if (!config.verbose) return
-  console.log('SpaceBro -', ...args)
+  if (config._isCLI) {
+    dashboard.log(...args)
+  } else {
+    console.log('SpaceBro -', ...args)
+  }
+}
+
+function joinChannel (socket, channelName) {
+  socket.join(channelName)
+  if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
+  infos[channelName].clients = _.union(infos[channelName].clients, [socket.clientName])
+  dashboard.setInfos(infos)
+}
+
+function quitChannel (socket, channelName) {
+  if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
+  infos[channelName].clients = _.remove(infos[channelName].clients, socket.clientName)
+  dashboard.setInfos(infos)
+}
+
+function registerEvent (eventName, channelName) {
+  if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
+  infos[channelName].events = _.union(infos[channelName].events, [eventName])
+  dashboard.setInfos(infos)
 }
 
 function updateTable () {
-  if (!config.verbose) return
+  if (!config.verbose || config._isCLI) return
   table.length = 0
   sockets.forEach(function (socket) {
     if (socket && socket.clientName && socket.channelName) {

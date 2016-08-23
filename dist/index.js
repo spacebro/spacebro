@@ -6,6 +6,10 @@ var _socketioWildcard = require('socketio-wildcard');
 
 var _socketioWildcard2 = _interopRequireDefault(_socketioWildcard);
 
+var _dashboard = require('./dashboard');
+
+var _dashboard2 = _interopRequireDefault(_dashboard);
+
 var _socket = require('socket.io');
 
 var _socket2 = _interopRequireDefault(_socket);
@@ -38,6 +42,7 @@ var config = {
 // Variables
 var io = null;
 var sockets = [];
+var infos = {};
 
 var reservedEvents = ['register'];
 var table = new _cliTable2.default({
@@ -50,6 +55,7 @@ function init(configOption) {
   process.title = config.server.serviceName;
   initSocketIO();
   initBroadcast();
+  _dashboard2.default.init(config);
   log(config.server.serviceName, 'listening on port', config.server.port);
 }
 
@@ -60,8 +66,9 @@ function initSocketIO() {
     log('New socket connected');
     sockets.push(socket);
     socket.on('disconnect', function () {
-      log(fullname(socket), 'disconnected');
       sockets.splice(sockets.indexOf(socket), 1);
+      log(fullname(socket), 'disconnected');
+      quitChannel(socket, socket.channelName);
       updateTable();
     }).on('error', function (err) {
       log(fullname(socket), 'error:', err);
@@ -71,6 +78,7 @@ function initSocketIO() {
       socket.channelName = data.channelName || 'default';
       socket.join(socket.channelName);
       log(fullname(socket), 'registered');
+      joinChannel(socket, socket.channelName);
       updateTable();
     }).on('*', function (_ref) {
       var data = _ref.data;
@@ -86,6 +94,7 @@ function initSocketIO() {
         return;
       }
       log(fullname(socket), 'triggered', eventName, 'with data:', args);
+      registerEvent(eventName, socket.channelName);
       args._from = args._from || socket.clientName;
       if (args._to != null) {
         var target = sockets.find(function (s) {
@@ -107,23 +116,46 @@ function initBroadcast() {
   _mdns2.default.createAdvertisement(_mdns2.default.tcp(config.server.serviceName), config.server.port).start();
 }
 
-module.exports = { init: init };
+module.exports = { init: init, infos: infos };
 
 // = Helpers ===
 function log() {
-  var _console;
-
   if (!config.verbose) return;
 
   for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
     args[_key] = arguments[_key];
   }
 
-  (_console = console).log.apply(_console, ['SpaceBro -'].concat(args));
+  if (config._isCLI) {
+    _dashboard2.default.log.apply(_dashboard2.default, args);
+  } else {
+    var _console;
+
+    (_console = console).log.apply(_console, ['SpaceBro -'].concat(args));
+  }
+}
+
+function joinChannel(socket, channelName) {
+  socket.join(channelName);
+  if (!_lodash2.default.has(infos, channelName)) infos[channelName] = { events: [], clients: [] };
+  infos[channelName].clients = _lodash2.default.union(infos[channelName].clients, [socket.clientName]);
+  _dashboard2.default.setInfos(infos);
+}
+
+function quitChannel(socket, channelName) {
+  if (!_lodash2.default.has(infos, channelName)) infos[channelName] = { events: [], clients: [] };
+  infos[channelName].clients = _lodash2.default.remove(infos[channelName].clients, socket.clientName);
+  _dashboard2.default.setInfos(infos);
+}
+
+function registerEvent(eventName, channelName) {
+  if (!_lodash2.default.has(infos, channelName)) infos[channelName] = { events: [], clients: [] };
+  infos[channelName].events = _lodash2.default.union(infos[channelName].events, [eventName]);
+  _dashboard2.default.setInfos(infos);
 }
 
 function updateTable() {
-  if (!config.verbose) return;
+  if (!config.verbose || config._isCLI) return;
   table.length = 0;
   sockets.forEach(function (socket) {
     if (socket && socket.clientName && socket.channelName) {

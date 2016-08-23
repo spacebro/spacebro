@@ -17,6 +17,7 @@
     "test": "snazzy"
   },
   "dependencies": {
+    "blessed": "^0.1.81",
     "cli-table": "0.3.1",
     "colors": "1.1.2",
     "commander": "2.3.0",
