@@ -144,9 +144,9 @@ function joinChannel(socket, channelName) {
 
 function quitChannel(socket, channelName) {
   if (!_lodash2.default.has(infos, channelName)) infos[channelName] = { events: [], clients: [] };
-  log(_lodash2.default.remove(infos[channelName].clients, function (s) {
+  _lodash2.default.remove(infos[channelName].clients, function (s) {
     return s === socket.clientName;
-  }));
+  });
   _dashboard2.default.setInfos(infos);
 }
 
