@@ -15,7 +15,7 @@ var screen = void 0,
     clientTable = void 0,
     eventTable = void 0;
 
-var color = 'green';
+var color = '3F51B5';
 
 function init(config) {
   // Create a screen object.

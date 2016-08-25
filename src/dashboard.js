@@ -3,7 +3,7 @@ import _ from 'lodash'
 
 let screen, logText, clientTable, eventTable
 
-const color = 'green'
+const color = '3F51B5'
 
 function init (config) {
   // Create a screen object.
