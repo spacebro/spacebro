@@ -10,11 +10,11 @@
   ],
   "main": "dist/index.js",
   "scripts": {
-    "start": "node dev/example.js",
+    "start": "npm run bin",
     "client": "node dev/send-events.js",
     "example": "node dev/example.js",
     "bin": "./bin/spacebro",
-    "test": "snazzy"
+    "test": "standard src/**/*.js"
   },
   "dependencies": {
     "blessed": "^0.1.81",
