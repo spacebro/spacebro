@@ -3,7 +3,7 @@ import _ from 'lodash'
 
 let screen, logText, clientTable, eventTable
 
-const color = '3F51B5'
+const color = 'blue'
 
 function init (config) {
   // Create a screen object.
@@ -24,7 +24,8 @@ function init (config) {
     top: '0%',
     border: { type: 'line' },
     style: {
-      fg: -1,
+      // fg: -1,
+      transparent: false,
       border: { fg: color }
     }
   })

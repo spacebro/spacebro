@@ -15,7 +15,7 @@ var screen = void 0,
     clientTable = void 0,
     eventTable = void 0;
 
-var color = '3F51B5';
+var color = 'blue';
 
 function init(config) {
   // Create a screen object.
@@ -36,7 +36,8 @@ function init(config) {
     top: '0%',
     border: { type: 'line' },
     style: {
-      fg: -1,
+      // fg: -1,
+      transparent: false,
       border: { fg: color }
     }
   });
