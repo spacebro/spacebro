@@ -1,5 +1,5 @@
 'use strict'
 
-const config = require('../config.json')
-var spacebro = require('../index.js')
+const config = require('./config.example.json')
+var spacebro = require('../')
 spacebro.init(config)

@@ -2,14 +2,15 @@
 
 'use strict'
 
-var spacebro = require('../')
-var program = require('commander')
-const fs = require('fs')
+const spacebro = require('../')
+const program = require('commander')
+const pkg = require('../package.json')
+const path = require('path')
 
 program
-  .version(JSON.parse(fs.readFileSync(__dirname + '/../package.json', 'utf8')).version)
+  .version(pkg.version)
   .usage('[debug] [options] [files]')
-  .option('-S, --servicename [value]', "give the service a name")
+  .option('-S, --servicename [value]', 'give the service a name')
   .option('-P, --port <n>', 'give a port to spacebro')
   .option('-C, --config [value]', 'give a path to config.json file')
 
@@ -24,18 +25,12 @@ program.on('--help', function () {
 })
 
 // init command
-
 program.parse(process.argv)
 
-if (program.config) {
-  let config = require(process.cwd() + require('path').sep + program.config)
-  spacebro.init(config)
-} else {
-  spacebro.init({
-    'server': {
-      'port': Number(program.port) || 8888,
-      'serviceName': program.servicename || 'spacebro'
-    },
-    'events': []
-  })
-}
+const config = program.config
+  ? require(path.resolve(process.cwd(), program.config))
+  : {}
+
+config._isCLI = true
+
+spacebro.init(config)

@@ -1,4 +1,4 @@
-# Spacebro
+# 🚀  Spacebro
 > In reference to [Spacebrew](http://docs.spacebrew.cc/) by Rockwell Lab (http://www.rockwellgroup.com/search/LAB) 
 
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/) [![node](https://img.shields.io/badge/node-0.10.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-0.12.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-4.0.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-5.3.x-brightgreen.svg)](https://nodejs.org/en/)
@@ -81,6 +81,8 @@ By default the service name is `spacebro` and the port number is `8888`
 
 This is useful if you want to use the `spacebro-client` as is. The spacebro client allow to connect your node application to spacebro server, just by requiring it.
 See [Spacebro Client](https://github.com/soixantecircuits/spacebro-client) on github to learn more.
+
+For openFramework you can also use [ofxSpaceBro](https://github.com/soixantecircuits/ofxSpacebroClient).
 
 ## Develop
 
