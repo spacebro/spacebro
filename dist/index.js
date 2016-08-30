@@ -1,5 +1,7 @@
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 var _socketioWildcard = require('socketio-wildcard');
@@ -88,6 +90,10 @@ function initSocketIO() {
       var eventName = _data[0];
       var args = _data[1];
 
+      if ((typeof args === 'undefined' ? 'undefined' : _typeof(args)) !== 'object') {
+        args = { data: args };
+        args.altered = true;
+      }
       if (reservedEvents.indexOf(eventName) !== -1) return;
       if (!socket.clientName) {
         log(fullname(socket), 'tried to trigger', eventName, 'with data:', args);
@@ -95,17 +101,21 @@ function initSocketIO() {
       }
       log(fullname(socket), 'triggered', eventName, 'with data:', args);
       registerEvent(eventName, socket.channelName);
-      args._from = args._from || socket.clientName;
-      if (args._to != null) {
+
+      if (args._to !== null) {
         var target = sockets.find(function (s) {
           return s.clientName === args._to && s.channelName === socket.channelName;
         });
         if (target) {
+          log('Target found:', args._to);
           io.to(target.id).emit(eventName, args);
           return;
         } else {
           log('Target not found:', args._to);
         }
+      }
+      if (args.altered) {
+        args = args.data;
       }
       io.to(socket.channelName).emit(eventName, args);
     });

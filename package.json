@@ -14,6 +14,7 @@
     "client": "node dev/send-events.js",
     "example": "node dev/example.js",
     "bin": "./bin/spacebro",
+    "bin-verbose": "./bin/spacebro --config ./config/config.json",
     "test": "standard src/**/*.js"
   },
   "dependencies": {

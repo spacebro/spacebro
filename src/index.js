@@ -67,6 +67,10 @@ function initSocketIO () {
       })
       .on('*', function ({ data }) {
         let [eventName, args] = data
+        if (typeof args !== 'object') {
+          args = {data: args}
+          args.altered = true
+        }
         if (reservedEvents.indexOf(eventName) !== -1) return
         if (!socket.clientName) {
           log(fullname(socket), 'tried to trigger', eventName, 'with data:', args)
@@ -74,15 +78,19 @@ function initSocketIO () {
         }
         log(fullname(socket), 'triggered', eventName, 'with data:', args)
         registerEvent(eventName, socket.channelName)
-        args._from = args._from || socket.clientName
-        if (args._to != null) {
+
+        if (args._to !== null) {
           let target = sockets.find(s => s.clientName === args._to && s.channelName === socket.channelName)
           if (target) {
+            log('Target found:', args._to)
             io.to(target.id).emit(eventName, args)
             return
           } else {
             log('Target not found:', args._to)
           }
+        }
+        if (args.altered) {
+          args = args.data
         }
         io.to(socket.channelName).emit(eventName, args)
       })
