@@ -1,6 +1,6 @@
 {
   "name": "spacebro",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "description": "Spacebro use Zeroconf and socket.io to bind apps together!",
   "keywords": [
     "zeroconf",
