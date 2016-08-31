@@ -13,9 +13,10 @@ let config = {
     port: 8888,
     serviceName: 'spacebro'
   },
-  verbose: true,
+  verbose: false,
   events: [], // Useless
-  _isCLI: false // Should be private
+  _isCLI: false, // Should be private
+  console: false
 }
 
 // Variables
@@ -32,7 +33,7 @@ const table = new Table({
 })
 
 function init (configOption) {
-  config = _.merge(config, configOption)
+  Object.assign(config, configOption)
   process.title = config.server.serviceName
   dashboard.init(config)
   log('Init socket.io')

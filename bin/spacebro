@@ -12,6 +12,7 @@ program
   .usage('[debug] [options] [files]')
   .option('-S, --servicename [value]', 'give the service a name')
   .option('-P, --port <n>', 'give a port to spacebro')
+  .option('-V, --verbose', 'option to display information')
   .option('-C, --config [value]', 'give a path to config.json file')
 
 program.name = 'spacebro'
@@ -32,5 +33,12 @@ const config = program.config
   : {}
 
 config._isCLI = true
+
+config.server = {
+  port: Number(program.port) || 8888,
+  serviceName: program.servicename || 'spacebro'
+}
+
+config.verbose = program.verbose || false
 
 spacebro.init(config)
