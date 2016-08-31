@@ -40,7 +40,6 @@ function init (configOption) {
   log('Init broadcast')
   initBroadcast()
   log(`Init dashboard`)
-  
   log(config.server.serviceName, 'listening on port', config.server.port)
 }
 
