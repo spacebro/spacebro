@@ -34,9 +34,13 @@ const table = new Table({
 function init (configOption) {
   config = _.merge(config, configOption)
   process.title = config.server.serviceName
-  initSocketIO()
-  initBroadcast()
   dashboard.init(config)
+  log('Init socket.io')
+  initSocketIO()
+  log('Init broadcast')
+  initBroadcast()
+  log(`Init dashboard`)
+  
   log(config.server.serviceName, 'listening on port', config.server.port)
 }
 

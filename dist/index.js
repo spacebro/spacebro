@@ -59,9 +59,13 @@ var table = new _cliTable2.default({
 function init(configOption) {
   config = _lodash2.default.merge(config, configOption);
   process.title = config.server.serviceName;
-  initSocketIO();
-  initBroadcast();
   _dashboard2.default.init(config);
+  log('Init socket.io');
+  initSocketIO();
+  log('Init broadcast');
+  initBroadcast();
+  log('Init dashboard');
+
   log(config.server.serviceName, 'listening on port', config.server.port);
 }
 
