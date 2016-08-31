@@ -1,8 +1,12 @@
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof2 = require('babel-runtime/helpers/typeof');
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+var _typeof3 = _interopRequireDefault(_typeof2);
+
+var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
+
+var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
 
 var _socketioWildcard = require('socketio-wildcard');
 
@@ -85,12 +89,12 @@ function initSocketIO() {
     }).on('*', function (_ref) {
       var data = _ref.data;
 
-      var _data = _slicedToArray(data, 2);
+      var _data = (0, _slicedToArray3.default)(data, 2);
 
       var eventName = _data[0];
       var args = _data[1];
 
-      if ((typeof args === 'undefined' ? 'undefined' : _typeof(args)) !== 'object') {
+      if ((typeof args === 'undefined' ? 'undefined' : (0, _typeof3.default)(args)) !== 'object') {
         args = { data: args };
         args.altered = true;
       }
@@ -108,6 +112,9 @@ function initSocketIO() {
         });
         if (target) {
           log('Target found:', args._to);
+          if (args.altered) {
+            args = args.data;
+          }
           io.to(target.id).emit(eventName, args);
           return;
         } else {

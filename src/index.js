@@ -83,6 +83,9 @@ function initSocketIO () {
           let target = sockets.find(s => s.clientName === args._to && s.channelName === socket.channelName)
           if (target) {
             log('Target found:', args._to)
+            if (args.altered) {
+              args = args.data
+            }
             io.to(target.id).emit(eventName, args)
             return
           } else {

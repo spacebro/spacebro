@@ -5,7 +5,7 @@ const scripts = 'src/**/*.js'
 
 gulp.task('scripts', function () {
   return gulp.src(scripts)
-    .pipe(babel({ presets: ['es2015'] }))
+    .pipe(babel({ presets: ['es2015'], plugins: ['transform-runtime'] }))
     .pipe(gulp.dest('dist'))
 })
 
