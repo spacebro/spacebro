@@ -35,12 +35,13 @@ const table = new Table({
 function init (configOption) {
   Object.assign(config, configOption)
   process.title = config.server.serviceName
-  dashboard.init(config)
+  if (!config.hidedashboard) {
+    dashboard.init(config)
+  }
   log('Init socket.io')
   initSocketIO()
   log('Init broadcast')
   initBroadcast()
-  log(`Init dashboard`)
   log(config.server.serviceName, 'listening on port', config.server.port)
 }
 
@@ -115,7 +116,7 @@ module.exports = { init, infos }
 // = Helpers ===
 function log (...args) {
   if (!config.verbose) return
-  if (config._isCLI) {
+  if (config._isCLI && !config.hidedashboard) {
     dashboard.log(...args)
   } else {
     console.log('SpaceBro -', ...args)

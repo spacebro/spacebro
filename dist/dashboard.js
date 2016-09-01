@@ -161,8 +161,12 @@ function setInfos(data) {
   for (var channelName in data) {
     _loop(channelName);
   }
-  eventTable.setData(events);
-  clientTable.setData(clients);
+  if (eventTable) {
+    eventTable.setData(events);
+  }
+  if (clientTable) {
+    clientTable.setData(clients);
+  }
 }
 
 module.exports = { init: init, log: log, setInfos: setInfos };

@@ -8,6 +8,10 @@ var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
 
 var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
 
+var _assign = require('babel-runtime/core-js/object/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
 var _socketioWildcard = require('socketio-wildcard');
 
 var _socketioWildcard2 = _interopRequireDefault(_socketioWildcard);
@@ -40,9 +44,10 @@ var config = {
     port: 8888,
     serviceName: 'spacebro'
   },
-  verbose: true,
+  verbose: false,
   events: [], // Useless
-  _isCLI: false // Should be private
+  _isCLI: false, // Should be private
+  console: false
 };
 
 // Variables
@@ -57,15 +62,15 @@ var table = new _cliTable2.default({
 });
 
 function init(configOption) {
-  config = _lodash2.default.merge(config, configOption);
+  (0, _assign2.default)(config, configOption);
   process.title = config.server.serviceName;
-  _dashboard2.default.init(config);
+  if (!config.hidedashboard) {
+    _dashboard2.default.init(config);
+  }
   log('Init socket.io');
   initSocketIO();
   log('Init broadcast');
   initBroadcast();
-  log('Init dashboard');
-
   log(config.server.serviceName, 'listening on port', config.server.port);
 }
 
@@ -147,7 +152,7 @@ function log() {
     args[_key] = arguments[_key];
   }
 
-  if (config._isCLI) {
+  if (config._isCLI && !config.hidedashboard) {
     _dashboard2.default.log.apply(_dashboard2.default, args);
   } else {
     var _console;

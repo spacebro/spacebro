@@ -138,8 +138,13 @@ function setInfos (data) {
     events = _.union(events, data[channelName].events.map(e => [e, channelName]))
     clients = _.union(clients, data[channelName].clients.map(c => [c, channelName]))
   }
-  eventTable.setData(events)
-  clientTable.setData(clients)
+  if (eventTable) {
+    eventTable.setData(events)
+  }
+  if (clientTable) {
+    clientTable.setData(clients)
+  }
+  
 }
 
 module.exports = { init, log, setInfos }
