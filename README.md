@@ -47,17 +47,12 @@ Spacebro is awaiting a config file that looks like :
   "server": {
     "port": 8888,
     "serviceName": "spacebro"
-  },
-  "events": ["event-1", "event-2", "event-3"]
+  }
 }
 ```
 
 The `port` define where Spacebro (socket.io) will listen.
 The `serviceName` is the name that Spacebro will use over Zeroconf.
-The `events` array allows you to define a list of events that you want
-to register.
-
-
 
 ## Usage as a Module
 
