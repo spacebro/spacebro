@@ -144,7 +144,6 @@ function setInfos (data) {
   if (clientTable) {
     clientTable.setData(clients)
   }
-  
 }
 
 module.exports = { init, log, setInfos }
