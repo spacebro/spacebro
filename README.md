@@ -81,6 +81,8 @@ For openFramework you can also use [ofxSpaceBro](https://github.com/soixantecirc
 
 ## Develop
 
+We use the list of galaxies for our release name, find it here: https://en.wikipedia.org/wiki/List_of_galaxies. We are currently at Andromeda
+
 You can test sending events with the [`dev/send-events.js`](/dev/send-events.js) script. Run `npm run send-events`.
 
 Please follow [standard style](https://github.com/feross/standard) conventions.
