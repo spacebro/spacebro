@@ -29,12 +29,16 @@ $ sudo apt-get install avahi-daemon avahi-discover libnss-mdns libavahi-compat-l
 
 ```bash
 $ npm i --save spacebro
+$ # or
+$ yarn add spacebro
 ```
 
 You can also install globally if you want to run the bin instead of developping your own app:
 
 ```bash
 $ npm i -g --save spacebro
+$ # or
+$ yarn global add spacebro
 ```
 
 
