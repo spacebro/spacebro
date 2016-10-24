@@ -1,23 +1,25 @@
 # 🚀  Spacebro
-> In reference to [Spacebrew](http://docs.spacebrew.cc/) by Rockwell Lab (http://www.rockwellgroup.com/search/LAB) 
 
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/) [![node](https://img.shields.io/badge/node-0.10.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-0.12.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-4.0.x-brightgreen.svg)](https://nodejs.org/en/) [![node](https://img.shields.io/badge/node-5.3.x-brightgreen.svg)](https://nodejs.org/en/)
+> In reference to [Spacebrew](http://docs.spacebrew.cc/) by Rockwell Lab (http://www.rockwellgroup.com/search/LAB)
+
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+[![node](https://img.shields.io/badge/node-0.12.x-brightgreen.svg)](https://nodejs.org/en/)
+[![node](https://img.shields.io/badge/node-4.0.x-brightgreen.svg)](https://nodejs.org/en/)
+[![node](https://img.shields.io/badge/node-5.3.x-brightgreen.svg)](https://nodejs.org/en/)
 
 
-*Spacebro* automagically links apps between them. It binds them based on `events`.
-You just define a list of events and make sure your client apps emits and listen to them.
+*Spacebro* automagically links apps between them. It binds them based on `events`. You just define a list of events and make sure your client apps emits and listen to them.
 
-It follow a centralized model where each apps automagically connects thru zeroconf and socket.io to the Spacebro server.
-Then each of them register a supplementary list of events.
+It follow a centralized model where each apps automagically connects thru zeroconf and socket.io to the Spacebro server. Then each of them register a supplementary list of events.
 
 ## Prerequisites
 
-Space bro use:
+Space bro uses:
 
-* [mdns](https://github.com/agnat/node_mdns) to allow your app to connect seamlessly
-* [socket.io](http://socket.io) to broadcast events
-* [cli-table]() to display a list of connected clients
-* [lodash]() to easily handle array manipulation
+* [mdns](https://github.com/agnat/node_mdns) to allow your apps to connect seamlessly.
+* [socket.io](http://socket.io) to broadcast events.
+* [cli-table](https://github.com/Automattic/cli-table) to display a list of connected clients.
+* [lodash](https://lodash.com) to easily handle arrays and objects manipulation.
 
 ### Linux
 
@@ -44,7 +46,7 @@ $ yarn global add spacebro
 
 ## Configure
 
-Spacebro is awaiting a config file that looks like : 
+Spacebro is awaiting a config file that looks like :
 
 ```js
 {
@@ -55,8 +57,8 @@ Spacebro is awaiting a config file that looks like :
 }
 ```
 
-The `port` define where Spacebro (socket.io) will listen.
-The `serviceName` is the name that Spacebro will use over Zeroconf.
+* `port` defines where Spacebro (socket.io) will listen.
+* `serviceName` is the name that Spacebro will use over Zeroconf.
 
 ## Usage as a Module
 
@@ -68,24 +70,31 @@ spacebro.init(config)
 
 ## Usage as an app
 
-You just run the `bin` : 
+You just run the `bin` :
 
-`spacebro`
+```bash
+$ spacebro
+```
 or
-`spacebro --port 8888`
+```bash
+$ spacebro --port 8888
+```
 or
-`spacebro --port 8888 --servicename woowoo`
+```bash
+$ spacebro --port 8888 --servicename woowoo
+```
 
-By default the service name is `spacebro` and the port number is `8888` 
+> NOTE: By default the service name is `spacebro` and the port number is `8888`.
 
-This is useful if you want to use the `spacebro-client` as is. The spacebro client allow to connect your node application to spacebro server, just by requiring it.
-See [Spacebro Client](https://github.com/soixantecircuits/spacebro-client) on github to learn more.
+This is useful if you want to use the `spacebro-client` as is. The spacebro client allows to connect your node application to spacebro server, just by requiring it.
+
+See [spacebro-client](https://github.com/soixantecircuits/spacebro-client) to learn more.
 
 For openFramework you can also use [ofxSpaceBro](https://github.com/soixantecircuits/ofxSpacebroClient).
 
-## Develop
+## Contribute
 
-We use the list of galaxies for our release name, find it here: https://en.wikipedia.org/wiki/List_of_galaxies. We are currently at Andromeda
+We use galaxies names for our release name, listed here [here](https://en.wikipedia.org/wiki/List_of_galaxies). We are currently at Andromeda.
 
 You can test sending events with the [`dev/send-events.js`](/dev/send-events.js) script. Run `npm run send-events`.
 
