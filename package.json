@@ -51,7 +51,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/soixantecircuits/spacebro.git"
+    "url": "git://github.com/spacebro/spacebro.git"
   },
   "bin": {
     "spacebro": "./bin/spacebro"
