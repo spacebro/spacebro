@@ -18,10 +18,7 @@ Space bro uses:
 
 * [mdns](https://github.com/agnat/node_mdns) to allow your apps to connect seamlessly.
 * [socket.io](http://socket.io) to broadcast events.
-* [cli-table](https://github.com/Automattic/cli-table) to display a list of connected clients.
-* [lodash](https://lodash.com) to easily handle arrays and objects manipulation.
-
-*NOTE:* Since [node_mdns](https://github.com/agnat/node_mdns) will only compile via npm, **you cannot use yarn** to install spacebro.
+* [cli-table](https://github.com/Automattic/cli-table) to display a list of connected clients.install spacebro.
 
 ### Linux
 
@@ -33,16 +30,12 @@ $ sudo apt-get install avahi-daemon avahi-discover libnss-mdns libavahi-compat-l
 
 ```bash
 $ npm i --save spacebro
-$ # or
-$ yarn add spacebro
 ```
 
 You can also install globally if you want to run the bin instead of developping your own app:
 
 ```bash
 $ npm i -g --save spacebro
-$ # or
-$ yarn global add spacebro
 ```
 
 
