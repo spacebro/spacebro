@@ -89,7 +89,7 @@ For openFramework you can also use [ofxSpaceBro](https://github.com/soixantecirc
 
 ## Contribute
 
-We use galaxies names for our release name, listed here [here](https://en.wikipedia.org/wiki/List_of_galaxies). We are currently at Andromeda.
+We use galaxies names for our release name, listed here [here](https://en.wikipedia.org/wiki/List_of_galaxies). We are currently at Black Eye.
 
 You can test sending events with the [`dev/send-events.js`](/dev/send-events.js) script. Run `npm run send-events`.
 
