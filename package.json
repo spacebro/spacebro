@@ -25,7 +25,7 @@
     "colors": "1.1.2",
     "commander": "2.9.0",
     "lodash": "4.16.5",
-    "mdns": "2.3.3",
+    "mdns": "^2.3.3",
     "socket.io": "1.5.1",
     "socketio-wildcard": "^0.3.0"
   },

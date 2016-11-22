@@ -21,6 +21,8 @@ Space bro uses:
 * [cli-table](https://github.com/Automattic/cli-table) to display a list of connected clients.
 * [lodash](https://lodash.com) to easily handle arrays and objects manipulation.
 
+*NOTE:* Since [node_mdns](https://github.com/agnat/node_mdns) will only compile via npm, **you cannot use yarn** to install spacebro.
+
 ### Linux
 
 ```bash
