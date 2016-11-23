@@ -1,85 +1,79 @@
-# 🚀  Spacebro
+# 🚀 Spacebro 💫
 
 > In reference to [Spacebrew](http://docs.spacebrew.cc/) by Rockwell Lab (http://www.rockwellgroup.com/search/LAB)
 
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
-[![node](https://img.shields.io/badge/node-0.12.x-brightgreen.svg)](https://nodejs.org/en/)
 [![node](https://img.shields.io/badge/node-4.0.x-brightgreen.svg)](https://nodejs.org/en/)
 [![node](https://img.shields.io/badge/node-5.3.x-brightgreen.svg)](https://nodejs.org/en/)
+[![node](https://img.shields.io/badge/node-6.x.x-brightgreen.svg)](https://nodejs.org/en/)
 
-
-*Spacebro* automagically links apps between them. It binds them based on `events`. You just define a list of events and make sure your client apps emits and listen to them.
-
-It follow a centralized model where each apps automagically connects thru zeroconf and socket.io to the Spacebro server. Then each of them register a supplementary list of events.
+*Spacebro* automagically links apps between them. It binds them with `events`. You just start a spacebro server somewhere, connect your spacebro clients thanks to mdns/zeroconf/bonjour and listen to them events`.
 
 ## Prerequisites
 
-Space bro uses:
+Spacebro uses:
 
 * [mdns](https://github.com/agnat/node_mdns) to allow your apps to connect seamlessly.
 * [socket.io](http://socket.io) to broadcast events.
-* [cli-table](https://github.com/Automattic/cli-table) to display a list of connected clients.install spacebro.
+* [cli-table](https://github.com/Automattic/cli-table) to display a list of connected clients.
 
-### Linux
+#### Linux
 
 ```bash
 $ sudo apt-get install avahi-daemon avahi-discover libnss-mdns libavahi-compat-libdnssd-dev curl build-essential
 ```
 
-## Install Spacebro to use it as a module
+## Usage
+
+## As a CLI tool
+
+Install it globally
 
 ```bash
-$ npm i --save spacebro
+$ npm i -g spacebro
+# or
+$ yarn global add spacebro
 ```
 
-You can also install globally if you want to run the bin instead of developping your own app:
-
-```bash
-$ npm i -g --save spacebro
-```
-
-
-## Configure
-
-Spacebro is awaiting a config file that looks like :
-
-```js
-{
-  "server": {
-    "port": 8888,
-    "serviceName": "spacebro"
-  }
-}
-```
-
-* `port` defines where Spacebro (socket.io) will listen.
-* `serviceName` is the name that Spacebro will use over Zeroconf.
-
-## Usage as a Module
-
-```js
-const config = require('../config.json')
-var spacebro = require('spacebro')
-spacebro.init(config)
-```
-
-## Usage as an app
-
-You just run the `bin` :
+And just run the `bin` :
 
 ```bash
 $ spacebro
 ```
-or
+<!-- or
 ```bash
 $ spacebro --port 8888
 ```
 or
 ```bash
 $ spacebro --port 8888 --servicename woowoo
+``` -->
+
+## As a module
+
+```bash
+$ npm i --save spacebro
+# or
+$ yarn add spacebro
 ```
 
-> NOTE: By default the service name is `spacebro` and the port number is `8888`.
+## Configure
+
+Spacebro can be configure through a config JSON object:
+
+```json
+{
+  "server": {
+    "serviceName": "spacebro",
+    "port": 8888
+  }
+}
+```
+
+* `serviceName` is the name that Spacebro will use over Zeroconf.
+* `port` defines where the spacebro websocket (socket.io) will listen.
+
+> NOTE: Default service name is `"spacebro"` and port number is `8888`.
 
 This is useful if you want to use the `spacebro-client` as is. The spacebro client allows to connect your node application to spacebro server, just by requiring it.
 
