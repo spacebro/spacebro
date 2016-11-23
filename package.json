@@ -1,7 +1,7 @@
 {
   "name": "spacebro",
   "version": "0.4.0",
-  "description": "Spacebro use Zeroconf and socket.io to bind apps together!",
+  "description": "Spacebro uses mdns/zeroconf/bonjour and socket.io to bind apps together!",
   "keywords": [
     "zeroconf",
     "mdns",
@@ -35,11 +35,11 @@
     "babel-preset-es2015": "^6.13.2",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
-    "spacebro-client": "0.0.11",
+    "spacebro-client": "0.1.10",
     "standard": "^5.4.1"
   },
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=4.4.4"
   },
   "contributors": [
     "emmanuelgeoffray <manuel@soixantecircuits.fr> (https://github.com/emmanuelgeoffray)",
