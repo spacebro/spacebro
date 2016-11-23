@@ -9,7 +9,7 @@ function init (config) {
   // Create a screen object.
   screen = blessed.screen({
     smartCSR: true,
-    title: 'SpaceBro Server',
+    title: 'spacebro server',
     dockBorders: false,
     fullUnicode: true,
     autoPadding: true

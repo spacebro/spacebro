@@ -2,6 +2,8 @@
 
 'use strict'
 
+process.env.SPACEBRO_BIN = true
+
 const spacebro = require('../')
 const program = require('commander')
 const pkg = require('../package.json')
@@ -9,16 +11,16 @@ const path = require('path')
 
 program
   .version(pkg.version)
-  .usage('[debug] [options] [files]')
+  .usage('[options]')
   .option('-S, --servicename [value]', 'give the service a name')
   .option('-P, --port <n>', 'give a port to spacebro')
-  .option('-V, --verbose', 'option to display information')
+  .option('-M, --mute', 'option to hide informations')
   .option('-H, --hidedashboard', 'Allow to hide dashboard')
   .option('-C, --config [value]', 'give a path to config.json file')
 
 program.name = 'spacebro'
 
-program.on('--help', function () {
+program.on('-h, --help', function () {
   console.log('  Examples:')
   console.log('')
   console.log('    $ spacebro --servicename spacebro --port 8888')
@@ -33,15 +35,14 @@ const config = program.config
   ? require(path.resolve(process.cwd(), program.config))
   : {}
 
-config._isCLI = true
-
-config.hidedashboard = program.hidedashboard || false
+config.showdashboard = (typeof program.hidedashboard === undefined) ? true : !program.hidedashboard
+console.log('spacebro - ', config.showdashboard)
 
 config.server = {
   port: Number(program.port) || 8888,
   serviceName: program.servicename || 'spacebro'
 }
 
-config.verbose = program.verbose || false
+config.verbose = !program.mute || true
 
 spacebro.init(config)

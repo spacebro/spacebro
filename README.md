@@ -15,7 +15,6 @@ Spacebro uses:
 
 * [mdns](https://github.com/agnat/node_mdns) to allow your apps to connect seamlessly.
 * [socket.io](http://socket.io) to broadcast events.
-* [cli-table](https://github.com/Automattic/cli-table) to display a list of connected clients.
 
 #### Linux
 
@@ -40,14 +39,18 @@ And just run the `bin` :
 ```bash
 $ spacebro
 ```
-<!-- or
+
+You can configure it via CLI args:
+
 ```bash
 $ spacebro --port 8888
-```
-or
-```bash
+# or
 $ spacebro --port 8888 --servicename woowoo
-``` -->
+# to view all possible arguments
+$ spacebro --help
+```
+
+> NOTE: Default service name is `"spacebro"` and port number is `8888`.
 
 ## As a module
 
@@ -57,9 +60,7 @@ $ npm i --save spacebro
 $ yarn add spacebro
 ```
 
-## Configure
-
-Spacebro can be configure through a config JSON object:
+And configure it through a config JSON object:
 
 ```json
 {

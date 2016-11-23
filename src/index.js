@@ -2,10 +2,11 @@
 
 import middlewareMaker from 'socketio-wildcard'
 import dashboard from './dashboard'
-import Server from 'socket.io'
-import Table from 'cli-table'
+import server from 'socket.io'
 import mdns from 'mdns'
 import _ from 'lodash'
+
+const isBin = process.env.SPACEBRO_BIN || false
 
 // Default Config
 let config = {
@@ -13,10 +14,8 @@ let config = {
     port: 8888,
     serviceName: 'spacebro'
   },
-  verbose: false,
-  events: [], // Useless
-  _isCLI: false, // Should be private
-  console: false
+  verbose: true,
+  showdashboard: isBin
 }
 
 // Variables
@@ -27,48 +26,43 @@ let infos = {}
 const reservedEvents = [
   'register'
 ]
-const table = new Table({
-  head: ['Clients', 'Channel', 'Status'],
-  colWidths: [25, 25, 15]
-})
 
 function init (configOption) {
   Object.assign(config, configOption)
+  log(config)
   process.title = config.server.serviceName
-  if (!config.hidedashboard) {
+  if (config.showdashboard) {
     dashboard.init(config)
   }
-  log('Init socket.io')
+  config.verbose && log('init socket.io')
   initSocketIO()
-  log('Init broadcast')
+  config.verbose && log('init broadcast')
   initBroadcast()
-  log(config.server.serviceName, 'listening on port', config.server.port)
+  config.verbose && log(config.server.serviceName, 'listening on port', config.server.port)
 }
 
 function initSocketIO () {
-  io = Server(config.server.port)
+  io = server(config.server.port)
   io.use(middlewareMaker())
   io.on('connection', function (socket) {
-    log('New socket connected')
+    config.verbose && log('new socket connected')
     sockets.push(socket)
     socket
       .on('disconnect', function () {
         sockets.splice(sockets.indexOf(socket), 1)
-        log(fullname(socket), 'disconnected')
+        config.verbose && log(fullname(socket), 'disconnected')
         quitChannel(socket, socket.channelName)
-        updateTable()
       })
       .on('error', function (err) {
-        log(fullname(socket), 'error:', err)
+        config.verbose && log(fullname(socket), 'error:', err)
       })
       .on('register', function (data) {
         data = objectify(data)
         socket.clientName = data.clientName || socket.id
         socket.channelName = data.channelName || 'default'
         socket.join(socket.channelName)
-        log(fullname(socket), 'registered')
+        config.verbose && log(fullname(socket), 'registered')
         joinChannel(socket, socket.channelName)
-        updateTable()
       })
       .on('*', function ({ data }) {
         let [eventName, args] = data
@@ -78,23 +72,23 @@ function initSocketIO () {
         }
         if (reservedEvents.indexOf(eventName) !== -1) return
         if (!socket.clientName) {
-          log(fullname(socket), 'tried to trigger', eventName, 'with data:', args)
+          config.verbose && log(fullname(socket), 'tried to trigger', eventName, 'with data:', args)
           return
         }
-        log(fullname(socket), 'triggered', eventName, 'with data:', args)
+        config.verbose && log(fullname(socket), 'triggered', eventName, 'with data:', args)
         registerEvent(eventName, socket.channelName)
 
         if (args._to !== null) {
           let target = sockets.find(s => s.clientName === args._to && s.channelName === socket.channelName)
           if (target) {
-            log('Target found:', args._to)
+            config.verbose && log('target found:', args._to)
             if (args.altered) {
               args = args.data
             }
             io.to(target.id).emit(eventName, args)
             return
           } else {
-            log('Target not found:', args._to)
+            config.verbose && log('target not found:', args._to)
           }
         }
         if (args.altered) {
@@ -113,13 +107,14 @@ function initBroadcast () {
 
 module.exports = { init, infos }
 
-// = Helpers ===
+/*
+ * Helpers
+ */
 function log (...args) {
-  if (!config.verbose) return
-  if (config._isCLI && !config.hidedashboard) {
+  if (config.showdashboard) {
     dashboard.log(...args)
   } else {
-    console.log('SpaceBro -', ...args)
+    console.log('spacebro -', ...args)
   }
 }
 
@@ -142,23 +137,12 @@ function registerEvent (eventName, channelName) {
   dashboard.setInfos(infos)
 }
 
-function updateTable () {
-  if (!config.verbose || config._isCLI) return
-  table.length = 0
-  sockets.forEach(function (socket) {
-    if (socket && socket.clientName && socket.channelName) {
-      table.push([socket.clientName, socket.channelName, socket.connected ? 'online' : 'offline'])
-    }
-  })
-  console.log(table.toString())
-}
-
 function objectify (data) {
   if (typeof data === 'string') {
     try {
       return JSON.parse(data)
     } catch (e) {
-      console.log('Socket error:', e)
+      console.log('socket error:', e)
       return {}
     }
   }

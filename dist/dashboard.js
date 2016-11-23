@@ -21,7 +21,7 @@ function init(config) {
   // Create a screen object.
   screen = _blessed2.default.screen({
     smartCSR: true,
-    title: 'SpaceBro Server',
+    title: 'spacebro server',
     dockBorders: false,
     fullUnicode: true,
     autoPadding: true
