@@ -29,7 +29,6 @@ const reservedEvents = [
 
 function init (configOption) {
   Object.assign(config, configOption)
-  log(config)
   process.title = config.server.serviceName
   if (config.showdashboard) {
     dashboard.init(config)
@@ -122,19 +121,19 @@ function joinChannel (socket, channelName) {
   socket.join(channelName)
   if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
   infos[channelName].clients = _.union(infos[channelName].clients, [socket.clientName])
-  dashboard.setInfos(infos)
+  config.showdashboard && dashboard.setInfos(infos)
 }
 
 function quitChannel (socket, channelName) {
   if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
   _.remove(infos[channelName].clients, s => s === socket.clientName)
-  dashboard.setInfos(infos)
+  config.showdashboard && dashboard.setInfos(infos)
 }
 
 function registerEvent (eventName, channelName) {
   if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
   infos[channelName].events = _.union(infos[channelName].events, [eventName])
-  dashboard.setInfos(infos)
+  config.showdashboard && dashboard.setInfos(infos)
 }
 
 function objectify (data) {
@@ -150,7 +149,7 @@ function objectify (data) {
 }
 
 function fullname (socket) {
-  return !socket.clientName
-    ? 'unregistered socket #' + socket.id
-    : socket.channelName + '@' + socket.clientName
+  return socket.clientName
+    ? `${socket.clientName}@${socket.channelName}`
+    : `unregistered socket #${socket.id}`
 }

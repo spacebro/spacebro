@@ -1,7 +1,10 @@
 import blessed from 'blessed'
 import _ from 'lodash'
 
-let screen, logText, clientTable, eventTable
+let screen = null
+let logText = null
+let clientTable = null
+let eventTable = null
 
 const color = 'blue'
 
@@ -29,6 +32,7 @@ function init (config) {
       border: { fg: color }
     }
   })
+  screen.append(log)
 
   logText = blessed.log({
     parent: log,
@@ -45,8 +49,6 @@ function init (config) {
     vi: true,
     mouse: true
   })
-
-  screen.append(log)
 
   let clientBox = blessed.box({
     label: 'Clients',
@@ -80,7 +82,6 @@ function init (config) {
     mouse: true,
     data: [['Name', 'Channel']]
   })
-
   screen.append(clientBox)
 
   let eventBox = blessed.box({
@@ -115,7 +116,6 @@ function init (config) {
     mouse: true,
     data: [['Name', 'Channel']]
   })
-
   screen.append(eventBox)
 
   // Quit on Escape, q, or Control-C.

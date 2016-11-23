@@ -10,10 +10,10 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var screen = void 0,
-    logText = void 0,
-    clientTable = void 0,
-    eventTable = void 0;
+var screen = null;
+var logText = null;
+var clientTable = null;
+var eventTable = null;
 
 var color = 'blue';
 
@@ -41,6 +41,7 @@ function init(config) {
       border: { fg: color }
     }
   });
+  screen.append(log);
 
   logText = _blessed2.default.log({
     parent: log,
@@ -57,8 +58,6 @@ function init(config) {
     vi: true,
     mouse: true
   });
-
-  screen.append(log);
 
   var clientBox = _blessed2.default.box({
     label: 'Clients',
@@ -92,7 +91,6 @@ function init(config) {
     mouse: true,
     data: [['Name', 'Channel']]
   });
-
   screen.append(clientBox);
 
   var eventBox = _blessed2.default.box({
@@ -127,7 +125,6 @@ function init(config) {
     mouse: true,
     data: [['Name', 'Channel']]
   });
-
   screen.append(eventBox);
 
   // Quit on Escape, q, or Control-C.

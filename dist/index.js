@@ -154,7 +154,7 @@ function joinChannel(socket, channelName) {
   socket.join(channelName);
   if (!_lodash2.default.has(infos, channelName)) infos[channelName] = { events: [], clients: [] };
   infos[channelName].clients = _lodash2.default.union(infos[channelName].clients, [socket.clientName]);
-  _dashboard2.default.setInfos(infos);
+  config.showdashboard && _dashboard2.default.setInfos(infos);
 }
 
 function quitChannel(socket, channelName) {
@@ -162,13 +162,13 @@ function quitChannel(socket, channelName) {
   _lodash2.default.remove(infos[channelName].clients, function (s) {
     return s === socket.clientName;
   });
-  _dashboard2.default.setInfos(infos);
+  config.showdashboard && _dashboard2.default.setInfos(infos);
 }
 
 function registerEvent(eventName, channelName) {
   if (!_lodash2.default.has(infos, channelName)) infos[channelName] = { events: [], clients: [] };
   infos[channelName].events = _lodash2.default.union(infos[channelName].events, [eventName]);
-  _dashboard2.default.setInfos(infos);
+  config.showdashboard && _dashboard2.default.setInfos(infos);
 }
 
 function objectify(data) {
@@ -184,5 +184,5 @@ function objectify(data) {
 }
 
 function fullname(socket) {
-  return !socket.clientName ? 'unregistered socket #' + socket.id : socket.channelName + '@' + socket.clientName;
+  return socket.clientName ? socket.clientName + '@' + socket.channelName : 'unregistered socket #' + socket.id;
 }
