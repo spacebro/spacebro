@@ -4,7 +4,6 @@ import _ from 'lodash'
 let screen = null
 let logText = null
 let clientTable = null
-let eventTable = null
 
 const color = 'blue'
 
