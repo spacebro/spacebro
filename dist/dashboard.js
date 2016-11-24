@@ -31,7 +31,7 @@ function init(config) {
     label: 'Log',
     padding: 1,
     width: '100%',
-    height: '50%',
+    height: '70%',
     left: '0%',
     top: '0%',
     border: { type: 'line' },
@@ -63,10 +63,10 @@ function init(config) {
     label: 'Clients',
     tags: true,
     padding: 1,
-    width: '50%',
-    height: '50%',
+    width: '100%',
+    height: '30%',
     left: '0%',
-    top: '50%',
+    top: '70%',
     border: { type: 'line' },
     style: {
       fg: -1,
@@ -77,7 +77,7 @@ function init(config) {
   clientTable = _blessed2.default.table({
     parent: clientBox,
     height: '100%',
-    width: '100%-5',
+    width: '100%',
     align: 'left',
     pad: 1,
     scrollable: true,
@@ -92,40 +92,6 @@ function init(config) {
     data: [['Name', 'Channel']]
   });
   screen.append(clientBox);
-
-  var eventBox = _blessed2.default.box({
-    label: 'Events',
-    tags: true,
-    padding: 1,
-    width: '50%',
-    height: '50%',
-    left: '50%',
-    top: '50%',
-    border: { type: 'line' },
-    style: {
-      fg: -1,
-      border: { fg: color }
-    }
-  });
-
-  eventTable = _blessed2.default.table({
-    parent: eventBox,
-    height: '100%',
-    width: '100%-5',
-    align: 'left',
-    pad: 1,
-    scrollable: true,
-    alwaysScroll: true,
-    scrollbar: {
-      ch: ' ',
-      inverse: true
-    },
-    keys: true,
-    vi: true,
-    mouse: true,
-    data: [['Name', 'Channel']]
-  });
-  screen.append(eventBox);
 
   // Quit on Escape, q, or Control-C.
   screen.key(['escape', 'q', 'C-c'], function (ch, key) {
@@ -143,13 +109,9 @@ function log() {
 }
 
 function setInfos(data) {
-  var events = [['Name', 'Channel']];
   var clients = [['Name', 'Channel']];
 
   var _loop = function _loop(channelName) {
-    events = _lodash2.default.union(events, data[channelName].events.map(function (e) {
-      return [e, channelName];
-    }));
     clients = _lodash2.default.union(clients, data[channelName].clients.map(function (c) {
       return [c, channelName];
     }));
@@ -157,9 +119,6 @@ function setInfos(data) {
 
   for (var channelName in data) {
     _loop(channelName);
-  }
-  if (eventTable) {
-    eventTable.setData(events);
   }
   if (clientTable) {
     clientTable.setData(clients);

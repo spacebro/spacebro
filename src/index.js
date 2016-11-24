@@ -1,6 +1,6 @@
 'use strict'
 
-import middlewareMaker from 'socketio-wildcard'
+import wildcard from 'socketio-wildcard'
 import dashboard from './dashboard'
 import server from 'socket.io'
 import mdns from 'mdns'
@@ -23,9 +23,7 @@ let io = null
 let sockets = []
 let infos = {}
 
-const reservedEvents = [
-  'register'
-]
+const reservedEvents = [ 'register' ]
 
 function init (configOption) {
   Object.assign(config, configOption)
@@ -42,7 +40,7 @@ function init (configOption) {
 
 function initSocketIO () {
   io = server(config.server.port)
-  io.use(middlewareMaker())
+  io.use(wildcard())
   io.on('connection', function (socket) {
     config.verbose && log('new socket connected')
     sockets.push(socket)
@@ -65,17 +63,18 @@ function initSocketIO () {
       })
       .on('*', function ({ data }) {
         let [eventName, args] = data
+
+        if (reservedEvents.indexOf(eventName) > -1) return
+
         if (typeof args !== 'object') {
           args = {data: args}
           args.altered = true
         }
-        if (reservedEvents.indexOf(eventName) !== -1) return
         if (!socket.clientName) {
           config.verbose && log(fullname(socket), 'tried to trigger', eventName, 'with data:', args)
           return
         }
         config.verbose && log(fullname(socket), 'triggered', eventName, 'with data:', args)
-        registerEvent(eventName, socket.channelName)
 
         if (args._to !== null) {
           let target = sockets.find(s => s.clientName === args._to && s.channelName === socket.channelName)
@@ -130,18 +129,12 @@ function quitChannel (socket, channelName) {
   config.showdashboard && dashboard.setInfos(infos)
 }
 
-function registerEvent (eventName, channelName) {
-  if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
-  infos[channelName].events = _.union(infos[channelName].events, [eventName])
-  config.showdashboard && dashboard.setInfos(infos)
-}
-
 function objectify (data) {
   if (typeof data === 'string') {
     try {
       return JSON.parse(data)
     } catch (e) {
-      console.log('socket error:', e)
+      log('socket error:', e)
       return {}
     }
   }

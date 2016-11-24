@@ -92,17 +92,17 @@ function initSocketIO() {
           eventName = _data[0],
           args = _data[1];
 
+      if (reservedEvents.indexOf(eventName) > -1) return;
+
       if ((typeof args === 'undefined' ? 'undefined' : (0, _typeof3.default)(args)) !== 'object') {
         args = { data: args };
         args.altered = true;
       }
-      if (reservedEvents.indexOf(eventName) !== -1) return;
       if (!socket.clientName) {
         config.verbose && log(fullname(socket), 'tried to trigger', eventName, 'with data:', args);
         return;
       }
       config.verbose && log(fullname(socket), 'triggered', eventName, 'with data:', args);
-      registerEvent(eventName, socket.channelName);
 
       if (args._to !== null) {
         var target = sockets.find(function (s) {
@@ -165,18 +165,12 @@ function quitChannel(socket, channelName) {
   config.showdashboard && _dashboard2.default.setInfos(infos);
 }
 
-function registerEvent(eventName, channelName) {
-  if (!_lodash2.default.has(infos, channelName)) infos[channelName] = { events: [], clients: [] };
-  infos[channelName].events = _lodash2.default.union(infos[channelName].events, [eventName]);
-  config.showdashboard && _dashboard2.default.setInfos(infos);
-}
-
 function objectify(data) {
   if (typeof data === 'string') {
     try {
       return JSON.parse(data);
     } catch (e) {
-      console.log('socket error:', e);
+      log('socket error:', e);
       return {};
     }
   }

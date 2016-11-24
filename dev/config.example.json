@@ -1,9 +1,0 @@
-{
-  "server": {
-    "port": 8888,
-    "serviceName": "spacebro"
-  },
-  "hidedashboard": true,
-  "verbose": true,
-  "events": ["event-1", "event-2", "event-3"]
-}
