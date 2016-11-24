@@ -18,7 +18,6 @@
   "dependencies": {
     "babel-runtime": "6.11.6",
     "blessed": "^0.1.81",
-    "colors": "1.1.2",
     "commander": "2.9.0",
     "lodash": "4.16.5",
     "mdns": "2.3.3",
