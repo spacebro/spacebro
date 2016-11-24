@@ -24,7 +24,7 @@ $ sudo apt-get install avahi-daemon avahi-discover libnss-mdns libavahi-compat-l
 
 ## Usage
 
-## As a CLI tool
+### As a CLI tool
 
 Install it globally
 
@@ -52,7 +52,7 @@ $ spacebro --help
 
 > NOTE: Default service name is `"spacebro"` and port number is `8888`.
 
-## As a module
+### As a module
 
 ```bash
 $ npm i --save spacebro
@@ -81,6 +81,18 @@ This is useful if you want to use the `spacebro-client` as is. The spacebro clie
 See [spacebro-client](https://github.com/soixantecircuits/spacebro-client) to learn more.
 
 For openFramework you can also use [ofxSpaceBro](https://github.com/soixantecircuits/ofxSpacebroClient).
+
+## Troubleshooting
+
+### ping pong
+
+Do not try to test with `'ping'` and `'pong'` events, those are reserved.
+
+```
+- `ping`. Fired when a ping packet is written out to the server.
+- `pong`. Fired when a pong is received from the server.
+```
+*[source](https://github.com/socketio/socket.io-client/issues/1022)*
 
 ## Contribute
 
