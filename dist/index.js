@@ -72,6 +72,7 @@ function initSocketIO() {
   io.on('connection', function (socket) {
     config.verbose && log('new socket connected');
     sockets.push(socket);
+
     socket.on('disconnect', function () {
       sockets.splice(sockets.indexOf(socket), 1);
       config.verbose && log(fullname(socket), 'disconnected');

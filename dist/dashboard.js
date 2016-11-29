@@ -13,7 +13,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var screen = null;
 var logText = null;
 var clientTable = null;
-var eventTable = null;
 
 var color = 'blue';
 

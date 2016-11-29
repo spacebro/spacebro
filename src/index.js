@@ -41,19 +41,20 @@ function init (configOption) {
 function initSocketIO () {
   io = server(config.server.port)
   io.use(wildcard())
-  io.on('connection', function (socket) {
+  io.on('connection', (socket) => {
     config.verbose && log('new socket connected')
     sockets.push(socket)
+
     socket
-      .on('disconnect', function () {
+      .on('disconnect', () => {
         sockets.splice(sockets.indexOf(socket), 1)
         config.verbose && log(fullname(socket), 'disconnected')
         quitChannel(socket, socket.channelName)
       })
-      .on('error', function (err) {
+      .on('error', (err) => {
         config.verbose && log(fullname(socket), 'error:', err)
       })
-      .on('register', function (data) {
+      .on('register', (data) => {
         data = objectify(data)
         socket.clientName = data.clientName || socket.id
         socket.channelName = data.channelName || 'default'
@@ -61,7 +62,7 @@ function initSocketIO () {
         config.verbose && log(fullname(socket), 'registered')
         joinChannel(socket, socket.channelName)
       })
-      .on('*', function ({ data }) {
+      .on('*', ({ data }) => {
         let [eventName, args] = data
 
         if (reservedEvents.indexOf(eventName) > -1) return
