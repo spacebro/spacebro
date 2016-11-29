@@ -61,6 +61,7 @@ function initSocketIO () {
         socket.join(socket.channelName)
         config.verbose && log(fullname(socket), 'registered')
         joinChannel(socket, socket.channelName)
+        io.to(socket.channelName).emit('new-member', { member: socket.clientName })
       })
       .on('*', ({ data }) => {
         let [eventName, args] = data

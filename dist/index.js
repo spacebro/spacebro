@@ -86,6 +86,7 @@ function initSocketIO() {
       socket.join(socket.channelName);
       config.verbose && log(fullname(socket), 'registered');
       joinChannel(socket, socket.channelName);
+      io.to(socket.channelName).emit('new-member', { member: socket.clientName });
     }).on('*', function (_ref) {
       var data = _ref.data;
 

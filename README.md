@@ -82,6 +82,18 @@ See [spacebro-client](https://github.com/soixantecircuits/spacebro-client) to le
 
 For openFramework you can also use [ofxSpaceBro](https://github.com/soixantecircuits/ofxSpacebroClient).
 
+## Events
+
+#### `new-member`
+
+spacebro broadcasts a `new-member` event when a new connection is created, with the connection name as `member` property value. Typically, you'd do on the client side:
+
+```js
+spacebroClient.on('new-member', (data) => {
+  console.log(`${data.member} has joined.`)
+})
+```
+
 ## Troubleshooting
 
 ### ping pong
