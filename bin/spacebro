@@ -15,6 +15,7 @@ program
   .option('-S, --servicename [value]', 'give the service a name')
   .option('-P, --port <n>', 'give a port to spacebro')
   .option('-M, --mute', 'option to hide informations')
+  .option('--semiverbose', 'do not show events datas in logs')
   .option('-H, --hidedashboard', 'Allow to hide dashboard')
   .option('-C, --config [value]', 'give a path to config.json file')
 
@@ -36,7 +37,6 @@ const config = program.config
   : {}
 
 config.showdashboard = (typeof program.hidedashboard === undefined) ? true : !program.hidedashboard
-console.log('spacebro - ', config.showdashboard)
 
 config.server = {
   port: Number(program.port) || 8888,
@@ -44,5 +44,6 @@ config.server = {
 }
 
 config.verbose = !program.mute || true
+config.semiverbose = program.semiverbose
 
 spacebro.init(config)

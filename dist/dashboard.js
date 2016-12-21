@@ -4,6 +4,10 @@ var _blessed = require('blessed');
 
 var _blessed2 = _interopRequireDefault(_blessed);
 
+var _moment = require('moment');
+
+var _moment2 = _interopRequireDefault(_moment);
+
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -104,7 +108,12 @@ function init(config) {
 function log() {
   var _logText;
 
-  (_logText = logText).log.apply(_logText, arguments);
+  for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  // logText.log(...args)
+  (_logText = logText).log.apply(_logText, [(0, _moment2.default)().format('YYYY:MM:DD-HH:mm:ss') + ' - '].concat(args));
 }
 
 function setInfos(data) {

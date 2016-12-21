@@ -3,6 +3,7 @@
 import wildcard from 'socketio-wildcard'
 import dashboard from './dashboard'
 import server from 'socket.io'
+import moment from 'moment'
 import mdns from 'mdns'
 import _ from 'lodash'
 
@@ -72,11 +73,9 @@ function initSocketIO () {
           args = {data: args}
           args.altered = true
         }
-        if (!socket.clientName) {
-          config.verbose && log(fullname(socket), 'tried to trigger', eventName, 'with data:', args)
-          return
-        }
-        config.verbose && log(fullname(socket), 'triggered', eventName, 'with data:', args)
+        config.verbose && log(`${fullname(socket)} emitted event "${eventName}"${config.semiverbose ? '' : `, datas: ${args}`}`)
+
+        if (!socket.clientName) return
 
         if (args._to !== null) {
           let target = sockets.find(s => s.clientName === args._to && s.channelName === socket.channelName)
@@ -114,7 +113,7 @@ function log (...args) {
   if (config.showdashboard) {
     dashboard.log(...args)
   } else {
-    console.log('spacebro -', ...args)
+    console.log(`${moment().format('YYYY-MM-DD-HH:mm:ss')} - `, ...args)
   }
 }
 

@@ -24,6 +24,10 @@ var _socket = require('socket.io');
 
 var _socket2 = _interopRequireDefault(_socket);
 
+var _moment = require('moment');
+
+var _moment2 = _interopRequireDefault(_moment);
+
 var _mdns = require('mdns');
 
 var _mdns2 = _interopRequireDefault(_mdns);
@@ -100,11 +104,9 @@ function initSocketIO() {
         args = { data: args };
         args.altered = true;
       }
-      if (!socket.clientName) {
-        config.verbose && log(fullname(socket), 'tried to trigger', eventName, 'with data:', args);
-        return;
-      }
-      config.verbose && log(fullname(socket), 'triggered', eventName, 'with data:', args);
+      config.verbose && log(fullname(socket) + ' emitted event "' + eventName + '"' + (config.semiverbose ? '' : ', datas: ' + args));
+
+      if (!socket.clientName) return;
 
       if (args._to !== null) {
         var target = sockets.find(function (s) {
@@ -148,7 +150,7 @@ function log() {
   } else {
     var _console;
 
-    (_console = console).log.apply(_console, ['spacebro -'].concat(args));
+    (_console = console).log.apply(_console, [(0, _moment2.default)().format('YYYY-MM-DD-HH:mm:ss') + ' - '].concat(args));
   }
 }
 

@@ -1,4 +1,5 @@
 import blessed from 'blessed'
+import moment from 'moment'
 import _ from 'lodash'
 
 let screen = null
@@ -93,7 +94,8 @@ function init (config) {
 }
 
 function log (...args) {
-  logText.log(...args)
+  // logText.log(...args)
+  logText.log(`${moment().format('YYYY:MM:DD-HH:mm:ss')} - `, ...args)
 }
 
 function setInfos (data) {
