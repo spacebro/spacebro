@@ -1,7 +1,0 @@
-{
-  "server": {
-    "port": 8888,
-    "serviceName": "spacebro"
-  },
-  "events": ["event-1", "event-2", "event-3"]
-}

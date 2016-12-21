@@ -24,9 +24,9 @@ var _socket = require('socket.io');
 
 var _socket2 = _interopRequireDefault(_socket);
 
-var _cliTable = require('cli-table');
+var _moment = require('moment');
 
-var _cliTable2 = _interopRequireDefault(_cliTable);
+var _moment2 = _interopRequireDefault(_moment);
 
 var _mdns = require('mdns');
 
@@ -38,16 +38,16 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var isBin = process.env.SPACEBRO_BIN || false;
+
 // Default Config
 var config = {
   server: {
     port: 8888,
     serviceName: 'spacebro'
   },
-  verbose: false,
-  events: [], // Useless
-  _isCLI: false, // Should be private
-  console: false
+  verbose: true,
+  showdashboard: isBin
 };
 
 // Variables
@@ -56,78 +56,71 @@ var sockets = [];
 var infos = {};
 
 var reservedEvents = ['register'];
-var table = new _cliTable2.default({
-  head: ['Clients', 'Channel', 'Status'],
-  colWidths: [25, 25, 15]
-});
 
 function init(configOption) {
   (0, _assign2.default)(config, configOption);
   process.title = config.server.serviceName;
-  if (!config.hidedashboard) {
+  if (config.showdashboard) {
     _dashboard2.default.init(config);
   }
-  log('Init socket.io');
+  config.verbose && log('init socket.io');
   initSocketIO();
-  log('Init broadcast');
+  config.verbose && log('init broadcast');
   initBroadcast();
-  log(config.server.serviceName, 'listening on port', config.server.port);
+  config.verbose && log(config.server.serviceName, 'listening on port', config.server.port);
 }
 
 function initSocketIO() {
   io = (0, _socket2.default)(config.server.port);
   io.use((0, _socketioWildcard2.default)());
   io.on('connection', function (socket) {
-    log('New socket connected');
+    config.verbose && log('new socket connected');
     sockets.push(socket);
+
     socket.on('disconnect', function () {
       sockets.splice(sockets.indexOf(socket), 1);
-      log(fullname(socket), 'disconnected');
+      config.verbose && log(fullname(socket), 'disconnected');
       quitChannel(socket, socket.channelName);
-      updateTable();
     }).on('error', function (err) {
-      log(fullname(socket), 'error:', err);
+      config.verbose && log(fullname(socket), 'error:', err);
     }).on('register', function (data) {
       data = objectify(data);
       socket.clientName = data.clientName || socket.id;
       socket.channelName = data.channelName || 'default';
       socket.join(socket.channelName);
-      log(fullname(socket), 'registered');
+      config.verbose && log(fullname(socket), 'registered');
       joinChannel(socket, socket.channelName);
-      updateTable();
+      io.to(socket.channelName).emit('new-member', { member: socket.clientName });
     }).on('*', function (_ref) {
       var data = _ref.data;
 
-      var _data = (0, _slicedToArray3.default)(data, 2);
+      var _data = (0, _slicedToArray3.default)(data, 2),
+          eventName = _data[0],
+          args = _data[1];
 
-      var eventName = _data[0];
-      var args = _data[1];
+      if (reservedEvents.indexOf(eventName) > -1) return;
 
       if ((typeof args === 'undefined' ? 'undefined' : (0, _typeof3.default)(args)) !== 'object') {
         args = { data: args };
         args.altered = true;
       }
-      if (reservedEvents.indexOf(eventName) !== -1) return;
-      if (!socket.clientName) {
-        log(fullname(socket), 'tried to trigger', eventName, 'with data:', args);
-        return;
-      }
-      log(fullname(socket), 'triggered', eventName, 'with data:', args);
-      registerEvent(eventName, socket.channelName);
+      config.verbose && log(fullname(socket) + ' emitted event "' + eventName + '"' + (config.semiverbose ? '' : ', datas: ' + args));
+
+      if (!socket.clientName) return;
 
       if (args._to !== null) {
         var target = sockets.find(function (s) {
           return s.clientName === args._to && s.channelName === socket.channelName;
         });
         if (target) {
-          log('Target found:', args._to);
+          config.verbose && log('target found:', args._to);
           if (args.altered) {
             args = args.data;
           }
           io.to(target.id).emit(eventName, args);
           return;
         } else {
-          log('Target not found:', args._to);
+          config.verbose && log('target not found:', args._to);
         }
       }
       if (args.altered) {
@@ -144,20 +137,20 @@ function initBroadcast() {
 
 module.exports = { init: init, infos: infos };
 
-// = Helpers ===
+/*
+ * Helpers
+ */
 function log() {
-  if (!config.verbose) return;
-
   for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
     args[_key] = arguments[_key];
   }
 
-  if (config._isCLI && !config.hidedashboard) {
+  if (config.showdashboard) {
     _dashboard2.default.log.apply(_dashboard2.default, args);
   } else {
     var _console;
 
-    (_console = console).log.apply(_console, ['SpaceBro -'].concat(args));
+    (_console = console).log.apply(_console, [(0, _moment2.default)().format('YYYY-MM-DD-HH:mm:ss') + ' - '].concat(args));
   }
 }
 
@@ -165,7 +158,7 @@ function joinChannel(socket, channelName) {
   socket.join(channelName);
   if (!_lodash2.default.has(infos, channelName)) infos[channelName] = { events: [], clients: [] };
   infos[channelName].clients = _lodash2.default.union(infos[channelName].clients, [socket.clientName]);
-  _dashboard2.default.setInfos(infos);
+  config.showdashboard && _dashboard2.default.setInfos(infos);
 }
 
 function quitChannel(socket, channelName) {
@@ -173,24 +166,7 @@ function quitChannel(socket, channelName) {
   _lodash2.default.remove(infos[channelName].clients, function (s) {
     return s === socket.clientName;
   });
-  _dashboard2.default.setInfos(infos);
-}
-
-function registerEvent(eventName, channelName) {
-  if (!_lodash2.default.has(infos, channelName)) infos[channelName] = { events: [], clients: [] };
-  infos[channelName].events = _lodash2.default.union(infos[channelName].events, [eventName]);
-  _dashboard2.default.setInfos(infos);
-}
-
-function updateTable() {
-  if (!config.verbose || config._isCLI) return;
-  table.length = 0;
-  sockets.forEach(function (socket) {
-    if (socket && socket.clientName && socket.channelName) {
-      table.push([socket.clientName, socket.channelName, socket.connected ? 'online' : 'offline']);
-    }
-  });
-  console.log(table.toString());
+  config.showdashboard && _dashboard2.default.setInfos(infos);
 }
 
 function objectify(data) {
@@ -198,7 +174,7 @@ function objectify(data) {
     try {
       return JSON.parse(data);
     } catch (e) {
-      console.log('Socket error:', e);
+      log('socket error:', e);
       return {};
     }
   }
@@ -206,5 +182,5 @@ function objectify(data) {
 }
 
 function fullname(socket) {
-  return !socket.clientName ? 'unregistered socket #' + socket.id : socket.channelName + '@' + socket.clientName;
+  return socket.clientName ? socket.clientName + '@' + socket.channelName : 'unregistered socket #' + socket.id;
 }
