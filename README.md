@@ -82,6 +82,19 @@ See [spacebro-client](https://github.com/soixantecircuits/spacebro-client) to le
 
 For openFramework you can also use [ofxSpaceBro](https://github.com/soixantecircuits/ofxSpacebroClient).
 
+## Options
+
+|flag|what it does|
+|:---|:---|
+|`-h, --help`|output usage information|
+|`-V, --version`|output the version number|
+|`-S, --servicename [value]`|give the service a name|
+|`-P, --port <n>`|give a port to spacebro|
+|`-M, --mute`|option to hide informations|
+|`--semiverbose`|do not show events datas in logs|
+|`-H, --hidedashboard`|Allow to hide dashboard|
+|`-C, --config [value]`|give a path to config.json file|
+
 ## Events
 
 #### `new-member`
