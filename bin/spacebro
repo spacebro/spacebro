@@ -43,7 +43,7 @@ config.server = {
   serviceName: program.servicename || 'spacebro'
 }
 
-config.verbose = (program.mute === false) ? true : false
+config.verbose = (program.mute === undefined) ? true : false
 config.semiverbose = program.semiverbose
 
 spacebro.init(config)
