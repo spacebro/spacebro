@@ -17,7 +17,7 @@ program
   .option('-M, --mute', 'option to hide informations')
   .option('--semiverbose', 'do not show events datas in logs')
   .option('-H, --hidedashboard', 'Allow to hide dashboard')
-  .option('-C, --config [value]', 'give a path to config.json file')
+  .option('-C, --config [path]', 'give a path to config.json file')
 
 program.name = 'spacebro'
 
@@ -36,14 +36,22 @@ const config = program.config
   ? require(path.resolve(process.cwd(), program.config))
   : {}
 
-config.showdashboard = (typeof program.hidedashboard === undefined) ? true : !program.hidedashboard
-
-config.server = {
-  port: Number(program.port) || 8888,
-  serviceName: program.servicename || 'spacebro'
+if (!config.showdashboard) {
+  config.showdashboard = (typeof program.hidedashboard === undefined) ? true : !program.hidedashboard
 }
 
-config.verbose = (program.mute === undefined) ? true : false
-config.semiverbose = program.semiverbose
+if (!config.server) {
+  config.server = {
+    port: Number(program.port) || 8888,
+    serviceName: program.servicename || 'spacebro'
+  }
+}
+
+if (!config.verbose) {
+  config.verbose = (program.mute === undefined) ? true : false
+}
+if (!config.semiverbose) {
+  config.semiverbose = program.semiverbose
+}
 
 spacebro.init(config)
