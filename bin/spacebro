@@ -36,22 +36,18 @@ const config = program.config
   ? require(path.resolve(process.cwd(), program.config))
   : {}
 
-if (!config.showdashboard) {
-  config.showdashboard = (typeof program.hidedashboard === undefined) ? true : !program.hidedashboard
-}
+config.showdashboard = config.showdashboard || true
+config.showdashboard = (!program.hidedashboard) ? config.showdashboard : false
 
-if (!config.server) {
-  config.server = {
-    port: Number(program.port) || 8888,
-    serviceName: program.servicename || 'spacebro'
-  }
-}
+config.server = config.server || {}
+config.server.port = (!config.server || !config.server.port) ? 8888 : config.server.port
+config.server.port = (!program.port) ? config.server.port : Number(program.port)
+config.server.serviceName = (!config.server || !config.server.serviceName) ? 'spacebro' : config.server.serviceName
+config.server.serviceName = program.servicename || config.server.serviceName
 
-if (!config.verbose) {
-  config.verbose = (program.mute === undefined) ? true : false
-}
-if (!config.semiverbose) {
-  config.semiverbose = program.semiverbose
-}
+config.verbose = config.verbose || true
+config.verbose = (!program.mute) ? config.verbose : false
+
+config.semiverbose = program.semiverbose || config.semiverbose
 
 spacebro.init(config)
