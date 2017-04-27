@@ -119,6 +119,12 @@ Do not try to test with `'ping'` and `'pong'` events, those are reserved.
 ```
 *[source](https://github.com/socketio/socket.io-client/issues/1022)*
 
+## Test
+
+### CLI tool
+
+The spacebro ecosystem is ever growing, and it now has a dedicated [spacebro-client-CLI](https://github.com/soixantecircuits/spacebro-client-cli) that is super useful for quick testing both servers and clients.
+
 ## Contribute
 
 We use galaxies names for our release name, listed here [here](https://en.wikipedia.org/wiki/List_of_galaxies). We are currently at Black Eye.
