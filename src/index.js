@@ -125,7 +125,7 @@ function joinChannel (socket, channelName) {
 
 function quitChannel (socket, channelName) {
   if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
-  _.remove(infos[channelName].clients, s => s === socket.clientName)
+  _.remove(infos[channelName].clients, s => s.clientName === socket.clientName)
   config.showdashboard && dashboard.setInfos(infos)
 }
 
