@@ -6,7 +6,7 @@ let screen = null
 let logText = null
 let clientTable = null
 let eventTable = null
-let clientTableHeader = [['Name', 'IP', 'Host connexion','Channel']]
+let clientTableHeader = [['Name', 'IP', 'Host connexion', 'Channel']]
 
 const color = 'blue'
 

@@ -71,9 +71,9 @@ function initSocketIO () {
         let [eventName, args] = data
 
         if (reservedEvents.indexOf(eventName) > -1) return
-        
+
         observeEvent(eventName, socket.channelName)
-        
+
         if (typeof args !== 'object') {
           args = {data: args}
           args.altered = true
@@ -119,7 +119,7 @@ function log (...args) {
 function joinChannel (socket, channelName) {
   socket.join(channelName)
   if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
-  infos[channelName].clients = _.union(infos[channelName].clients, [{'clientName':socket.clientName,'ip':socket.handshake.address, 'hostname':socket.handshake.headers.host}])
+  infos[channelName].clients = _.union(infos[channelName].clients, [{'clientName': socket.clientName, 'ip': socket.handshake.address, 'hostname': socket.handshake.headers.host}])
   config.showdashboard && dashboard.setInfos(infos)
 }
 
