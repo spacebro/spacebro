@@ -28,10 +28,6 @@ var _moment = require('moment');
 
 var _moment2 = _interopRequireDefault(_moment);
 
-var _mdns = require('mdns');
-
-var _mdns2 = _interopRequireDefault(_mdns);
-
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -65,9 +61,13 @@ function init(configOption) {
   }
   config.verbose && log('init socket.io');
   initSocketIO();
-  config.verbose && log('init broadcast');
-  initBroadcast();
   config.verbose && log(config.server.serviceName, 'listening on port', config.server.port);
+}
+
+function observeEvent(eventName, channelName) {
+  if (!_lodash2.default.has(infos, channelName)) infos[channelName] = { events: [], clients: [] };
+  infos[channelName].events = _lodash2.default.union(infos[channelName].events, [eventName]);
+  _dashboard2.default.setInfos(infos);
 }
 
 function initSocketIO() {
@@ -100,6 +100,8 @@ function initSocketIO() {
 
       if (reservedEvents.indexOf(eventName) > -1) return;
 
+      observeEvent(eventName, socket.channelName);
+
       if ((typeof args === 'undefined' ? 'undefined' : (0, _typeof3.default)(args)) !== 'object') {
         args = { data: args };
         args.altered = true;
@@ -129,10 +131,6 @@ function initSocketIO() {
       io.to(socket.channelName).emit(eventName, args);
     });
   });
-}
-
-function initBroadcast() {
-  _mdns2.default.createAdvertisement(_mdns2.default.tcp(config.server.serviceName), config.server.port).start();
 }
 
 module.exports = { init: init, infos: infos };

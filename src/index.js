@@ -4,7 +4,6 @@ import wildcard from 'socketio-wildcard'
 import dashboard from './dashboard'
 import server from 'socket.io'
 import moment from 'moment'
-import mdns from 'mdns'
 import _ from 'lodash'
 
 const isBin = process.env.SPACEBRO_BIN || false
@@ -34,9 +33,13 @@ function init (configOption) {
   }
   config.verbose && log('init socket.io')
   initSocketIO()
-  config.verbose && log('init broadcast')
-  initBroadcast()
   config.verbose && log(config.server.serviceName, 'listening on port', config.server.port)
+}
+
+function observeEvent (eventName, channelName) {
+  if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
+  infos[channelName].events = _.union(infos[channelName].events, [eventName])
+  dashboard.setInfos(infos)
 }
 
 function initSocketIO () {
@@ -68,7 +71,9 @@ function initSocketIO () {
         let [eventName, args] = data
 
         if (reservedEvents.indexOf(eventName) > -1) return
-
+        
+        observeEvent(eventName, socket.channelName)
+        
         if (typeof args !== 'object') {
           args = {data: args}
           args.altered = true
@@ -96,12 +101,6 @@ function initSocketIO () {
         io.to(socket.channelName).emit(eventName, args)
       })
   })
-}
-
-function initBroadcast () {
-  mdns
-    .createAdvertisement(mdns.tcp(config.server.serviceName), config.server.port)
-    .start()
 }
 
 module.exports = { init, infos }

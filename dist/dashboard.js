@@ -17,6 +17,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var screen = null;
 var logText = null;
 var clientTable = null;
+var eventTable = null;
 
 var color = 'blue';
 
@@ -30,7 +31,7 @@ function init(config) {
     autoPadding: true
   });
 
-  var log = _blessed2.default.box({
+  var logBox = _blessed2.default.box({
     label: 'Log',
     padding: 1,
     width: '100%',
@@ -44,10 +45,10 @@ function init(config) {
       border: { fg: color }
     }
   });
-  screen.append(log);
+  screen.append(logBox);
 
   logText = _blessed2.default.log({
-    parent: log,
+    parent: logBox,
     tags: true,
     width: '100%-5',
     scrollable: true,
@@ -66,8 +67,8 @@ function init(config) {
     label: 'Clients',
     tags: true,
     padding: 1,
-    width: '100%',
-    height: '30%',
+    width: '50%',
+    height: '40%',
     left: '0%',
     top: '70%',
     border: { type: 'line' },
@@ -96,6 +97,41 @@ function init(config) {
   });
   screen.append(clientBox);
 
+  var eventBox = _blessed2.default.box({
+    label: 'Events',
+    tags: true,
+    padding: 1,
+    width: '50%',
+    height: '40%',
+    left: '50%',
+    top: '70%',
+    border: { type: 'line' },
+    style: {
+      fg: -1,
+      border: { fg: color }
+    }
+  });
+
+  eventTable = _blessed2.default.table({
+    parent: eventBox,
+    height: '100%',
+    width: '100%-5',
+    align: 'left',
+    pad: 1,
+    scrollable: true,
+    alwaysScroll: true,
+    scrollbar: {
+      ch: ' ',
+      inverse: true
+    },
+    keys: true,
+    vi: true,
+    mouse: true,
+    data: [['Name', 'Channel']]
+  });
+
+  screen.append(eventBox);
+
   // Quit on Escape, q, or Control-C.
   screen.key(['escape', 'q', 'C-c'], function (ch, key) {
     return process.exit(0);
@@ -117,9 +153,13 @@ function log() {
 }
 
 function setInfos(data) {
+  var events = [['Name', 'Channel']];
   var clients = [['Name', 'Channel']];
 
   var _loop = function _loop(channelName) {
+    events = _lodash2.default.union(events, data[channelName].events.map(function (e) {
+      return [e, channelName];
+    }));
     clients = _lodash2.default.union(clients, data[channelName].clients.map(function (c) {
       return [c, channelName];
     }));
@@ -127,6 +167,9 @@ function setInfos(data) {
 
   for (var channelName in data) {
     _loop(channelName);
+  }
+  if (eventTable) {
+    eventTable.setData(events);
   }
   if (clientTable) {
     clientTable.setData(clients);
