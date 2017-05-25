@@ -119,7 +119,7 @@ function log (...args) {
 function joinChannel (socket, channelName) {
   socket.join(channelName)
   if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
-  infos[channelName].clients = _.union(infos[channelName].clients, [socket.clientName])
+  infos[channelName].clients = _.union(infos[channelName].clients, [{'clientName':socket.clientName,'ip':socket.handshake.address, 'hostname':socket.handshake.headers.host}])
   config.showdashboard && dashboard.setInfos(infos)
 }
 
