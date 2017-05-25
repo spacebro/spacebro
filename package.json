@@ -1,6 +1,6 @@
 {
   "name": "spacebro",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "Spacebro uses mdns/zeroconf/bonjour and socket.io to bind apps together!",
   "keywords": [
     "zeroconf",
