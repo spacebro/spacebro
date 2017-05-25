@@ -155,7 +155,7 @@ function log() {
 function joinChannel(socket, channelName) {
   socket.join(channelName);
   if (!_lodash2.default.has(infos, channelName)) infos[channelName] = { events: [], clients: [] };
-  infos[channelName].clients = _lodash2.default.union(infos[channelName].clients, [socket.clientName]);
+  infos[channelName].clients = _lodash2.default.union(infos[channelName].clients, [{ 'clientName': socket.clientName, 'ip': socket.handshake.address, 'hostname': socket.handshake.headers.host }]);
   config.showdashboard && _dashboard2.default.setInfos(infos);
 }
 

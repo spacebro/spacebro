@@ -6,6 +6,7 @@ let screen = null
 let logText = null
 let clientTable = null
 let eventTable = null
+let clientTableHeader = [['Name', 'IP', 'Host connexion','Channel']]
 
 const color = 'blue'
 
@@ -81,7 +82,7 @@ function init (config) {
     keys: true,
     vi: true,
     mouse: true,
-    data: [['Name', 'Channel']]
+    data: clientTableHeader
   })
   screen.append(clientBox)
 
@@ -91,7 +92,7 @@ function init (config) {
     padding: 1,
     width: '50%',
     height: '40%',
-    left: '50%',
+    left: '51%',
     top: '70%',
     border: { type: 'line' },
     style: {
@@ -136,10 +137,10 @@ function log (...args) {
 
 function setInfos (data) {
   let events = [['Name', 'Channel']]
-  let clients = [['Name', 'Channel']]
+  let clients = clientTableHeader
   for (let channelName in data) {
     events = _.union(events, data[channelName].events.map(e => [e, channelName]))
-    clients = _.union(clients, data[channelName].clients.map(c => [c, channelName]))
+    clients = _.union(clients, data[channelName].clients.map(client => [client.clientName, client.ip, client.hostname, channelName]))
   }
   if (eventTable) {
     eventTable.setData(events)

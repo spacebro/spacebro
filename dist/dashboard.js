@@ -18,6 +18,7 @@ var screen = null;
 var logText = null;
 var clientTable = null;
 var eventTable = null;
+var clientTableHeader = [['Name', 'IP', 'Host connexion', 'Channel']];
 
 var color = 'blue';
 
@@ -93,7 +94,7 @@ function init(config) {
     keys: true,
     vi: true,
     mouse: true,
-    data: [['Name', 'Channel']]
+    data: clientTableHeader
   });
   screen.append(clientBox);
 
@@ -103,7 +104,7 @@ function init(config) {
     padding: 1,
     width: '50%',
     height: '40%',
-    left: '50%',
+    left: '51%',
     top: '70%',
     border: { type: 'line' },
     style: {
@@ -154,14 +155,14 @@ function log() {
 
 function setInfos(data) {
   var events = [['Name', 'Channel']];
-  var clients = [['Name', 'Channel']];
+  var clients = clientTableHeader;
 
   var _loop = function _loop(channelName) {
     events = _lodash2.default.union(events, data[channelName].events.map(function (e) {
       return [e, channelName];
     }));
-    clients = _lodash2.default.union(clients, data[channelName].clients.map(function (c) {
-      return [c, channelName];
+    clients = _lodash2.default.union(clients, data[channelName].clients.map(function (client) {
+      return [client.clientName, client.ip, client.hostname, channelName];
     }));
   };
 
