@@ -39,7 +39,7 @@ var isBin = process.env.SPACEBRO_BIN || false;
 // Default Config
 var config = {
   server: {
-    port: 8888,
+    port: 6060,
     serviceName: 'spacebro'
   },
   verbose: true,
