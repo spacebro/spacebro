@@ -127,6 +127,12 @@ The spacebro ecosystem is ever growing, and it now has a dedicated [spacebro-cli
 
 ## Contribute
 
+You can develop on spacebro, by running:
+
+`yarn dev`
+
+you can build with `yarn build`
+
 We use galaxies names for our release name, listed here [here](https://en.wikipedia.org/wiki/List_of_galaxies). We are currently at Black Eye.
 
 You can check the `examples/` folder, as well as the [spacebro-client](https://github.com/soixantecircuits/spacebro-client) examples for real life examples.
