@@ -25,7 +25,7 @@ let sockets = []
 let connections = []
 let infos = {}
 
-const reservedEvents = [ 'register', 'addConnections', 'replaceConnections' ]
+const reservedEvents = [ 'register', 'addConnections', 'replaceConnections', 'getConnections' ]
 
 function init (configOption) {
   Object.assign(config, configOption)
@@ -100,6 +100,9 @@ function initSocketIO () {
         io.to(socket.channelName).emit('new-member', { member: socket.clientName })
       })
       .on('addConnections', (data) => addConnections(data, socket))
+      .on('getConnections', (data) => {
+        io.to(socket.id).emit('connections', connections)
+      })
       .on('replaceConnections', (data) => {
         data = objectify(data)
         if (data) {
