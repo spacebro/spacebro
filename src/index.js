@@ -21,9 +21,10 @@ let config = {
 // Variables
 let io = null
 let sockets = []
+let connections = []
 let infos = {}
 
-const reservedEvents = [ 'register' ]
+const reservedEvents = [ 'register', 'addConnections' ]
 
 function init (configOption) {
   Object.assign(config, configOption)
@@ -40,6 +41,21 @@ function observeEvent (eventName, channelName) {
   if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
   infos[channelName].events = _.union(infos[channelName].events, [eventName])
   dashboard.setInfos(infos)
+}
+
+function sendToConnections (socket, eventName, args) {
+  let matchingConnections = connections.filter(c => c.src.clientName === socket.clientName && c.src.eventName === eventName)
+  if (matchingConnections) {
+    matchingConnections.forEach(c => {
+      let target = sockets.find(s => s.clientName === c.tgt.clientName && s.channelName === socket.channelName)
+      if (target) {
+        io.to(target.id).emit(c.tgt.eventName, args)
+        config.verbose && log(`${fullname(socket)} emitted event "${eventName}" connected to ${fullname(target)} event "${c.tgt.eventName}"`)
+      } else {
+        config.verbose && log('target not found:', c.tgt.clientName)
+      }
+    })
+  }
 }
 
 function initSocketIO () {
@@ -67,6 +83,17 @@ function initSocketIO () {
         joinChannel(socket, socket.channelName)
         io.to(socket.channelName).emit('new-member', { member: socket.clientName })
       })
+      .on('addConnections', (data) => {
+        data = objectify(data)
+        if (data) {
+          if (Array.isArray(data)) {
+            Array.prototype.push.apply(connections, data)
+          } else {
+            connections.push(data)
+          }
+          config.verbose && log(`${fullname(socket)} added connections ${config.semiverbose ? '' : `,  ${data}`}`)
+        }
+      })
       .on('*', ({ data }) => {
         let [eventName, args] = data
 
@@ -79,6 +106,8 @@ function initSocketIO () {
           args.altered = true
         }
         config.verbose && log(`${fullname(socket)} emitted event "${eventName}"${config.semiverbose ? '' : `, datas: ${args}`}`)
+
+        sendToConnections(socket, eventName, args)
 
         if (!socket.clientName) return
 
