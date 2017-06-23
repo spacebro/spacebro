@@ -24,7 +24,7 @@ let sockets = []
 let connections = []
 let infos = {}
 
-const reservedEvents = [ 'register', 'addConnections' ]
+const reservedEvents = [ 'register', 'addConnections', 'replaceConnections' ]
 
 function init (configOption) {
   Object.assign(config, configOption)
@@ -92,6 +92,21 @@ function initSocketIO () {
             connections.push(data)
           }
           config.verbose && log(`${fullname(socket)} added connections ${config.semiverbose ? '' : `,  ${data}`}`)
+          // remove duplicated
+          connections = _.uniqWith(connections, _.isEqual)
+        }
+      })
+      .on('replaceConnections', (data) => {
+        data = objectify(data)
+        if (data) {
+          if (Array.isArray(data)) {
+            connections = data
+          } else {
+            connections = [data]
+          }
+          config.verbose && log(`${fullname(socket)} replaced connections ${config.semiverbose ? '' : `,  ${data}`}`)
+          // remove duplicated
+          connections = _.uniqWith(connections, _.isEqual)
         }
       })
       .on('*', ({ data }) => {
