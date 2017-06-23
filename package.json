@@ -11,9 +11,10 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "npm run bin",
+    "dev": "gulp watch",
     "bin": "./bin/spacebro",
     "test": "standard src/**/*.js",
-    "build": "./node_modules/.bin/babel src -d dist"
+    "build": "gulp compile"
   },
   "dependencies": {
     "babel-runtime": "^6.23.0",
@@ -22,7 +23,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "nodemon": "^1.11.0",
-    "socket.io": "^2.0.1",
+    "socket.io": "1.7.4",
     "socketio-wildcard": "^2.0.0"
   },
   "devDependencies": {
@@ -31,6 +32,8 @@
     "babel-preset-es2015": "^6.24.1",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
+    "gulp-file-cache": "^0.0.1",
+    "gulp-nodemon": "^2.2.1",
     "spacebro-client": "^0.3.4",
     "standard": "^10.0.2"
   },
