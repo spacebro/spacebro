@@ -24,7 +24,8 @@
     "moment": "^2.18.1",
     "nodemon": "^1.11.0",
     "socket.io": "1.7.4",
-    "socketio-wildcard": "^2.0.0"
+    "socketio-wildcard": "^2.0.0",
+    "standard-settings": "^1.1.9"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",

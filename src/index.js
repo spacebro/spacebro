@@ -5,6 +5,7 @@ import dashboard from './dashboard'
 import server from 'socket.io'
 import moment from 'moment'
 import _ from 'lodash'
+const settings = require('standard-settings').getSettings()
 
 const isBin = process.env.SPACEBRO_BIN || false
 
@@ -32,6 +33,7 @@ function init (configOption) {
   if (config.showdashboard) {
     dashboard.init(config)
   }
+  addConnections(settings.connections)
   config.verbose && log('init socket.io')
   initSocketIO()
   config.verbose && log(config.server.serviceName, 'listening on port', config.server.port)
@@ -55,6 +57,20 @@ function sendToConnections (socket, eventName, args) {
         config.verbose && log('target not found:', c.tgt.clientName)
       }
     })
+  }
+}
+
+function addConnections (data, socket) {
+  data = objectify(data)
+  if (data) {
+    if (Array.isArray(data)) {
+      Array.prototype.push.apply(connections, data)
+    } else {
+      connections.push(data)
+    }
+    config.verbose && log(`${socket ? fullname(socket) : ''} added connections ${config.semiverbose ? '' : `,  ${data}`}`)
+    // remove duplicated
+    connections = _.uniqWith(connections, _.isEqual)
   }
 }
 
@@ -83,19 +99,7 @@ function initSocketIO () {
         joinChannel(socket, socket.channelName)
         io.to(socket.channelName).emit('new-member', { member: socket.clientName })
       })
-      .on('addConnections', (data) => {
-        data = objectify(data)
-        if (data) {
-          if (Array.isArray(data)) {
-            Array.prototype.push.apply(connections, data)
-          } else {
-            connections.push(data)
-          }
-          config.verbose && log(`${fullname(socket)} added connections ${config.semiverbose ? '' : `,  ${data}`}`)
-          // remove duplicated
-          connections = _.uniqWith(connections, _.isEqual)
-        }
-      })
+      .on('addConnections', (data) => addConnections(data, socket))
       .on('replaceConnections', (data) => {
         data = objectify(data)
         if (data) {
