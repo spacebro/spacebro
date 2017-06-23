@@ -36,14 +36,14 @@ const config = program.config
   ? require(path.resolve(process.cwd(), program.config))
   : {}
 
-config.showdashboard = (typeof program.hidedashboard === undefined) ? true : !program.hidedashboard
+config.showdashboard = (program.hidedashboard === undefined) ? true : !program.hidedashboard
 
 config.server = {
   port: Number(program.port) || 8888,
   serviceName: program.servicename || 'spacebro'
 }
 
-config.verbose = (program.mute === undefined) ? true : false
+config.verbose = (program.mute === undefined)
 config.semiverbose = program.semiverbose
 
 spacebro.init(config)
