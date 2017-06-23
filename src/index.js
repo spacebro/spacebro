@@ -6,6 +6,7 @@ import server from 'socket.io'
 import moment from 'moment'
 import _ from 'lodash'
 const settings = require('standard-settings').getSettings()
+const jsonColorz = require('json-colorz')
 
 const isBin = process.env.SPACEBRO_BIN || false
 
@@ -68,7 +69,8 @@ function addConnections (data, socket) {
     } else {
       connections.push(data)
     }
-    config.verbose && log(`${socket ? fullname(socket) : ''} added connections ${config.semiverbose ? '' : `,  ${data}`}`)
+    config.verbose && log(`${socket ? fullname(socket) : ''} added connections`)
+    !config.semiverbose && jsonColorz(data)
     // remove duplicated
     connections = _.uniqWith(connections, _.isEqual)
   }
@@ -111,7 +113,8 @@ function initSocketIO () {
           } else {
             connections = [data]
           }
-          config.verbose && log(`${fullname(socket)} replaced connections ${config.semiverbose ? '' : `,  ${data}`}`)
+          config.verbose && log(`${fullname(socket)} replaced connections`)
+          !config.semiverbose && jsonColorz(data)
           // remove duplicated
           connections = _.uniqWith(connections, _.isEqual)
         }
@@ -127,7 +130,8 @@ function initSocketIO () {
           args = {data: args}
           args.altered = true
         }
-        config.verbose && log(`${fullname(socket)} emitted event "${eventName}"${config.semiverbose ? '' : `, datas: ${args}`}`)
+        config.verbose && log(`${fullname(socket)} emitted event "${eventName}"`)
+        !config.semiverbose && jsonColorz(data)
 
         sendToConnections(socket, eventName, args)
 
