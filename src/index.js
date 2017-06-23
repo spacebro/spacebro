@@ -82,7 +82,7 @@ function initSocketIO () {
 
         if (!socket.clientName) return
 
-        if (args._to !== null) {
+        if (args._to !== null && args._to !== undefined) {
           let target = sockets.find(s => s.clientName === args._to && s.channelName === socket.channelName)
           if (target) {
             config.verbose && log('target found:', args._to)
