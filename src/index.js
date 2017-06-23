@@ -26,7 +26,7 @@ let sockets = []
 let connections = []
 let infos = {}
 
-const reservedEvents = [ 'register', 'addConnections', 'replaceConnections', 'getConnections' ]
+const reservedEvents = [ 'register', 'addConnections', 'replaceConnections', 'getConnections', 'getClients' ]
 
 function init (configOption) {
   Object.assign(config, configOption)
@@ -76,6 +76,19 @@ function addConnections (data, socket) {
   }
 }
 
+function getClients () {
+  let clients = {}
+  sockets.forEach((s) => {
+    clients[s.clientName] = {
+      clientName: s.clientName,
+      description: s.description,
+      icon: s.icon,
+      events: s.events
+    }
+  })
+  return clients
+}
+
 function initSocketIO () {
   io = server(config.server.port)
   io.use(wildcard())
@@ -96,14 +109,21 @@ function initSocketIO () {
         data = objectify(data)
         socket.clientName = data.clientName || socket.id
         socket.channelName = data.channelName || 'default'
+        socket.events = data.events
         socket.join(socket.channelName)
         config.verbose && log(fullname(socket), 'registered')
+        !config.semiverbose && jsonColorz(data)
         joinChannel(socket, socket.channelName)
         io.to(socket.channelName).emit('new-member', { member: socket.clientName })
       })
       .on('addConnections', (data) => addConnections(data, socket))
+      // TODO: filter by channel
       .on('getConnections', (data) => {
         io.to(socket.id).emit('connections', connections)
+      })
+      // TODO: filter by channel
+      .on('getClients', (data) => {
+        io.to(socket.id).emit('clients', getClients())
       })
       .on('replaceConnections', (data) => {
         data = objectify(data)
