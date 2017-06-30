@@ -26,7 +26,7 @@ let sockets = []
 let connections = []
 let infos = {}
 
-const reservedEvents = [ 'register', 'addConnections', 'replaceConnections', 'getConnections', 'getClients' ]
+const reservedEvents = [ 'register', 'addConnections', 'removeConnections', 'replaceConnections', 'getConnections', 'getClients' ]
 
 function init (configOption) {
   Object.assign(config, configOption)
@@ -47,7 +47,7 @@ function observeEvent (eventName, channelName) {
 }
 
 function sendToConnections (socket, eventName, args) {
-  let matchingConnections = connections.filter(c => c.src.clientName === socket.clientName && c.src.eventName === eventName)
+  let matchingConnections = connections.filter(c => c.src && c.src.clientName === socket.clientName && c.src.eventName === eventName)
   if (matchingConnections) {
     matchingConnections.forEach(c => {
       let target = sockets.find(s => s.clientName === c.tgt.clientName && s.channelName === socket.channelName)
@@ -67,13 +67,40 @@ function addConnections (data, socket) {
     if (Array.isArray(data)) {
       Array.prototype.push.apply(connections, data)
     } else {
-      connections.push(data)
+      // clean data
+      var connection = {
+        src: data.src,
+        tgt: data.tgt
+      }
+      connections.push(connection)
     }
     config.verbose && log(`${socket ? fullname(socket) : ''} added connections`)
     !config.semiverbose && jsonColorz(data)
     // remove duplicated
     connections = _.uniqWith(connections, _.isEqual)
   }
+}
+
+function removeConnections (data, socket) {
+  data = objectify(data)
+  if (data) {
+    if (Array.isArray(data)) {
+      data.forEach((connection) => removeConnection(connection))
+    } else {
+      // clean data
+      var connection = {
+        src: data.src,
+        tgt: data.tgt
+      }
+      removeConnection(connection)
+    }
+  }
+}
+
+function removeConnection (data, socket) {
+  _.remove(connections, data)
+  config.verbose && log(`${socket ? fullname(socket) : ''} removed connection`)
+  !config.semiverbose && jsonColorz(data)
 }
 
 function getClients () {
@@ -116,7 +143,10 @@ function initSocketIO () {
         joinChannel(socket, socket.channelName)
         io.to(socket.channelName).emit('new-member', { member: socket.clientName })
       })
+      // TODO: filter by channel
       .on('addConnections', (data) => addConnections(data, socket))
+      // TODO: filter by channel
+      .on('removeConnections', (data) => removeConnections(data, socket))
       // TODO: filter by channel
       .on('getConnections', (data) => {
         io.to(socket.id).emit('connections', connections)
