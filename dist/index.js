@@ -34,6 +34,9 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var settings = require('standard-settings').getSettings();
+var jsonColorz = require('json-colorz');
+
 var isBin = process.env.SPACEBRO_BIN || false;
 
 // Default Config
@@ -49,9 +52,10 @@ var config = {
 // Variables
 var io = null;
 var sockets = [];
+var connections = [];
 var infos = {};
 
-var reservedEvents = ['register'];
+var reservedEvents = ['register', 'addConnections', 'removeConnections', 'replaceConnections', 'getConnections', 'getClients'];
 
 function init(configOption) {
   (0, _assign2.default)(config, configOption);
@@ -59,6 +63,7 @@ function init(configOption) {
   if (config.showdashboard) {
     _dashboard2.default.init(config);
   }
+  addConnections(settings.connections);
   config.verbose && log('init socket.io');
   initSocketIO();
   config.verbose && log(config.server.serviceName, 'listening on port', config.server.port);
@@ -68,6 +73,82 @@ function observeEvent(eventName, channelName) {
   if (!_lodash2.default.has(infos, channelName)) infos[channelName] = { events: [], clients: [] };
   infos[channelName].events = _lodash2.default.union(infos[channelName].events, [eventName]);
   _dashboard2.default.setInfos(infos);
+}
+
+function sendToConnections(socket, eventName, args) {
+  var matchingConnections = connections.filter(function (c) {
+    return c.src && c.src.clientName === socket.clientName && c.src.eventName === eventName;
+  });
+  if (matchingConnections) {
+    matchingConnections.forEach(function (c) {
+      var target = sockets.find(function (s) {
+        return s.clientName === c.tgt.clientName && s.channelName === socket.channelName;
+      });
+      if (target) {
+        io.to(target.id).emit(c.tgt.eventName, args);
+        config.verbose && log(fullname(socket) + ' emitted event "' + eventName + '" connected to ' + fullname(target) + ' event "' + c.tgt.eventName + '"');
+      } else {
+        config.verbose && log('target not found:', c.tgt.clientName);
+      }
+    });
+  }
+}
+
+function addConnections(data, socket) {
+  data = objectify(data);
+  if (data) {
+    if (Array.isArray(data)) {
+      Array.prototype.push.apply(connections, data);
+    } else {
+      // clean data
+      var connection = {
+        src: data.src,
+        tgt: data.tgt
+      };
+      connections.push(connection);
+    }
+    config.verbose && log((socket ? fullname(socket) : '') + ' added connections');
+    !config.semiverbose && jsonColorz(data);
+    // remove duplicated
+    connections = _lodash2.default.uniqWith(connections, _lodash2.default.isEqual);
+  }
+}
+
+function removeConnections(data, socket) {
+  data = objectify(data);
+  if (data) {
+    if (Array.isArray(data)) {
+      data.forEach(function (connection) {
+        return removeConnection(connection);
+      });
+    } else {
+      // clean data
+      var connection = {
+        src: data.src,
+        tgt: data.tgt
+      };
+      removeConnection(connection);
+    }
+  }
+}
+
+function removeConnection(data, socket) {
+  _lodash2.default.remove(connections, data);
+  config.verbose && log((socket ? fullname(socket) : '') + ' removed connection');
+  !config.semiverbose && jsonColorz(data);
+}
+
+function getClients() {
+  var clients = {};
+  sockets.forEach(function (s) {
+    clients[s.clientName] = {
+      clientName: s.clientName,
+      description: s.description,
+      icon: s.icon,
+      events: s.events
+    };
+  });
+  return clients;
 }
 
 function initSocketIO() {
@@ -87,10 +168,49 @@ function initSocketIO() {
       data = objectify(data);
       socket.clientName = data.clientName || socket.id;
       socket.channelName = data.channelName || 'default';
+      socket.events = data.events;
       socket.join(socket.channelName);
       config.verbose && log(fullname(socket), 'registered');
+      !config.semiverbose && jsonColorz(data);
       joinChannel(socket, socket.channelName);
-      io.to(socket.channelName).emit('new-member', { member: socket.clientName });
+      var client = {
+        member: socket.clientName, // legacy
+        clientName: socket.clientName,
+        description: socket.description,
+        icon: socket.icon,
+        events: socket.events
+      };
+      io.to(socket.channelName).emit('new-member', client); // legacy
+      io.to(socket.channelName).emit('newClient', client);
+    })
+    // TODO: filter by channel
+    .on('addConnections', function (data) {
+      return addConnections(data, socket);
+    })
+    // TODO: filter by channel
+    .on('removeConnections', function (data) {
+      return removeConnections(data, socket);
+    })
+    // TODO: filter by channel
+    .on('getConnections', function (data) {
+      io.to(socket.id).emit('connections', connections);
+    })
+    // TODO: filter by channel
+    .on('getClients', function (data) {
+      io.to(socket.id).emit('clients', getClients());
+    }).on('replaceConnections', function (data) {
+      data = objectify(data);
+      if (data) {
+        if (Array.isArray(data)) {
+          connections = data;
+        } else {
+          connections = [data];
+        }
+        config.verbose && log(fullname(socket) + ' replaced connections');
+        !config.semiverbose && jsonColorz(data);
+        // remove duplicated
+        connections = _lodash2.default.uniqWith(connections, _lodash2.default.isEqual);
+      }
     }).on('*', function (_ref) {
       var data = _ref.data;
 
@@ -106,11 +226,14 @@ function initSocketIO() {
         args = { data: args };
         args.altered = true;
       }
-      config.verbose && log(fullname(socket) + ' emitted event "' + eventName + '"' + (config.semiverbose ? '' : ', datas: ' + args));
+      config.verbose && log(fullname(socket) + ' emitted event "' + eventName + '"');
+      !config.semiverbose && jsonColorz(data);
+
+      sendToConnections(socket, eventName, args);
 
       if (!socket.clientName) return;
 
-      if (args._to !== null) {
+      if (args._to !== null && args._to !== undefined) {
         var target = sockets.find(function (s) {
           return s.clientName === args._to && s.channelName === socket.channelName;
         });

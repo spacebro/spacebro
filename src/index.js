@@ -141,7 +141,15 @@ function initSocketIO () {
         config.verbose && log(fullname(socket), 'registered')
         !config.semiverbose && jsonColorz(data)
         joinChannel(socket, socket.channelName)
-        io.to(socket.channelName).emit('new-member', { member: socket.clientName })
+        let client = {
+          member: socket.clientName, // legacy
+          clientName: socket.clientName,
+          description: socket.description,
+          icon: socket.icon,
+          events: socket.events
+        }
+        io.to(socket.channelName).emit('new-member', client) // legacy
+        io.to(socket.channelName).emit('newClient', client)
       })
       // TODO: filter by channel
       .on('addConnections', (data) => addConnections(data, socket))
