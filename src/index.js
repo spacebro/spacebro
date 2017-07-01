@@ -65,19 +65,47 @@ function addConnections (data, socket) {
   data = objectify(data)
   if (data) {
     if (Array.isArray(data)) {
-      Array.prototype.push.apply(connections, data)
+      data.forEach((connection) => addConnection(connection, socket))
     } else {
       // clean data
       var connection = {
         src: data.src,
         tgt: data.tgt
       }
-      connections.push(connection)
+      addConnection(connection, socket)
     }
-    config.verbose && log(`${socket ? fullname(socket) : ''} added connections`)
-    !config.semiverbose && jsonColorz(data)
     // remove duplicated
     connections = _.uniqWith(connections, _.isEqual)
+  }
+}
+
+function addConnection (data, socket) {
+  if (typeof data === 'string') {
+    data = parseConnection(data)
+  }
+  if (data) {
+    connections.push(data)
+    config.verbose && log(`${socket ? fullname(socket) : ''} added connection`)
+    !config.semiverbose && jsonColorz(data)
+  }
+}
+
+function parseConnection (data, socket) {
+  const regex = / ?([^ ]+) ?\/ ?([^ ]+) ?=> ?([^ ]+) ?\/ ?([^ ]+) ?/g;
+  let match = regex.exec(str)
+  if (match.length > 4) {
+    var connection = {
+      src: {
+        clientName: match[1],
+        eventName: match[2]
+      },
+      tgt: {
+        clientName: match[3],
+        eventName: match[4]
+      }
+    }
+  } else {
+    log(`can't parse connection '$data`)
   }
 }
 
