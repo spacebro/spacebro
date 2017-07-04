@@ -47,7 +47,7 @@ function observeEvent (eventName, channelName) {
 }
 
 function sendToConnections (socket, eventName, args) {
-  let matchingConnections = connections.filter(c => c.src && c.src.clientName === socket.clientName && c.src.eventName === eventName)
+  let matchingConnections = connections.filter(c => c.src && c.src.clientName === socket.clientDescription.name && c.src.eventName === eventName)
   if (matchingConnections) {
     matchingConnections.forEach(c => {
       let target = sockets.find(s => s.clientName === c.tgt.clientName && s.channelName === socket.channelName)
@@ -134,12 +134,7 @@ function removeConnection (data, socket) {
 function getClients () {
   let clients = {}
   sockets.forEach((s) => {
-    clients[s.clientName] = {
-      clientName: s.clientName,
-      description: s.description,
-      icon: s.icon,
-      events: s.events
-    }
+    clients[s.clientDescription.name] = s.clientDescription
   })
   return clients
 }
@@ -162,22 +157,22 @@ function initSocketIO () {
       })
       .on('register', (data) => {
         data = objectify(data)
-        socket.clientName = data.clientName || socket.id
+        socket.clientDescription = data.client || data.clientName || socket.id
+        // legacy
+        if (typeof socket.clientDescription === 'string') {
+          socket.clientDescription = {name: socket.clientDescription}
+        }
+
         socket.channelName = data.channelName || 'default'
-        socket.events = data.events
         socket.join(socket.channelName)
         config.verbose && log(fullname(socket), 'registered')
         !config.semiverbose && jsonColorz(data)
+
         joinChannel(socket, socket.channelName)
-        let client = {
-          member: socket.clientName, // legacy
-          clientName: socket.clientName,
-          description: socket.description,
-          icon: socket.icon,
-          events: socket.events
-        }
-        io.to(socket.channelName).emit('new-member', client) // legacy
-        io.to(socket.channelName).emit('newClient', client)
+
+        socket.clientDescription.member = socket.clientDescription.name // legacy
+        io.to(socket.channelName).emit('new-member', socket.clientDescription) // legacy
+        io.to(socket.channelName).emit('newClient', socket.clientDescription)
       })
       // TODO: filter by channel
       .on('addConnections', (data) => addConnections(data, socket))
@@ -221,7 +216,7 @@ function initSocketIO () {
 
         sendToConnections(socket, eventName, args)
 
-        if (!socket.clientName) return
+        if (!socket.clientDescription.name) return
 
         if (args._to !== null && args._to !== undefined) {
           let target = sockets.find(s => s.clientName === args._to && s.channelName === socket.channelName)
@@ -260,13 +255,13 @@ function log (...args) {
 function joinChannel (socket, channelName) {
   socket.join(channelName)
   if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
-  infos[channelName].clients = _.union(infos[channelName].clients, [{'clientName': socket.clientName, 'ip': socket.handshake.address, 'hostname': socket.handshake.headers.host}])
+  infos[channelName].clients = _.union(infos[channelName].clients, [{'clientName': socket.clientDescription.name, 'ip': socket.handshake.address, 'hostname': socket.handshake.headers.host}])
   config.showdashboard && dashboard.setInfos(infos)
 }
 
 function quitChannel (socket, channelName) {
   if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
-  _.remove(infos[channelName].clients, s => s.clientName === socket.clientName)
+  _.remove(infos[channelName].clients, s => s.clientName === socket.clientDescription.name)
   config.showdashboard && dashboard.setInfos(infos)
 }
 
@@ -283,7 +278,7 @@ function objectify (data) {
 }
 
 function fullname (socket) {
-  return socket.clientName
-    ? `${socket.clientName}@${socket.channelName}`
+  return socket.clientDescription.name
+    ? `${socket.clientDescription.name}@${socket.channelName}`
     : `unregistered socket #${socket.id}`
 }
