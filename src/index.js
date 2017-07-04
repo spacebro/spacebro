@@ -67,21 +67,24 @@ function addConnections (data, socket) {
     if (Array.isArray(data)) {
       data.forEach((connection) => addConnection(connection, socket))
     } else {
-      // clean data
-      var connection = {
-        src: data.src,
-        tgt: data.tgt
-      }
-      addConnection(connection, socket)
+      addConnection(data, socket)
     }
     // remove duplicated
     connections = _.uniqWith(connections, _.isEqual)
+    io && io.to(socket.channelName).emit('connections', connections)
   }
 }
 
 function addConnection (data, socket) {
-  if (typeof data === 'string') {
+  if (typeof data === 'string' || typeof data.data === 'string') {
+    data = data.altered ? data.data : data
     data = parseConnection(data)
+  } else {
+    // clean data
+    data = {
+      src: data.src,
+      tgt: data.tgt
+    }
   }
   if (data) {
     connections.push(data)
@@ -91,10 +94,11 @@ function addConnection (data, socket) {
 }
 
 function parseConnection (data, socket) {
-  const regex = / ?([^ ]+) ?\/ ?([^ ]+) ?=> ?([^ ]+) ?\/ ?([^ ]+) ?/g;
-  let match = regex.exec(str)
+  const regex = / ?([^ ]+) ?\/ ?([^ ]+) ?=> ?([^ ]+) ?\/ ?([^ ]+) ?/g
+  let match = regex.exec(data)
+  let connection
   if (match.length > 4) {
-    var connection = {
+    connection = {
       src: {
         clientName: match[1],
         eventName: match[2]
@@ -107,6 +111,7 @@ function parseConnection (data, socket) {
   } else {
     log(`can't parse connection '$data`)
   }
+  return connection
 }
 
 function removeConnections (data, socket) {
@@ -123,6 +128,7 @@ function removeConnections (data, socket) {
       removeConnection(connection)
     }
   }
+  io && io.to(socket.channelName).emit('connections', connections)
 }
 
 function removeConnection (data, socket) {
