@@ -8,6 +8,10 @@ var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
 
 var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
 
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
 var _assign = require('babel-runtime/core-js/object/assign');
 
 var _assign2 = _interopRequireDefault(_assign);
@@ -63,7 +67,7 @@ function init(configOption) {
   if (config.showdashboard) {
     _dashboard2.default.init(config);
   }
-  addConnections(settings.connections);
+  addConnectionsFromSettings(settings.connections);
   config.verbose && log('init socket.io');
   initSocketIO();
   config.verbose && log(config.server.serviceName, 'listening on port', config.server.port);
@@ -76,13 +80,13 @@ function observeEvent(eventName, channelName) {
 }
 
 function sendToConnections(socket, eventName, args) {
-  var matchingConnections = connections.filter(function (c) {
+  var matchingConnections = connections[socket.channelName].filter(function (c) {
     return c.src && c.src.clientName === socket.clientDescription.name && c.src.eventName === eventName;
   });
   if (matchingConnections) {
     matchingConnections.forEach(function (c) {
       var target = sockets.find(function (s) {
-        return s.clientName === c.tgt.clientName && s.channelName === socket.channelName;
+        return s.clientDescription.name === c.tgt.clientName && s.channelName === socket.channelName;
       });
       if (target) {
         io.to(target.id).emit(c.tgt.eventName, args);
@@ -92,6 +96,18 @@ function sendToConnections(socket, eventName, args) {
       }
     });
   }
+}
+
+function addConnectionsFromSettings(data) {
+  var description = {
+    clientDescription: {
+      name: 'initial settings'
+    }
+  };
+  (0, _keys2.default)(data).forEach(function (channelName) {
+    description.channelName = channelName;
+    addConnections(data[channelName], description);
+  });
 }
 
 function addConnections(data, socket) {
@@ -105,8 +121,8 @@ function addConnections(data, socket) {
       addConnection(data, socket);
     }
     // remove duplicated
-    connections = _lodash2.default.uniqWith(connections, _lodash2.default.isEqual);
-    io && io.to(socket.channelName).emit('connections', connections);
+    connections[socket.channelName] = _lodash2.default.uniqWith(connections[socket.channelName], _lodash2.default.isEqual);
+    io && io.to(socket.channelName).emit('connections', connections[socket.channelName]);
   }
 }
 
@@ -122,7 +138,8 @@ function addConnection(data, socket) {
     };
   }
   if (data) {
-    connections.push(data);
+    connections[socket.channelName] = connections[socket.channelName] || [];
+    connections[socket.channelName].push(data);
     config.verbose && log((socket ? fullname(socket) : '') + ' added connection');
     !config.semiverbose && jsonColorz(data);
   }
@@ -154,7 +171,7 @@ function removeConnections(data, socket) {
   if (data) {
     if (Array.isArray(data)) {
       data.forEach(function (connection) {
-        return removeConnection(connection);
+        return removeConnection(connection, socket);
       });
     } else {
       // clean data
@@ -162,14 +179,14 @@ function removeConnections(data, socket) {
         src: data.src,
         tgt: data.tgt
       };
-      removeConnection(connection);
+      removeConnection(connection, socket);
     }
   }
-  io && io.to(socket.channelName).emit('connections', connections);
+  io && io.to(socket.channelName).emit('connections', connections[socket.channelName]);
 }
 
 function removeConnection(data, socket) {
-  _lodash2.default.remove(connections, data);
+  _lodash2.default.remove(connections[socket.channelName], data);
   config.verbose && log((socket ? fullname(socket) : '') + ' removed connection');
   !config.semiverbose && jsonColorz(data);
 }
@@ -224,7 +241,7 @@ function initSocketIO() {
     })
     // TODO: filter by channel
     .on('getConnections', function (data) {
-      io.to(socket.id).emit('connections', connections);
+      io.to(socket.id).emit('connections', connections[socket.channelName]);
     })
     // TODO: filter by channel
     .on('getClients', function (data) {
@@ -233,14 +250,14 @@ function initSocketIO() {
       data = objectify(data);
       if (data) {
         if (Array.isArray(data)) {
-          connections = data;
+          connections[socket.channelName] = data;
         } else {
-          connections = [data];
+          connections[socket.channelName] = [data];
         }
         config.verbose && log(fullname(socket) + ' replaced connections');
         !config.semiverbose && jsonColorz(data);
         // remove duplicated
-        connections = _lodash2.default.uniqWith(connections, _lodash2.default.isEqual);
+        connections[socket.channelName] = _lodash2.default.uniqWith(connections[socket.channelName], _lodash2.default.isEqual);
       }
     }).on('*', function (_ref) {
       var data = _ref.data;

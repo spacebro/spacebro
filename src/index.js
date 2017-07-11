@@ -34,7 +34,7 @@ function init (configOption) {
   if (config.showdashboard) {
     dashboard.init(config)
   }
-  addConnections(settings.connections)
+  addConnectionsFromSettings(settings.connections)
   config.verbose && log('init socket.io')
   initSocketIO()
   config.verbose && log(config.server.serviceName, 'listening on port', config.server.port)
@@ -47,10 +47,10 @@ function observeEvent (eventName, channelName) {
 }
 
 function sendToConnections (socket, eventName, args) {
-  let matchingConnections = connections.filter(c => c.src && c.src.clientName === socket.clientDescription.name && c.src.eventName === eventName)
+  let matchingConnections = connections[socket.channelName].filter(c => c.src && c.src.clientName === socket.clientDescription.name && c.src.eventName === eventName)
   if (matchingConnections) {
     matchingConnections.forEach(c => {
-      let target = sockets.find(s => s.clientName === c.tgt.clientName && s.channelName === socket.channelName)
+      let target = sockets.find(s => s.clientDescription.name === c.tgt.clientName && s.channelName === socket.channelName)
       if (target) {
         io.to(target.id).emit(c.tgt.eventName, args)
         config.verbose && log(`${fullname(socket)} emitted event "${eventName}" connected to ${fullname(target)} event "${c.tgt.eventName}"`)
@@ -59,6 +59,18 @@ function sendToConnections (socket, eventName, args) {
       }
     })
   }
+}
+
+function addConnectionsFromSettings (data) {
+  let description = {
+    clientDescription: {
+      name: 'initial settings'
+    }
+  }
+  Object.keys(data).forEach((channelName) => {
+    description.channelName = channelName
+    addConnections(data[channelName], description)
+  })
 }
 
 function addConnections (data, socket) {
@@ -70,8 +82,8 @@ function addConnections (data, socket) {
       addConnection(data, socket)
     }
     // remove duplicated
-    connections = _.uniqWith(connections, _.isEqual)
-    io && io.to(socket.channelName).emit('connections', connections)
+    connections[socket.channelName] = _.uniqWith(connections[socket.channelName], _.isEqual)
+    io && io.to(socket.channelName).emit('connections', connections[socket.channelName])
   }
 }
 
@@ -87,7 +99,8 @@ function addConnection (data, socket) {
     }
   }
   if (data) {
-    connections.push(data)
+    connections[socket.channelName] = connections[socket.channelName] || []
+    connections[socket.channelName].push(data)
     config.verbose && log(`${socket ? fullname(socket) : ''} added connection`)
     !config.semiverbose && jsonColorz(data)
   }
@@ -118,21 +131,21 @@ function removeConnections (data, socket) {
   data = objectify(data)
   if (data) {
     if (Array.isArray(data)) {
-      data.forEach((connection) => removeConnection(connection))
+      data.forEach((connection) => removeConnection(connection, socket))
     } else {
       // clean data
       var connection = {
         src: data.src,
         tgt: data.tgt
       }
-      removeConnection(connection)
+      removeConnection(connection, socket)
     }
   }
-  io && io.to(socket.channelName).emit('connections', connections)
+  io && io.to(socket.channelName).emit('connections', connections[socket.channelName])
 }
 
 function removeConnection (data, socket) {
-  _.remove(connections, data)
+  _.remove(connections[socket.channelName], data)
   config.verbose && log(`${socket ? fullname(socket) : ''} removed connection`)
   !config.semiverbose && jsonColorz(data)
 }
@@ -186,7 +199,7 @@ function initSocketIO () {
       .on('removeConnections', (data) => removeConnections(data, socket))
       // TODO: filter by channel
       .on('getConnections', (data) => {
-        io.to(socket.id).emit('connections', connections)
+        io.to(socket.id).emit('connections', connections[socket.channelName])
       })
       // TODO: filter by channel
       .on('getClients', (data) => {
@@ -196,14 +209,14 @@ function initSocketIO () {
         data = objectify(data)
         if (data) {
           if (Array.isArray(data)) {
-            connections = data
+            connections[socket.channelName] = data
           } else {
-            connections = [data]
+            connections[socket.channelName] = [data]
           }
           config.verbose && log(`${fullname(socket)} replaced connections`)
           !config.semiverbose && jsonColorz(data)
           // remove duplicated
-          connections = _.uniqWith(connections, _.isEqual)
+          connections[socket.channelName] = _.uniqWith(connections[socket.channelName], _.isEqual)
         }
       })
       .on('*', ({ data }) => {
