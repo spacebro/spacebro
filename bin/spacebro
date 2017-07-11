@@ -5,45 +5,22 @@
 process.env.SPACEBRO_BIN = true
 
 const spacebro = require('../')
-const program = require('commander')
 const pkg = require('../package.json')
-const path = require('path')
+var settings = require('standard-settings').getSettings()
+var program = require('yargs')
 
 program
   .version(pkg.version)
-  .usage('[options]')
-  .option('-S, --servicename [value]', 'give the service a name')
-  .option('-P, --port <n>', 'give a port to spacebro')
-  .option('-M, --mute', 'option to hide informations')
-  .option('--semiverbose', 'do not show events datas in logs')
-  .option('-H, --hidedashboard', 'Allow to hide dashboard')
-  .option('-C, --config [value]', 'give a path to config.json file')
+  .usage('Usage: $0 [options]')
+  .example('$0 --settings /path/to/mysettings.json')
+  .alias('-P', 'server.port')
+  .describe('P', 'give a port to spacebro')
+  .alias('-M', 'mute')
+  .describe('M', 'option to hide informations')
+  .alias('-H', 'hidedashboard')
+  .describe('H', 'Allow to hide dashboard')
+  .describe('semiverbose', 'do not show events datas in logs')
+  .help('h')
+  .alias('h', 'help')
 
-program.name = 'spacebro'
-
-program.on('-h, --help', function () {
-  console.log('  Examples:')
-  console.log('')
-  console.log('    $ spacebro --servicename spacebro --port 8888')
-  console.log('    $ spacebro --config ./config.json')
-  console.log('')
-})
-
-// init command
-program.parse(process.argv)
-
-const config = program.config
-  ? require(path.resolve(process.cwd(), program.config))
-  : {}
-
-config.showdashboard = (program.hidedashboard === undefined) ? true : !program.hidedashboard
-
-config.server = {
-  port: Number(program.port) || 8888,
-  serviceName: program.servicename || 'spacebro'
-}
-
-config.verbose = (program.mute === undefined)
-config.semiverbose = program.semiverbose
-
-spacebro.init(config)
+spacebro.init()

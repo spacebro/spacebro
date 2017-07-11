@@ -8,18 +8,6 @@ import _ from 'lodash'
 const settings = require('standard-settings').getSettings()
 const jsonColorz = require('json-colorz')
 
-const isBin = process.env.SPACEBRO_BIN || false
-
-// Default Config
-let config = {
-  server: {
-    port: 6060,
-    serviceName: 'spacebro'
-  },
-  verbose: true,
-  showdashboard: isBin
-}
-
 // Variables
 let io = null
 let sockets = []
@@ -28,16 +16,20 @@ let infos = {}
 
 const reservedEvents = [ 'register', 'addConnections', 'removeConnections', 'replaceConnections', 'getConnections', 'getClients' ]
 
-function init (configOption) {
-  Object.assign(config, configOption)
-  process.title = config.server.serviceName
-  if (config.showdashboard) {
-    dashboard.init(config)
+function init () {
+  process.title = 'spacebro'
+  settings.verbose = (settings.mute === undefined || settings.mute === false)
+  settings.showdashboard = !settings.hidedashboard && process.env.SPACEBRO_BIN
+  settings.semiverbose = settings.showdashboard || settings.semiverbose
+  if (settings.showdashboard) {
+    dashboard.init()
   }
-  addConnectionsFromSettings(settings.connections)
-  config.verbose && log('init socket.io')
+  if (settings.connections) {
+    addConnectionsFromSettings(settings.connections)
+  }
+  settings.verbose && log('init socket.io')
   initSocketIO()
-  config.verbose && log(config.server.serviceName, 'listening on port', config.server.port)
+  settings.verbose && log('spacebro listening on port', settings.server.port)
 }
 
 function observeEvent (eventName, channelName) {
@@ -53,9 +45,9 @@ function sendToConnections (socket, eventName, args) {
       let target = sockets.find(s => s.clientDescription.name === c.tgt.clientName && s.channelName === socket.channelName)
       if (target) {
         io.to(target.id).emit(c.tgt.eventName, args)
-        config.verbose && log(`${fullname(socket)} emitted event "${eventName}" connected to ${fullname(target)} event "${c.tgt.eventName}"`)
+        settings.verbose && log(`${fullname(socket)} emitted event "${eventName}" connected to ${fullname(target)} event "${c.tgt.eventName}"`)
       } else {
-        config.verbose && log('target not found:', c.tgt.clientName)
+        settings.verbose && log('target not found:', c.tgt.clientName)
       }
     })
   }
@@ -101,8 +93,8 @@ function addConnection (data, socket) {
   if (data) {
     connections[socket.channelName] = connections[socket.channelName] || []
     connections[socket.channelName].push(data)
-    config.verbose && log(`${socket ? fullname(socket) : ''} added connection`)
-    !config.semiverbose && jsonColorz(data)
+    settings.verbose && log(`${socket ? fullname(socket) : ''} added connection`)
+    !settings.semiverbose && jsonColorz(data)
   }
 }
 
@@ -146,8 +138,8 @@ function removeConnections (data, socket) {
 
 function removeConnection (data, socket) {
   _.remove(connections[socket.channelName], data)
-  config.verbose && log(`${socket ? fullname(socket) : ''} removed connection`)
-  !config.semiverbose && jsonColorz(data)
+  settings.verbose && log(`${socket ? fullname(socket) : ''} removed connection`)
+  !settings.semiverbose && jsonColorz(data)
 }
 
 function getClients () {
@@ -159,20 +151,20 @@ function getClients () {
 }
 
 function initSocketIO () {
-  io = server(config.server.port)
+  io = server(settings.server.port)
   io.use(wildcard())
   io.on('connection', (socket) => {
-    config.verbose && log('new socket connected')
+    settings.verbose && log('new socket connected')
     sockets.push(socket)
 
     socket
       .on('disconnect', () => {
         sockets.splice(sockets.indexOf(socket), 1)
-        config.verbose && log(fullname(socket), 'disconnected')
+        settings.verbose && log(fullname(socket), 'disconnected')
         quitChannel(socket, socket.channelName)
       })
       .on('error', (err) => {
-        config.verbose && log(fullname(socket), 'error:', err)
+        settings.verbose && log(fullname(socket), 'error:', err)
       })
       .on('register', (data) => {
         data = objectify(data)
@@ -184,8 +176,8 @@ function initSocketIO () {
 
         socket.channelName = data.channelName || 'default'
         socket.join(socket.channelName)
-        config.verbose && log(fullname(socket), 'registered')
-        !config.semiverbose && jsonColorz(data)
+        settings.verbose && log(fullname(socket), 'registered')
+        !settings.semiverbose && jsonColorz(data)
 
         joinChannel(socket, socket.channelName)
 
@@ -213,8 +205,8 @@ function initSocketIO () {
           } else {
             connections[socket.channelName] = [data]
           }
-          config.verbose && log(`${fullname(socket)} replaced connections`)
-          !config.semiverbose && jsonColorz(data)
+          settings.verbose && log(`${fullname(socket)} replaced connections`)
+          !settings.semiverbose && jsonColorz(data)
           // remove duplicated
           connections[socket.channelName] = _.uniqWith(connections[socket.channelName], _.isEqual)
         }
@@ -230,8 +222,8 @@ function initSocketIO () {
           args = {data: args}
           args.altered = true
         }
-        config.verbose && log(`${fullname(socket)} emitted event "${eventName}"`)
-        !config.semiverbose && jsonColorz(data)
+        settings.verbose && log(`${fullname(socket)} emitted event "${eventName}"`)
+        !settings.semiverbose && jsonColorz(data)
 
         sendToConnections(socket, eventName, args)
 
@@ -240,14 +232,14 @@ function initSocketIO () {
         if (args._to !== null && args._to !== undefined) {
           let target = sockets.find(s => s.clientName === args._to && s.channelName === socket.channelName)
           if (target) {
-            config.verbose && log('target found:', args._to)
+            settings.verbose && log('target found:', args._to)
             if (args.altered) {
               args = args.data
             }
             io.to(target.id).emit(eventName, args)
             return
           } else {
-            config.verbose && log('target not found:', args._to)
+            settings.verbose && log('target not found:', args._to)
           }
         }
         if (args.altered) {
@@ -264,7 +256,7 @@ module.exports = { init, infos }
  * Helpers
  */
 function log (...args) {
-  if (config.showdashboard) {
+  if (settings.showdashboard) {
     dashboard.log(...args)
   } else {
     console.log(`${moment().format('YYYY-MM-DD-HH:mm:ss')} - `, ...args)
@@ -275,13 +267,13 @@ function joinChannel (socket, channelName) {
   socket.join(channelName)
   if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
   infos[channelName].clients = _.union(infos[channelName].clients, [{'clientName': socket.clientDescription.name, 'ip': socket.handshake.address, 'hostname': socket.handshake.headers.host}])
-  config.showdashboard && dashboard.setInfos(infos)
+  settings.showdashboard && dashboard.setInfos(infos)
 }
 
 function quitChannel (socket, channelName) {
   if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
   _.remove(infos[channelName].clients, s => s.clientName === socket.clientDescription.name)
-  config.showdashboard && dashboard.setInfos(infos)
+  settings.showdashboard && dashboard.setInfos(infos)
 }
 
 function objectify (data) {

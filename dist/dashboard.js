@@ -22,7 +22,7 @@ var clientTableHeader = [['Name', 'IP', 'Host connexion', 'Channel']];
 
 var color = 'blue';
 
-function init(config) {
+function init() {
   // Create a screen object.
   screen = _blessed2.default.screen({
     smartCSR: true,

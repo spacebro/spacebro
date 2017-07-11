@@ -1,0 +1,8 @@
+{
+  "server": {
+    "port": 8888
+  },
+  "mute": false,
+  "semiverbose": false,
+  "hidedashboard": false
+}

@@ -10,7 +10,7 @@ let clientTableHeader = [['Name', 'IP', 'Host connexion', 'Channel']]
 
 const color = 'blue'
 
-function init (config) {
+function init () {
   // Create a screen object.
   screen = blessed.screen({
     smartCSR: true,

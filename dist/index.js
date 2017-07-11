@@ -12,10 +12,6 @@ var _keys = require('babel-runtime/core-js/object/keys');
 
 var _keys2 = _interopRequireDefault(_keys);
 
-var _assign = require('babel-runtime/core-js/object/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
 var _socketioWildcard = require('socketio-wildcard');
 
 var _socketioWildcard2 = _interopRequireDefault(_socketioWildcard);
@@ -41,18 +37,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var settings = require('standard-settings').getSettings();
 var jsonColorz = require('json-colorz');
 
-var isBin = process.env.SPACEBRO_BIN || false;
-
-// Default Config
-var config = {
-  server: {
-    port: 6060,
-    serviceName: 'spacebro'
-  },
-  verbose: true,
-  showdashboard: isBin
-};
-
 // Variables
 var io = null;
 var sockets = [];
@@ -61,16 +45,20 @@ var infos = {};
 
 var reservedEvents = ['register', 'addConnections', 'removeConnections', 'replaceConnections', 'getConnections', 'getClients'];
 
-function init(configOption) {
-  (0, _assign2.default)(config, configOption);
-  process.title = config.server.serviceName;
-  if (config.showdashboard) {
-    _dashboard2.default.init(config);
+function init() {
+  process.title = 'spacebro';
+  settings.verbose = settings.mute === undefined || settings.mute === false;
+  settings.showdashboard = !settings.hidedashboard && process.env.SPACEBRO_BIN;
+  settings.semiverbose = settings.showdashboard || settings.semiverbose;
+  if (settings.showdashboard) {
+    _dashboard2.default.init();
   }
-  addConnectionsFromSettings(settings.connections);
-  config.verbose && log('init socket.io');
+  if (settings.connections) {
+    addConnectionsFromSettings(settings.connections);
+  }
+  settings.verbose && log('init socket.io');
   initSocketIO();
-  config.verbose && log(config.server.serviceName, 'listening on port', config.server.port);
+  settings.verbose && log('spacebro listening on port', settings.server.port);
 }
 
 function observeEvent(eventName, channelName) {
@@ -90,9 +78,9 @@ function sendToConnections(socket, eventName, args) {
       });
       if (target) {
         io.to(target.id).emit(c.tgt.eventName, args);
-        config.verbose && log(fullname(socket) + ' emitted event "' + eventName + '" connected to ' + fullname(target) + ' event "' + c.tgt.eventName + '"');
+        settings.verbose && log(fullname(socket) + ' emitted event "' + eventName + '" connected to ' + fullname(target) + ' event "' + c.tgt.eventName + '"');
       } else {
-        config.verbose && log('target not found:', c.tgt.clientName);
+        settings.verbose && log('target not found:', c.tgt.clientName);
       }
     });
   }
@@ -140,8 +128,8 @@ function addConnection(data, socket) {
   if (data) {
     connections[socket.channelName] = connections[socket.channelName] || [];
     connections[socket.channelName].push(data);
-    config.verbose && log((socket ? fullname(socket) : '') + ' added connection');
-    !config.semiverbose && jsonColorz(data);
+    settings.verbose && log((socket ? fullname(socket) : '') + ' added connection');
+    !settings.semiverbose && jsonColorz(data);
   }
 }
 
@@ -187,8 +175,8 @@ function removeConnections(data, socket) {
 
 function removeConnection(data, socket) {
   _lodash2.default.remove(connections[socket.channelName], data);
-  config.verbose && log((socket ? fullname(socket) : '') + ' removed connection');
-  !config.semiverbose && jsonColorz(data);
+  settings.verbose && log((socket ? fullname(socket) : '') + ' removed connection');
+  !settings.semiverbose && jsonColorz(data);
 }
 
 function getClients() {
@@ -200,18 +188,18 @@ function getClients() {
 }
 
 function initSocketIO() {
-  io = (0, _socket2.default)(config.server.port);
+  io = (0, _socket2.default)(settings.server.port);
   io.use((0, _socketioWildcard2.default)());
   io.on('connection', function (socket) {
-    config.verbose && log('new socket connected');
+    settings.verbose && log('new socket connected');
     sockets.push(socket);
 
     socket.on('disconnect', function () {
       sockets.splice(sockets.indexOf(socket), 1);
-      config.verbose && log(fullname(socket), 'disconnected');
+      settings.verbose && log(fullname(socket), 'disconnected');
       quitChannel(socket, socket.channelName);
     }).on('error', function (err) {
-      config.verbose && log(fullname(socket), 'error:', err);
+      settings.verbose && log(fullname(socket), 'error:', err);
     }).on('register', function (data) {
       data = objectify(data);
       socket.clientDescription = data.client || data.clientName || socket.id;
@@ -222,8 +210,8 @@ function initSocketIO() {
 
       socket.channelName = data.channelName || 'default';
       socket.join(socket.channelName);
-      config.verbose && log(fullname(socket), 'registered');
-      !config.semiverbose && jsonColorz(data);
+      settings.verbose && log(fullname(socket), 'registered');
+      !settings.semiverbose && jsonColorz(data);
 
       joinChannel(socket, socket.channelName);
 
@@ -254,8 +242,8 @@ function initSocketIO() {
         } else {
           connections[socket.channelName] = [data];
         }
-        config.verbose && log(fullname(socket) + ' replaced connections');
-        !config.semiverbose && jsonColorz(data);
+        settings.verbose && log(fullname(socket) + ' replaced connections');
+        !settings.semiverbose && jsonColorz(data);
         // remove duplicated
         connections[socket.channelName] = _lodash2.default.uniqWith(connections[socket.channelName], _lodash2.default.isEqual);
       }
@@ -274,8 +262,8 @@ function initSocketIO() {
         args = { data: args };
         args.altered = true;
       }
-      config.verbose && log(fullname(socket) + ' emitted event "' + eventName + '"');
-      !config.semiverbose && jsonColorz(data);
+      settings.verbose && log(fullname(socket) + ' emitted event "' + eventName + '"');
+      !settings.semiverbose && jsonColorz(data);
 
       sendToConnections(socket, eventName, args);
 
@@ -286,14 +274,14 @@ function initSocketIO() {
           return s.clientName === args._to && s.channelName === socket.channelName;
         });
         if (target) {
-          config.verbose && log('target found:', args._to);
+          settings.verbose && log('target found:', args._to);
           if (args.altered) {
             args = args.data;
           }
           io.to(target.id).emit(eventName, args);
           return;
         } else {
-          config.verbose && log('target not found:', args._to);
+          settings.verbose && log('target not found:', args._to);
         }
       }
       if (args.altered) {
@@ -314,7 +302,7 @@ function log() {
     args[_key] = arguments[_key];
   }
 
-  if (config.showdashboard) {
+  if (settings.showdashboard) {
     _dashboard2.default.log.apply(_dashboard2.default, args);
   } else {
     var _console;
@@ -327,7 +315,7 @@ function joinChannel(socket, channelName) {
   socket.join(channelName);
   if (!_lodash2.default.has(infos, channelName)) infos[channelName] = { events: [], clients: [] };
   infos[channelName].clients = _lodash2.default.union(infos[channelName].clients, [{ 'clientName': socket.clientDescription.name, 'ip': socket.handshake.address, 'hostname': socket.handshake.headers.host }]);
-  config.showdashboard && _dashboard2.default.setInfos(infos);
+  settings.showdashboard && _dashboard2.default.setInfos(infos);
 }
 
 function quitChannel(socket, channelName) {
@@ -335,7 +323,7 @@ function quitChannel(socket, channelName) {
   _lodash2.default.remove(infos[channelName].clients, function (s) {
     return s.clientName === socket.clientDescription.name;
   });
-  config.showdashboard && _dashboard2.default.setInfos(infos);
+  settings.showdashboard && _dashboard2.default.setInfos(infos);
 }
 
 function objectify(data) {
