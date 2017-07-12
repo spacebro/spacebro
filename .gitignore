@@ -109,5 +109,8 @@ config.js
 tmp/
 *.log
 images/**
+*.swp
+.gulp-cache
+settings/settings.json
 
 .vscode
