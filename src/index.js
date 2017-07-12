@@ -39,17 +39,19 @@ function observeEvent (eventName, channelName) {
 }
 
 function sendToConnections (socket, eventName, args) {
-  let matchingConnections = connections[socket.channelName].filter(c => c.src && c.src.clientName === socket.clientDescription.name && c.src.eventName === eventName)
-  if (matchingConnections) {
-    matchingConnections.forEach(c => {
-      let target = sockets.find(s => s.clientDescription.name === c.tgt.clientName && s.channelName === socket.channelName)
-      if (target) {
-        io.to(target.id).emit(c.tgt.eventName, args)
-        settings.verbose && log(`${fullname(socket)} emitted event "${eventName}" connected to ${fullname(target)} event "${c.tgt.eventName}"`)
-      } else {
-        settings.verbose && log('target not found:', c.tgt.clientName)
-      }
-    })
+  if (connections[socket.channelName]) {
+    let matchingConnections = connections[socket.channelName].filter(c => c.src && c.src.clientName === socket.clientDescription.name && c.src.eventName === eventName)
+    if (matchingConnections) {
+      matchingConnections.forEach(c => {
+        let target = sockets.find(s => s.clientDescription.name === c.tgt.clientName && s.channelName === socket.channelName)
+        if (target) {
+          io.to(target.id).emit(c.tgt.eventName, args)
+          settings.verbose && log(`${fullname(socket)} emitted event "${eventName}" connected to ${fullname(target)} event "${c.tgt.eventName}"`)
+        } else {
+          settings.verbose && log('target not found:', c.tgt.clientName)
+        }
+      })
+    }
   }
 }
 

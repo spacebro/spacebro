@@ -68,21 +68,23 @@ function observeEvent(eventName, channelName) {
 }
 
 function sendToConnections(socket, eventName, args) {
-  var matchingConnections = connections[socket.channelName].filter(function (c) {
-    return c.src && c.src.clientName === socket.clientDescription.name && c.src.eventName === eventName;
-  });
-  if (matchingConnections) {
-    matchingConnections.forEach(function (c) {
-      var target = sockets.find(function (s) {
-        return s.clientDescription.name === c.tgt.clientName && s.channelName === socket.channelName;
-      });
-      if (target) {
-        io.to(target.id).emit(c.tgt.eventName, args);
-        settings.verbose && log(fullname(socket) + ' emitted event "' + eventName + '" connected to ' + fullname(target) + ' event "' + c.tgt.eventName + '"');
-      } else {
-        settings.verbose && log('target not found:', c.tgt.clientName);
-      }
+  if (connections[socket.channelName]) {
+    var matchingConnections = connections[socket.channelName].filter(function (c) {
+      return c.src && c.src.clientName === socket.clientDescription.name && c.src.eventName === eventName;
     });
+    if (matchingConnections) {
+      matchingConnections.forEach(function (c) {
+        var target = sockets.find(function (s) {
+          return s.clientDescription.name === c.tgt.clientName && s.channelName === socket.channelName;
+        });
+        if (target) {
+          io.to(target.id).emit(c.tgt.eventName, args);
+          settings.verbose && log(fullname(socket) + ' emitted event "' + eventName + '" connected to ' + fullname(target) + ' event "' + c.tgt.eventName + '"');
+        } else {
+          settings.verbose && log('target not found:', c.tgt.clientName);
+        }
+      });
+    }
   }
 }
 
@@ -292,12 +294,12 @@ function initSocketIO() {
   });
 }
 
-module.exports = { init: init, infos: infos };
+module.exports = { init: init, infos: infos
 
-/*
- * Helpers
- */
-function log() {
+  /*
+   * Helpers
+   */
+};function log() {
   for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
     args[_key] = arguments[_key];
   }
