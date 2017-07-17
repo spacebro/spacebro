@@ -144,9 +144,10 @@ function removeConnection (data, socket) {
   !settings.semiverbose && jsonColorz(data)
 }
 
-function getClients () {
+function getClients (socket) {
   let clients = {}
-  sockets.forEach((s) => {
+  let socketsInChannel = sockets.filter(s => s.channelName && s.channelName === socket.channelName)
+  socketsInChannel.forEach((s) => {
     clients[s.clientDescription.name] = s.clientDescription
   })
   return clients
@@ -197,7 +198,7 @@ function initSocketIO () {
       })
       // TODO: filter by channel
       .on('getClients', (data) => {
-        io.to(socket.id).emit('clients', getClients())
+        io.to(socket.id).emit('clients', getClients(socket))
       })
       .on('replaceConnections', (data) => {
         data = objectify(data)
