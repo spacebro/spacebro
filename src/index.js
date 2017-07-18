@@ -5,16 +5,18 @@ import dashboard from './dashboard'
 import server from 'socket.io'
 import moment from 'moment'
 import _ from 'lodash'
+import fs from 'fs'
+
 const settings = require('standard-settings').getSettings()
 const jsonColorz = require('json-colorz')
 
 // Variables
 let io = null
 let sockets = []
-let connections = []
+let connections = {}
 let infos = {}
 
-const reservedEvents = [ 'register', 'addConnections', 'removeConnections', 'replaceConnections', 'getConnections', 'getClients' ]
+const reservedEvents = [ 'register', 'addConnections', 'removeConnections', 'replaceConnections', 'getConnections', 'getClients', 'saveGraph' ]
 
 function init () {
   process.title = 'spacebro'
@@ -144,13 +146,25 @@ function removeConnection (data, socket) {
   !settings.semiverbose && jsonColorz(data)
 }
 
-function getClients (socket) {
+function getClients () {
   let clients = {}
-  let socketsInChannel = sockets.filter(s => s.channelName && s.channelName === socket.channelName)
-  socketsInChannel.forEach((s) => {
+  sockets.forEach((s) => {
     clients[s.clientDescription.name] = s.clientDescription
   })
   return clients
+}
+
+function saveGraph (data) {
+  if (!settings.settings) {
+    return
+  }
+  const graph = { connections, clients: getClients() }
+
+  fs.writeFile(
+    settings.settings,
+    JSON.stringify({ graph }, null, 4),
+    (err) => { err && log(err) }
+  )
 }
 
 function initSocketIO () {
@@ -198,8 +212,9 @@ function initSocketIO () {
       })
       // TODO: filter by channel
       .on('getClients', (data) => {
-        io.to(socket.id).emit('clients', getClients(socket))
+        io.to(socket.id).emit('clients', getClients())
       })
+      .on('saveGraph', (data) => saveGraph(data))
       .on('replaceConnections', (data) => {
         data = objectify(data)
         if (data) {
