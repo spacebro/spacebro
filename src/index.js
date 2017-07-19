@@ -158,11 +158,16 @@ function saveGraph (data) {
   if (!settings.settings) {
     return
   }
-  const graph = { connections, clients: getClients() }
+  const { server, mute, semiverbose, hidedashboard } = settings
+  const graph = {
+    server, mute, semiverbose, hidedashboard,
+    connections,
+    clients: getClients()
+  }
 
   fs.writeFile(
     settings.settings,
-    JSON.stringify({ graph }, null, 4),
+    JSON.stringify({ graph }, null, 2),
     (err) => { err && log(err) }
   )
 }
