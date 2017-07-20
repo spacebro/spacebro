@@ -102,6 +102,7 @@ function addConnectionsFromSettings(data) {
 
 function addConnections(data, socket) {
   data = objectify(data);
+  data = data.altered ? data.data : data;
   if (data) {
     if (Array.isArray(data)) {
       data.forEach(function (connection) {
@@ -121,6 +122,7 @@ function addConnection(data, socket) {
     data = data.altered ? data.data : data;
     data = parseConnection(data);
   } else {
+    data = data.altered ? data.data : data;
     // clean data
     data = {
       src: data.src,
@@ -181,9 +183,12 @@ function removeConnection(data, socket) {
   !settings.semiverbose && jsonColorz(data);
 }
 
-function getClients() {
+function getClients(socket) {
   var clients = {};
-  sockets.forEach(function (s) {
+  var socketsInChannel = sockets.filter(function (s) {
+    return s.channelName && s.channelName === socket.channelName;
+  });
+  socketsInChannel.forEach(function (s) {
     clients[s.clientDescription.name] = s.clientDescription;
   });
   return clients;
@@ -235,7 +240,7 @@ function initSocketIO() {
     })
     // TODO: filter by channel
     .on('getClients', function (data) {
-      io.to(socket.id).emit('clients', getClients());
+      io.to(socket.id).emit('clients', getClients(socket));
     }).on('replaceConnections', function (data) {
       data = objectify(data);
       if (data) {

@@ -69,6 +69,7 @@ function addConnectionsFromSettings (data) {
 
 function addConnections (data, socket) {
   data = objectify(data)
+  data = data.altered ? data.data : data
   if (data) {
     if (Array.isArray(data)) {
       data.forEach((connection) => addConnection(connection, socket))
@@ -86,6 +87,7 @@ function addConnection (data, socket) {
     data = data.altered ? data.data : data
     data = parseConnection(data)
   } else {
+    data = data.altered ? data.data : data
     // clean data
     data = {
       src: data.src,
