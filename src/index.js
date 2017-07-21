@@ -57,16 +57,16 @@ function sendToConnections (socket, eventName, args) {
   }
 }
 
-function addConnectionsFromSettings (data) {
+function addConnectionsFromSettings (settingsConnections) {
   let description = {
     clientDescription: {
       name: 'initial settings'
     }
   }
-  Object.keys(data).forEach((channelName) => {
+  for (const channelName of Object.keys(settingsConnections)) {
     description.channelName = channelName
-    addConnections(data[channelName], description)
-  })
+    addConnections(settingsConnections[channelName], description)
+  }
 }
 
 function addConnections (data, socket) {
@@ -159,15 +159,26 @@ function saveGraph (data) {
     return
   }
   const { server, mute, semiverbose, hidedashboard } = settings
-  const graph = {
+  const newSettings = {
     server, mute, semiverbose, hidedashboard,
-    connections,
-    clients: getClients()
+    graph: {}
+  }
+  console.log(connections)
+  for (const channelName of Object.keys(connections)) {
+    const clients = {}
+
+    for (const socket of sockets.filter(s => s.channelName == channelName)) {
+      clients[socket.clientDescription.name] = socket.clientDescription
+    }
+    newSettings.graph[channelName] = {
+      connections: connections[channelName],
+      clients
+    }
   }
 
   fs.writeFile(
     settings.settings,
-    JSON.stringify({ graph }, null, 2),
+    JSON.stringify(newSettings, null, 2),
     (err) => { err && log(err) }
   )
 }
