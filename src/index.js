@@ -161,14 +161,17 @@ function saveGraph (data) {
   }
   const { server, mute, semiverbose, hidedashboard } = settings
   const newSettings = {
-    server, mute, semiverbose, hidedashboard,
+    server,
+    mute,
+    semiverbose,
+    hidedashboard,
     graph: {}
   }
   console.log(connections)
   for (const channelName of Object.keys(connections)) {
     const clients = {}
 
-    for (const socket of sockets.filter(s => s.channelName == channelName)) {
+    for (const socket of sockets.filter(s => s.channelName === channelName)) {
       clients[socket.clientDescription.name] = socket.clientDescription
     }
     newSettings.graph[channelName] = {
