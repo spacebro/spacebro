@@ -1,19 +1,13 @@
 'use strict'
 
 import wildcard from 'socketio-wildcard'
-import dashboard from './dashboard'
 import server from 'socket.io'
-import _ from 'lodash'
 import fs from 'fs'
 
-import {
-  init as connectionsInit,
-  addConnectionsFromSettings,
-  addConnections,
-  removeConnections,
-} from './connections'
+import dashboard from './dashboard'
+import { getGraph, isValidConnection } from './graph'
 
-import { log, logData, logError } from './loggers'
+import { log, logData, logError, logErrorData } from './loggers'
 
 import { getSettings } from 'standard-settings'
 const settings = getSettings()
@@ -21,7 +15,6 @@ const settings = getSettings()
 // Variables
 let io = null
 let sockets = []
-let connections = {}
 let infos = {}
 
 const reservedEvents = [ 'register', 'addConnections', 'removeConnections', 'replaceConnections', 'getConnections', 'getClients', 'saveGraph' ]
@@ -34,73 +27,40 @@ function init () {
   if (settings.showdashboard) {
     dashboard.init()
   }
-  if (settings.connections) {
-    addConnectionsFromSettings(settings.connections)
+  if (settings.graph) {
+    for (const channelName of Object.keys(settings.graph)) {
+      const settingsGraph = settings.graph[channelName]
+      const graph = getGraph(channelName)
+
+      for (const clientName of Object.keys(settingsGraph.clients)) {
+        graph.addClient(settingsGraph.clients[clientName])
+      }
+      graph.addConnections(settingsGraph.connections)
+    }
   }
-  connectionsInit(settings, connections)
 
   log('init socket.io')
   initSocketIO()
   log('spacebro listening on port', settings.server.port)
 }
 
-function observeEvent (eventName, channelName) {
-  if (!_.has(infos, channelName)) {
-    infos[channelName] = { events: [], clients: [] }
-  }
-  infos[channelName].events = _.union(infos[channelName].events, [eventName])
-  dashboard.setInfos(infos)
-}
+const _prevGraph = settings.graph || {}
 
-function sendToConnections (socket, eventName, args) {
-  if (connections[socket.channelName]) {
-    let matchingConnections = connections[socket.channelName].filter(c => c.src && c.src.clientName === socket.clientDescription.name && c.src.eventName === eventName)
-    if (matchingConnections) {
-      matchingConnections.forEach(c => {
-        let target = sockets.find(s => s.clientDescription.name === c.tgt.clientName && s.channelName === socket.channelName)
-        if (target) {
-          io.to(target.id).emit(c.tgt.eventName, args)
-          log(`${fullname(socket)} emitted event "${eventName}" connected to ${fullname(target)} event "${c.tgt.eventName}"`)
-        } else {
-          logError('target not found:', c.tgt.clientName)
-        }
-      })
-    }
-  }
-}
-
-function getClients (socket) {
-  let clients = {}
-
-  for (const s of sockets.filter(s => s.channelName === socket.channelName)) {
-    clients[s.clientDescription.name] = s.clientDescription
-  }
-  return clients
-}
-
-function saveGraph (data) {
+function saveGraph (channelName) {
   if (!settings.settings) {
     return
   }
-  const { server, mute, semiverbose, hidedashboard } = settings
   const newSettings = {
-    server,
-    mute,
-    semiverbose,
-    hidedashboard,
-    graph: {}
+    server: settings.server,
+    mute: settings.mute,
+    semiverbose: settings.semiverbose,
+    hidedashboard: settings.hidedashboard,
+    graph: _prevGraph
   }
-  console.log(connections)
-  for (const channelName of Object.keys(connections)) {
-    const clients = {}
-
-    for (const socket of sockets.filter(s => s.channelName === channelName)) {
-      clients[socket.clientDescription.name] = socket.clientDescription
-    }
-    newSettings.graph[channelName] = {
-      connections: connections[channelName],
-      clients
-    }
+  const newGraph = getGraph(channelName)
+  _prevGraph[channelName] = {
+    clients: newGraph._clients,
+    connections: newGraph._connections
   }
 
   fs.writeFile(
@@ -110,109 +70,169 @@ function saveGraph (data) {
   )
 }
 
+function findSockets (channelName, clientName) {
+  return sockets.filter(socket =>
+    socket.channelName === channelName &&
+    socket.clientName === clientName
+  )
+}
+
 function initSocketIO () {
   io = server(settings.server.port)
   io.use(wildcard())
-  io.on('connection', (socket) => {
+  io.on('connection', (newSocket) => {
     log('new socket connected')
-    sockets.push(socket)
+    sockets.push(newSocket)
 
-    socket
+    function sendBack (eventName, data) {
+      return io && io.to(newSocket.id).emit(eventName, data)
+    }
+
+    function sendToChannel (eventName, data) {
+      return io && io.to(newSocket.channelName).emit(eventName, data)
+    }
+
+    const channelGraph = () => getGraph(newSocket.channelName)
+
+    newSocket
       .on('disconnect', () => {
-        sockets.splice(sockets.indexOf(socket), 1)
-        log(fullname(socket), 'disconnected')
-        quitChannel(socket, socket.channelName)
+        sockets.splice(sockets.indexOf(newSocket), 1)
+        log(_fullname(newSocket), 'disconnected')
+        settings.showdashboard && dashboard.quitChannel(infos, newSocket, newSocket.channelName)
       })
       .on('error', (err) => {
-        logError(fullname(socket), 'error:', err)
+        logError(_fullname(newSocket), 'error:', err)
       })
       .on('register', (data) => {
-        data = objectify(data)
-        socket.clientDescription = data.client || data.clientName || socket.id
-        // legacy
-        if (typeof socket.clientDescription === 'string') {
-          socket.clientDescription = {name: socket.clientDescription}
-        }
+        data = _objectify(data)
 
-        socket.channelName = data.channelName || 'default'
-        socket.join(socket.channelName)
-        log(fullname(socket), 'registered')
+        // legacy
+        let clientDescription = data.client || data.clientName || newSocket.id
+        if (typeof clientDescription === 'string') {
+          clientDescription = {name: clientDescription}
+        }
+        // legacy
+        clientDescription.member = clientDescription.name
+
+        newSocket.clientName = clientDescription.name
+        newSocket.channelName = data.channelName || 'default'
+        newSocket.join(newSocket.channelName)
+
+        log(_fullname(newSocket), 'registered')
         logData(data)
 
-        joinChannel(socket, socket.channelName)
+        settings.showdashboard && dashboard.joinChannel(infos, newSocket, newSocket.channelName)
 
-        socket.clientDescription.member = socket.clientDescription.name // legacy
-        io.to(socket.channelName).emit('new-member', socket.clientDescription) // legacy
-        io.to(socket.channelName).emit('newClient', socket.clientDescription)
+        channelGraph().addClient(clientDescription)
+        sendToChannel('newClient', clientDescription)
+        // legacy
+        sendToChannel('new-member', clientDescription)
       })
-      // TODO: filter by channel
-      .on('addConnections', (data) => {
-        addConnections(data, socket)
-        io && io.to(socket.channelName).emit('connections', connections[socket.channelName])
-      })
-      // TODO: filter by channel
-      .on('removeConnections', (data) => {
-        removeConnections(data, socket)
-        io && io.to(socket.channelName).emit('connections', connections[socket.channelName])
-      })
-      // TODO: filter by channel
-      .on('getConnections', (data) => {
-        io.to(socket.id).emit('connections', connections[socket.channelName])
-      })
-      // TODO: filter by channel
-      .on('getClients', (data) => {
-        io.to(socket.id).emit('clients', getClients(socket))
-      })
-      .on('saveGraph', (data) => saveGraph(data))
-      .on('replaceConnections', (data) => {
-        data = objectify(data)
-        if (data) {
-          if (Array.isArray(data)) {
-            connections[socket.channelName] = data
-          } else {
-            connections[socket.channelName] = [data]
+
+    function filterConnections (connections) {
+      return _arrayify(connections)
+        .map((c) => ({ src: c.src, tgt: c.tgt }))
+        .filter((connection) => {
+          if (!isValidConnection(connection)) {
+            logError(_fullname(newSocket), 'invalid connection object')
+            logErrorData(connection)
+            return false
           }
-          log(`${fullname(socket)} replaced connections`)
-          logData(data)
-          // remove duplicates
-          connections[socket.channelName] = _.uniqWith(connections[socket.channelName], _.isEqual)
-        }
+          return true
+        })
+    }
+
+    newSocket
+      .on('addConnections', (connections) => {
+        connections = filterConnections(connections)
+
+        channelGraph().addConnections(connections)
+        sendToChannel('connections', channelGraph().listConnections())
+
+        log(`${_fullname(newSocket)} added connections`)
+        logData(connections)
+      })
+      .on('removeConnections', (connections) => {
+        connections = filterConnections(connections)
+
+        channelGraph().removeConnections(connections)
+        sendToChannel('connections', channelGraph().listConnections())
+
+        log(`${_fullname(newSocket)} removed connections`)
+        logData(connections)
+      })
+      .on('replaceConnections', (connections) => {
+        connections = filterConnections(connections)
+
+        channelGraph().clearConnections()
+        channelGraph().addConnections(connections)
+        sendToChannel('connections', channelGraph().listConnections())
+
+        log(`${_fullname(newSocket)} replaced connections`)
+        logData(connections)
+      })
+      .on('getConnections', (data) => {
+        sendBack('connections', channelGraph().listConnections())
+      })
+      .on('getClients', (data) => {
+        sendBack('clients', channelGraph().listClients())
+      })
+
+    newSocket
+      .on('saveGraph', (data) => {
+        saveGraph(newSocket.channelName)
       })
       .on('*', ({ data }) => {
         let [eventName, args] = data
+        const { _to } = args
 
-        if (reservedEvents.indexOf(eventName) > -1) return
-
-        observeEvent(eventName, socket.channelName)
-
-        if (typeof args !== 'object') {
-          args = {data: args}
-          args.altered = true
+        if (reservedEvents.indexOf(eventName) > -1) {
+          return
         }
-        log(`${fullname(socket)} emitted event "${eventName}"`)
+
+        if (settings.showdashboard) {
+          dashboard.observeEvent(infos, eventName, newSocket.channelName)
+        }
+
+        log(`${_fullname(newSocket)} emitted event "${eventName}"`)
         logData(data)
 
-        sendToConnections(socket, eventName, args)
-
-        if (!socket.clientDescription.name) return
-
-        if (args._to != null) {
-          let target = sockets.find(s => s.clientName === args._to && s.channelName === socket.channelName)
-          if (target) {
-            log('target found:', args._to)
-            if (args.altered) {
-              args = args.data
-            }
-            io.to(target.id).emit(eventName, args)
-            return
-          } else {
-            log('target not found:', args._to)
-          }
-        }
         if (args.altered) {
           args = args.data
         }
-        io.to(socket.channelName).emit(eventName, args)
+
+        function sendToSockets (clientName, eventName, args) {
+          const targets = findSockets(clientName)
+
+          if (!targets.length) {
+            return false
+          }
+          for (const socket of targets) {
+            io && io.to(socket.id).emit(eventName, args)
+          }
+          return true
+        }
+
+        if (_to != null) {
+          if (!sendToSockets(_to, eventName, args)) {
+            logError(`could not find target "${_to}"`)
+          }
+          return
+        }
+
+        const targets = channelGraph().getTargets(newSocket.clientName, eventName)
+        if (targets) {
+          for (const target of targets) {
+            if (sendToSockets(target.clientName, target.eventName, args)) {
+              log(`${_fullname(newSocket)} emitted event "${eventName}" connected to ${target.clientName} event "${target.eventName}"`)
+            } else {
+              logError(`could not find target "${target.clientName}"`)
+            }
+          }
+          return
+        }
+
+        sendToChannel(eventName, args)
       })
   })
 }
@@ -222,33 +242,32 @@ module.exports = { init, infos }
 /*
  * Helpers
  */
-function joinChannel (socket, channelName) {
-  socket.join(channelName)
-  if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
-  infos[channelName].clients = _.union(infos[channelName].clients, [{'clientName': socket.clientDescription.name, 'ip': socket.handshake.address, 'hostname': socket.handshake.headers.host}])
-  settings.showdashboard && dashboard.setInfos(infos)
+
+function _arrayify (data) {
+  data = _objectify(data) || []
+
+  if (!Array.isArray(data)) {
+    data = [ data ]
+  }
+
+  data = data.map(_objectify)
+  data = data.filter(item => item != null)
+
+  return data
 }
 
-function quitChannel (socket, channelName) {
-  if (!_.has(infos, channelName)) infos[channelName] = { events: [], clients: [] }
-  _.remove(infos[channelName].clients, s => s.clientName === socket.clientDescription.name)
-  settings.showdashboard && dashboard.setInfos(infos)
-}
-
-function objectify (data) {
+function _objectify (data) {
   if (typeof data === 'string') {
     try {
       return JSON.parse(data)
     } catch (e) {
       logError('socket error:', e)
-      return {}
+      return null
     }
   }
   return data
 }
 
-function fullname (socket) {
-  return socket.clientDescription.name
-    ? `${socket.clientDescription.name}@${socket.channelName}`
-    : `unregistered socket #${socket.id}`
+function _fullname (socket) {
+  return `${socket.clientName}@${socket.channelName}`
 }
