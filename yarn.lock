@@ -1890,7 +1890,7 @@ eslint-scope@^3.7.1:
     esrecurse "^4.1.0"
     estraverse "^4.1.1"
 
-eslint@^4.3.0:
+eslint@^4.1.1, eslint@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-4.3.0.tgz#fcd7c96376bbf34c85ee67ed0012a299642b108f"
   dependencies:
@@ -4675,6 +4675,10 @@ slash@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-1.0.0.tgz#c41f2f6c39fc16d1cd17ad4b5d896114ae470d55"
 
+sleep-promise@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/sleep-promise/-/sleep-promise-2.0.0.tgz#e7e798dfe56c044da85882d76d22a99804663c41"
+
 slice-ansi@0.0.4:
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/slice-ansi/-/slice-ansi-0.0.4.tgz#edbf8903f66f7ce2f8eafd6ceed65e264c831b35"
@@ -4785,12 +4789,14 @@ source-map@^0.5.0, source-map@^0.5.1, source-map@^0.5.3:
   version "0.5.6"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.6.tgz#75ce38f52bf0733c5a7f0c118d81334a2bb5f412"
 
-spacebro-client@^0.3.4:
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/spacebro-client/-/spacebro-client-0.3.4.tgz#d279d5cfae75f271f79e8a43266b2a40bbb14245"
+spacebro-client@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/spacebro-client/-/spacebro-client-0.4.2.tgz#409df691e0b412ad157c2be6b82265cffbb959b3"
   dependencies:
+    assignment "^2.2.1"
     babel-runtime "6.23.0"
     chalk "1.1.3"
+    eslint "^4.1.1"
     signals "1.0.0"
     socket.io-client "2.0.1"
     socketio-wildcard "2.0.0"

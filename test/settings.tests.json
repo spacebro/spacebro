@@ -1,0 +1,10 @@
+{
+  "mute": true,
+  "semiverbose": true,
+  "hidedashboard": true,
+  "service": {
+    "spacebro": {
+      "verbose": false
+    }
+  }
+}

@@ -13,7 +13,6 @@ import { getSettings } from 'standard-settings'
 const settings = getSettings()
 
 // Variables
-let io = null
 let sockets = []
 let infos = {}
 
@@ -40,7 +39,7 @@ function init () {
   }
 
   log('init socket.io')
-  initSocketIO()
+  _initSocketIO(settings, sockets)
   log('spacebro listening on port', settings.server.port)
 }
 
@@ -70,26 +69,27 @@ function saveGraph (channelName) {
   )
 }
 
-function findSockets (channelName, clientName) {
-  return sockets.filter(socket =>
-    socket.channelName === channelName &&
-    socket.clientName === clientName
-  )
-}
+function _initSocketIO (settings, sockets) {
+  const newServer = server(settings.server.port)
 
-function initSocketIO () {
-  io = server(settings.server.port)
-  io.use(wildcard())
-  io.on('connection', (newSocket) => {
+  function findSockets (channelName, clientName) {
+    return sockets.filter(socket =>
+      socket.channelName === channelName &&
+      socket.clientName === clientName
+    )
+  }
+
+  newServer.use(wildcard())
+  newServer.on('connection', (newSocket) => {
     log('new socket connected')
     sockets.push(newSocket)
 
     function sendBack (eventName, data) {
-      return io && io.to(newSocket.id).emit(eventName, data)
+      return newServer && newServer.to(newSocket.id).emit(eventName, data)
     }
 
     function sendToChannel (eventName, data) {
-      return io && io.to(newSocket.channelName).emit(eventName, data)
+      return newServer && newServer.to(newSocket.channelName).emit(eventName, data)
     }
 
     const channelGraph = () => getGraph(newSocket.channelName)
@@ -129,7 +129,7 @@ function initSocketIO () {
         sendToChannel('new-member', clientDescription)
       })
 
-    function filterConnections (connections) {
+    function filterNewConnections (connections) {
       return _arrayify(connections)
         .map((c) => ({ src: c.src, tgt: c.tgt }))
         .filter((connection) => {
@@ -144,7 +144,7 @@ function initSocketIO () {
 
     newSocket
       .on('addConnections', (connections) => {
-        connections = filterConnections(connections)
+        connections = filterNewConnections(connections)
 
         channelGraph().addConnections(connections)
         sendToChannel('connections', channelGraph().listConnections())
@@ -153,7 +153,7 @@ function initSocketIO () {
         logData(connections)
       })
       .on('removeConnections', (connections) => {
-        connections = filterConnections(connections)
+        connections = filterNewConnections(connections)
 
         channelGraph().removeConnections(connections)
         sendToChannel('connections', channelGraph().listConnections())
@@ -162,7 +162,7 @@ function initSocketIO () {
         logData(connections)
       })
       .on('replaceConnections', (connections) => {
-        connections = filterConnections(connections)
+        connections = filterNewConnections(connections)
 
         channelGraph().clearConnections()
         channelGraph().addConnections(connections)
@@ -202,13 +202,13 @@ function initSocketIO () {
         }
 
         function sendToSockets (clientName, eventName, args) {
-          const targets = findSockets(clientName)
+          const targets = findSockets(newSocket.channelName, clientName)
 
           if (!targets.length) {
             return false
           }
           for (const socket of targets) {
-            io && io.to(socket.id).emit(eventName, args)
+            newServer && newServer.to(socket.id).emit(eventName, args)
           }
           return true
         }
@@ -221,7 +221,7 @@ function initSocketIO () {
         }
 
         const targets = channelGraph().getTargets(newSocket.clientName, eventName)
-        if (targets) {
+        if (targets.length) {
           for (const target of targets) {
             if (sendToSockets(target.clientName, target.eventName, args)) {
               log(`${_fullname(newSocket)} emitted event "${eventName}" connected to ${target.clientName} event "${target.eventName}"`)
@@ -235,9 +235,10 @@ function initSocketIO () {
         sendToChannel(eventName, args)
       })
   })
+  return newServer
 }
 
-module.exports = { init, infos }
+module.exports = { init, infos, _initSocketIO }
 
 /*
  * Helpers

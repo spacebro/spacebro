@@ -15,7 +15,7 @@
     "bin": "./bin/spacebro",
     "test": "npm run lint && npm run unittest",
     "lint": "eslint --ext .js test src",
-    "unittest": "ava --verbose --timeout=16s",
+    "unittest": "SETTINGS=test/settings.tests.json ava --verbose --timeout=16s",
     "build": "gulp compile"
   },
   "dependencies": {
@@ -53,7 +53,8 @@
     "gulp-babel": "^6.1.2",
     "gulp-file-cache": "^0.0.1",
     "gulp-nodemon": "^2.2.1",
-    "spacebro-client": "^0.3.4",
+    "sleep-promise": "^2.0.0",
+    "spacebro-client": "^0.4.2",
     "standard": "^10.0.2"
   },
   "engines": {
@@ -89,6 +90,15 @@
       "test/tests-*.js"
     ],
     "require": "babel-register",
-    "babel": "inherit"
+    "babel": {
+      "presets": [
+        "latest",
+        "es2015"
+      ],
+      "plugins": [
+        "transform-runtime",
+        "add-module-exports"
+      ]
+    }
   }
 }
