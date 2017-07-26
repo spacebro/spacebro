@@ -114,3 +114,5 @@ images/**
 settings/settings.json
 
 .vscode
+
+test/settingsCopy.json

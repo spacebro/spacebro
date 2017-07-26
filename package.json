@@ -13,9 +13,10 @@
     "start": "npm run bin",
     "dev": "gulp watch",
     "bin": "./bin/spacebro",
-    "test": "npm run lint && npm run unittest",
+    "test": "npm run lint && npm run unittest && npm run testSaveGraph",
     "lint": "eslint --ext .js test src",
     "unittest": "SETTINGS=test/settings.tests.json ava --verbose --timeout=16s",
+    "testSaveGraph": "gulp compile --silent && cp test/settings.tests.json test/settingsCopy.json && SETTINGS=test/settingsCopy.json node test/saveGraph.js && diff test/settingsCopy.json test/settingsTemplate.json",
     "build": "gulp compile"
   },
   "dependencies": {

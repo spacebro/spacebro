@@ -64,7 +64,7 @@ function saveGraph (channelName) {
 
   fs.writeFile(
     settings.settings,
-    JSON.stringify(newSettings, null, 2),
+    JSON.stringify(newSettings, null, 2) + '\n',
     (err) => { err && log(err) }
   )
 }
