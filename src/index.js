@@ -155,7 +155,9 @@ function _initSocketIO (settings, sockets) {
       .on('removeConnections', (connections) => {
         connections = filterNewConnections(connections)
 
-        channelGraph().removeConnections(connections)
+        for (const connection of connections) {
+          channelGraph().removeConnection(connection)
+        }
         sendToChannel('connections', channelGraph().listConnections())
 
         log(`${_fullname(newSocket)} removed connections`)

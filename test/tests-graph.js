@@ -144,7 +144,7 @@ test('Graph - connections - remove and clear', (t) => {
     src: { clientName: 'clientA', eventName: 'out2' },
     tgt: { clientName: 'clientB', eventName: 'in2' }
   }])
-  graph.addConnections(connections.slice(2, 2))
+  graph.addConnections(connections.slice(2, 4))
   graph.clearConnections()
   t.deepEqual(graph.listConnections(), [])
 })
