@@ -23,7 +23,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "nodemon": "^1.11.0",
-    "socket.io": "1.7.4",
+    "socket.io": "^2.0.3",
     "socketio-wildcard": "^2.0.0",
     "standard-settings": "^1.1.9"
   },
