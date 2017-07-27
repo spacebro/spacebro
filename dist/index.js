@@ -274,7 +274,7 @@ function initSocketIO() {
 
       sendToConnections(socket, eventName, args);
 
-      if (!socket.clientDescription.name) return;
+      if (!(socket.clientDescription && socket.clientDescription.name)) return;
 
       if (args._to !== null && args._to !== undefined) {
         var target = sockets.find(function (s) {
@@ -346,5 +346,5 @@ function objectify(data) {
 }
 
 function fullname(socket) {
-  return socket.clientDescription.name ? socket.clientDescription.name + '@' + socket.channelName : 'unregistered socket #' + socket.id;
+  return socket.clientDescription && socket.clientDescription.name ? socket.clientDescription.name + '@' + socket.channelName : 'unregistered socket #' + socket.id;
 }

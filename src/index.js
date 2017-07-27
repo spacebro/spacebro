@@ -232,7 +232,7 @@ function initSocketIO () {
 
         sendToConnections(socket, eventName, args)
 
-        if (!socket.clientDescription.name) return
+        if (! (socket.clientDescription && socket.clientDescription.name)) return
 
         if (args._to !== null && args._to !== undefined) {
           let target = sockets.find(s => s.clientName === args._to && s.channelName === socket.channelName)
@@ -294,7 +294,7 @@ function objectify (data) {
 }
 
 function fullname (socket) {
-  return socket.clientDescription.name
+  return socket.clientDescription && socket.clientDescription.name
     ? `${socket.clientDescription.name}@${socket.channelName}`
     : `unregistered socket #${socket.id}`
 }
