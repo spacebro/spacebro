@@ -3,10 +3,9 @@ import sleep from 'sleep-promise'
 import { SpacebroClient } from 'spacebro-client'
 
 import { _initSocketIO } from '../src/index'
-// import { Graph, getGraph, isValidConnection } from '../src/graph'
 import { getGraph } from '../src/graph'
 
-const waitTime = 3000
+const waitTime = 5000
 let port = 4200
 
 function initServer (channelName) {
@@ -32,24 +31,24 @@ function initClient (channelName, clientName) {
 }
 
 test('Basic connection', async (t) => {
-  initServer('test-channel-basic')
-  initClient('test-channel-basic')
+  initServer('test-basic')
+  initClient('test-basic')
   port++
 
-  const name = 'test-channel-basic-client'
+  const name = 'test-basic-client'
 
   await sleep(waitTime)
 
   t.deepEqual(
-    getGraph('test-channel-basic').listClients(),
+    getGraph('test-basic').listClients(),
     { [name]: { name, member: name } }
   )
 })
 
 test('Message - all', async (t) => {
-  initServer('test-channel-message-all')
-  const client1 = initClient('test-channel-message-all', 'client1')
-  const client2 = initClient('test-channel-message-all', 'client2')
+  initServer('test-message-all')
+  const client1 = initClient('test-message-all', 'client1')
+  const client2 = initClient('test-message-all', 'client2')
   port++
 
   await sleep(waitTime)
@@ -66,10 +65,10 @@ test('Message - all', async (t) => {
 })
 
 test('Message - _to', async (t) => {
-  initServer('test-channel-message-_to')
-  const client1 = initClient('test-channel-message-_to', 'client1')
-  const client2 = initClient('test-channel-message-_to', 'client2')
-  const client3 = initClient('test-channel-message-_to', 'client3')
+  initServer('test-message-_to')
+  const client1 = initClient('test-message-_to', 'client1')
+  const client2 = initClient('test-message-_to', 'client2')
+  const client3 = initClient('test-message-_to', 'client3')
   port++
 
   await sleep(waitTime)
@@ -87,16 +86,16 @@ test('Message - _to', async (t) => {
 })
 
 test('Message - connection', async (t) => {
-  initServer('test-channel-message-connection')
-  const client1 = initClient('test-channel-message-connection', 'client1')
-  const client2 = initClient('test-channel-message-connection', 'client2')
-  const client3 = initClient('test-channel-message-connection', 'client3')
+  initServer('test-message-connection')
+  const client1 = initClient('test-message-connection', 'client1')
+  const client2 = initClient('test-message-connection', 'client2')
+  const client3 = initClient('test-message-connection', 'client3')
   port++
 
   await sleep(waitTime)
 
   client1.emit('helloOut', 'world')
-  getGraph('test-channel-message-connection').addConnections([
+  getGraph('test-message-connection').addConnections([
     {
       src: { clientName: 'client1', eventName: 'helloOut' },
       tgt: { clientName: 'client3', eventName: 'helloIn' }

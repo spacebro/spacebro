@@ -3,7 +3,7 @@ const { SpacebroClient } = require('spacebro-client')
 const { _initSocketIO } = require('../dist/index')
 const { getGraph } = require('../dist/graph')
 
-const waitTime = 1000
+const waitTime = 5000
 const port = 4400
 
 function initServer (channelName) {

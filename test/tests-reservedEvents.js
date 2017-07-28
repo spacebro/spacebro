@@ -5,7 +5,7 @@ import { SpacebroClient } from 'spacebro-client'
 import { _initSocketIO } from '../src/index'
 import { getGraph } from '../src/graph'
 
-const waitTime = 1000
+const waitTime = 5000
 let port = 4300
 
 function initServer (channelName) {
