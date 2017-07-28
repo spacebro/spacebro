@@ -124,6 +124,7 @@ function _initSocketIO (settings, sockets) {
         settings.showdashboard && dashboard.joinChannel(infos, newSocket, newSocket.channelName)
 
         channelGraph().addClient(clientDescription)
+        sendToChannel('clients', channelGraph().listClients())
         sendToChannel('newClient', clientDescription)
         // legacy
         sendToChannel('new-member', clientDescription)
@@ -175,6 +176,14 @@ function _initSocketIO (settings, sockets) {
       })
       .on('getConnections', (data) => {
         sendBack('connections', channelGraph().listConnections())
+      })
+
+    newSocket
+      .on('removeClients', (clientNames) => {
+        for (const name of clientNames) {
+          channelGraph().removeClient(name)
+        }
+        sendToChannel('clients', channelGraph().listClients())
       })
       .on('getClients', (data) => {
         sendBack('clients', channelGraph().listClients())
