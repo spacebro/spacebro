@@ -5,16 +5,18 @@ import dashboard from './dashboard'
 import server from 'socket.io'
 import moment from 'moment'
 import _ from 'lodash'
+import fs from 'fs'
+
 const settings = require('standard-settings').getSettings()
 const jsonColorz = require('json-colorz')
 
 // Variables
 let io = null
 let sockets = []
-let connections = []
+let connections = {}
 let infos = {}
 
-const reservedEvents = [ 'register', 'addConnections', 'removeConnections', 'replaceConnections', 'getConnections', 'getClients' ]
+const reservedEvents = [ 'register', 'addConnections', 'removeConnections', 'replaceConnections', 'getConnections', 'getClients', 'saveGraph' ]
 
 function init () {
   process.title = 'spacebro'
@@ -55,16 +57,16 @@ function sendToConnections (socket, eventName, args) {
   }
 }
 
-function addConnectionsFromSettings (data) {
+function addConnectionsFromSettings (settingsConnections) {
   let description = {
     clientDescription: {
       name: 'initial settings'
     }
   }
-  Object.keys(data).forEach((channelName) => {
+  for (const channelName of Object.keys(settingsConnections)) {
     description.channelName = channelName
-    addConnections(data[channelName], description)
-  })
+    addConnections(settingsConnections[channelName], description)
+  }
 }
 
 function addConnections (data, socket) {
@@ -148,11 +150,40 @@ function removeConnection (data, socket) {
 
 function getClients (socket) {
   let clients = {}
-  let socketsInChannel = sockets.filter(s => s.channelName && s.channelName === socket.channelName)
-  socketsInChannel.forEach((s) => {
+
+  for (const s of sockets.filter(s => s.channelName === socket.channelName)) {
     clients[s.clientDescription.name] = s.clientDescription
-  })
+  }
   return clients
+}
+
+function saveGraph (data) {
+  if (!settings.settings) {
+    return
+  }
+  const { server, mute, semiverbose, hidedashboard } = settings
+  const newSettings = {
+    server, mute, semiverbose, hidedashboard,
+    graph: {}
+  }
+  console.log(connections)
+  for (const channelName of Object.keys(connections)) {
+    const clients = {}
+
+    for (const socket of sockets.filter(s => s.channelName == channelName)) {
+      clients[socket.clientDescription.name] = socket.clientDescription
+    }
+    newSettings.graph[channelName] = {
+      connections: connections[channelName],
+      clients
+    }
+  }
+
+  fs.writeFile(
+    settings.settings,
+    JSON.stringify(newSettings, null, 2),
+    (err) => { err && log(err) }
+  )
 }
 
 function initSocketIO () {
@@ -202,6 +233,7 @@ function initSocketIO () {
       .on('getClients', (data) => {
         io.to(socket.id).emit('clients', getClients(socket))
       })
+      .on('saveGraph', (data) => saveGraph(data))
       .on('replaceConnections', (data) => {
         data = objectify(data)
         if (data) {
