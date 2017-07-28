@@ -15,7 +15,7 @@ function log (...args) {
   if (!verbose) {
     return
   }
-  if (settings.showdashboard) {
+  if (showdashboard) {
     dashboard.log(...args)
   } else {
     console.log(`${moment().format('YYYY-MM-DD-HH:mm:ss')} - `, ...args)
@@ -33,7 +33,7 @@ function logError (...args) {
   if (!verbose) {
     return
   }
-  if (settings.showdashboard) {
+  if (showdashboard) {
     dashboard.log(...args)
   } else {
     console.error(`${moment().format('YYYY-MM-DD-HH:mm:ss')} - `, ...args)

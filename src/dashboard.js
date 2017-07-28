@@ -161,7 +161,7 @@ function observeEvent (infos, eventName, channelName) {
 function joinChannel (infos, socket, channelName) {
   infos[channelName] = infos[channelName] || { events: [], clients: [] }
   infos[channelName].clients = _.union(infos[channelName].clients, [{
-    'clientName': socket.clientDescription.name,
+    'clientName': socket.clientName,
     'ip': socket.handshake.address,
     'hostname': socket.handshake.headers.host
   }])
