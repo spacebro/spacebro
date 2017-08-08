@@ -94,11 +94,22 @@ function _initSocketIO (settings, sockets) {
 
     const channelGraph = () => getGraph(newSocket.channelName)
 
+    function _listClients () {
+      const clients = channelGraph().listClients()
+
+      for (const client of Object.values(clients)) {
+        const clientSockets = findSockets(newSocket.channelName, client.name)
+        client._isConnected = (clientSockets.length > 0)
+      }
+      return clients
+    }
+
     newSocket
       .on('disconnect', () => {
         sockets.splice(sockets.indexOf(newSocket), 1)
         log(_fullname(newSocket), 'disconnected')
         settings.showdashboard && dashboard.quitChannel(infos, newSocket, newSocket.channelName)
+        sendToChannel('clients', _listClients())
       })
       .on('error', (err) => {
         logError(_fullname(newSocket), 'error:', err)
@@ -124,7 +135,7 @@ function _initSocketIO (settings, sockets) {
         settings.showdashboard && dashboard.joinChannel(infos, newSocket, newSocket.channelName)
 
         channelGraph().addClient(clientDescription)
-        sendToChannel('clients', channelGraph().listClients())
+        sendToChannel('clients', _listClients())
         sendToChannel('newClient', clientDescription)
         // legacy
         sendToChannel('new-member', clientDescription)
@@ -183,10 +194,10 @@ function _initSocketIO (settings, sockets) {
         for (const name of clientNames) {
           channelGraph().removeClient(name)
         }
-        sendToChannel('clients', channelGraph().listClients())
+        sendToChannel('clients', _listClients())
       })
       .on('getClients', (data) => {
-        sendBack('clients', channelGraph().listClients())
+        sendBack('clients', _listClients())
       })
 
     newSocket
