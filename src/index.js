@@ -190,6 +190,12 @@ function _initSocketIO (settings, sockets) {
       })
 
     newSocket
+      .on('addClients', (clients) => {
+        for (const client of clients) {
+          channelGraph().addClient(client)
+        }
+        sendToChannel('clients', _listClients())
+      })
       .on('removeClients', (clientNames) => {
         for (const name of clientNames) {
           channelGraph().removeClient(name)
@@ -223,7 +229,7 @@ function _initSocketIO (settings, sockets) {
           args = args.data
         }
 
-        function sendToSockets (clientName, eventName, args) {
+        function sendTo (clientName, eventName, args) {
           const targets = findSockets(newSocket.channelName, clientName)
 
           if (!targets.length) {
@@ -236,7 +242,7 @@ function _initSocketIO (settings, sockets) {
         }
 
         if (_to != null) {
-          if (!sendToSockets(_to, eventName, args)) {
+          if (!sendTo(_to, eventName, args)) {
             logError(`could not find target "${_to}"`)
           }
           return
@@ -245,11 +251,21 @@ function _initSocketIO (settings, sockets) {
         const targets = channelGraph().getTargets(newSocket.clientName, eventName)
         if (targets.length) {
           for (const target of targets) {
-            if (sendToSockets(target.clientName, target.eventName, args)) {
-              log(`${_fullname(newSocket)} emitted event "${eventName}" connected to ${target.clientName} event "${target.eventName}"`)
+            if ((target.clientName || '').startsWith('ui-')) {
+              sendTo('spacebroUI', 'uiEvent', { target, args })
             } else {
-              logError(`could not find target "${target.clientName}"`)
+              const res = sendTo(target.clientName, target.eventName, args)
+
+              if (res) {
+                log(`${_fullname(newSocket)} emitted event "${eventName}" connected to ${target.clientName} event "${target.eventName}"`)
+              } else {
+                logError(`could not find target "${target.clientName}"`)
+              }
             }
+            sendTo('spacebroUI', 'connectionUsed', {
+              src: { clientName: newSocket.clientName, eventName },
+              tgt: target
+            })
           }
           return
         }

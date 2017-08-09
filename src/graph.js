@@ -10,7 +10,7 @@ class Graph {
   }
 
   addClient (client) {
-    this._clients[client.name] = this._clients[client.name] || client
+    this._clients[client.name] = client
   }
 
   removeClient (clientName) {
