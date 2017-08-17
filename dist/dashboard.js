@@ -177,4 +177,37 @@ function setInfos(data) {
   }
 }
 
-module.exports = { init: init, log: log, setInfos: setInfos };
+function observeEvent(infos, eventName, channelName) {
+  if (!_lodash2.default.has(infos, channelName)) {
+    infos[channelName] = { events: [], clients: [] };
+  }
+  infos[channelName].events = _lodash2.default.union(infos[channelName].events, [eventName]);
+  setInfos(infos);
+}
+
+function joinChannel(infos, socket, channelName) {
+  infos[channelName] = infos[channelName] || { events: [], clients: [] };
+  infos[channelName].clients = _lodash2.default.union(infos[channelName].clients, [{
+    'clientName': socket.clientName,
+    'ip': socket.handshake.address,
+    'hostname': socket.handshake.headers.host
+  }]);
+  setInfos(infos);
+}
+
+function quitChannel(infos, socket, channelName) {
+  infos[channelName] = infos[channelName] || { events: [], clients: [] };
+  _lodash2.default.remove(infos[channelName].clients, function (s) {
+    return s.clientName === socket.clientName;
+  });
+  setInfos(infos);
+}
+
+module.exports = {
+  init: init,
+  log: log,
+  setInfos: setInfos,
+  observeEvent: observeEvent,
+  joinChannel: joinChannel,
+  quitChannel: quitChannel
+};

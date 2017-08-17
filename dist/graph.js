@@ -37,7 +37,7 @@ var Graph = function () {
   (0, _createClass3.default)(Graph, [{
     key: 'addClient',
     value: function addClient(client) {
-      this._clients[client.name] = this._clients[client.name] || client;
+      this._clients[client.name] = client;
     }
   }, {
     key: 'removeClient',

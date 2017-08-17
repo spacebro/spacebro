@@ -31,7 +31,7 @@ function log() {
     args[_key] = arguments[_key];
   }
 
-  if (settings.showdashboard) {
+  if (showdashboard) {
     _dashboard2.default.log.apply(_dashboard2.default, args);
   } else {
     var _console;
@@ -56,7 +56,7 @@ function logError() {
     args[_key2] = arguments[_key2];
   }
 
-  if (settings.showdashboard) {
+  if (showdashboard) {
     _dashboard2.default.log.apply(_dashboard2.default, args);
   } else {
     var _console2;
