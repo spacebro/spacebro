@@ -35,7 +35,7 @@ test('Graph - clients - add duplicate', (t) => {
     i++
   }
   t.deepEqual(graph.listClients(), {
-    myClient: { name: 'myClient', description: 'Client n0' },
+    myClient: { name: 'myClient', description: 'Client n1' },
     myClient_2: { name: 'myClient_2', description: 'Client n2' }
   })
 })
@@ -84,7 +84,7 @@ test('Graph - clients - get', (t) => {
   }
   t.deepEqual(
     graph.getClient('myClient'),
-    { name: 'myClient', description: 'Client n0' }
+    { name: 'myClient', description: 'Client n1' }
   )
   t.deepEqual(
     graph.getClient('myClient_3'),

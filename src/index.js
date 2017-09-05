@@ -3,6 +3,7 @@
 import wildcard from 'socketio-wildcard'
 import server from 'socket.io'
 import fs from 'fs'
+import _ from 'lodash'
 
 import dashboard from './dashboard'
 import { getGraph, isValidConnection } from './graph'
@@ -57,9 +58,14 @@ function saveGraph (channelName) {
     graph: _prevGraph
   }
   const newGraph = getGraph(channelName)
-  _prevGraph[channelName] = {
+  _prevGraph[channelName] = JSON.parse(JSON.stringify({
     clients: newGraph._clients,
     connections: newGraph._connections
+  }))
+  for (let key in _prevGraph[channelName].clients) {
+    let entry = _prevGraph[channelName].clients[key]
+    entry = _.omit(entry, '_isConnected')
+    _prevGraph[channelName].clients[key] = entry
   }
 
   fs.writeFile(

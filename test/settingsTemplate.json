@@ -1,6 +1,6 @@
 {
   "server": {
-    "port": 6060
+    "port": 36000
   },
   "mute": true,
   "semiverbose": false,

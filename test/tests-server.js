@@ -41,7 +41,7 @@ test('Basic connection', async (t) => {
 
   t.deepEqual(
     getGraph('test-basic').listClients(),
-    { [name]: { name, member: name } }
+    { [name]: { name, member: name, _isConnected: true } }
   )
 })
 

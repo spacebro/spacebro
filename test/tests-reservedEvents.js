@@ -146,7 +146,7 @@ test('Event - getClients', async (t) => {
 
   const clients = {}
   for (const name of clientNames) {
-    clients[name] = { name, member: name }
+    clients[name] = { name, member: name, _isConnected: true }
   }
   t.deepEqual(messages, [ clients ])
 })

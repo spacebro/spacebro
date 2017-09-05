@@ -32,6 +32,10 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _dashboard = require('./dashboard');
 
 var _dashboard2 = _interopRequireDefault(_dashboard);
@@ -134,10 +138,15 @@ function saveGraph(channelName) {
     graph: _prevGraph
   };
   var newGraph = (0, _graph.getGraph)(channelName);
-  _prevGraph[channelName] = {
+  _prevGraph[channelName] = JSON.parse((0, _stringify2.default)({
     clients: newGraph._clients,
     connections: newGraph._connections
-  };
+  }));
+  for (var key in _prevGraph[channelName].clients) {
+    var entry = _prevGraph[channelName].clients[key];
+    entry = _lodash2.default.omit(entry, '_isConnected');
+    _prevGraph[channelName].clients[key] = entry;
+  }
 
   _fs2.default.writeFile(settings.settings, (0, _stringify2.default)(newSettings, null, 2) + '\n', function (err) {
     err && (0, _loggers.log)(err);
