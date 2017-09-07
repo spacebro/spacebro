@@ -173,7 +173,7 @@ function _initSocketIO (settings, sockets) {
         .map((c) => {
           if (typeof c === 'string' || typeof c.data === 'string') {
             c = c.altered ? c.data : c
-            c = parseConnection(c)
+            return parseConnection(c)
           } else {
             return { src: c.src, tgt: c.tgt }
           }
