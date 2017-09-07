@@ -81,9 +81,10 @@ function getGraph (channelName) {
 
 function isValidConnection (connection) {
   return (
+    connection &&
     deepEqual(Object.keys(connection), ['src', 'tgt']) &&
-    deepEqual(Object.keys(connection.src), ['clientName', 'eventName']) &&
-    deepEqual(Object.keys(connection.tgt), ['clientName', 'eventName'])
+    connection.src && deepEqual(Object.keys(connection.src), ['clientName', 'eventName']) &&
+    connection.tgt && deepEqual(Object.keys(connection.tgt), ['clientName', 'eventName'])
   )
 }
 

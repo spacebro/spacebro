@@ -147,10 +147,38 @@ function _initSocketIO (settings, sockets) {
         sendToChannel('new-member', clientDescription)
       })
 
+    function parseConnection (data) {
+      const regex = / ?([^ ]+) ?\/ ?([^ ]+) ?=> ?([^ ]+) ?\/ ?([^ ]+) ?/g
+      let match = regex.exec(data)
+      let connection
+      if (match.length > 4) {
+        connection = {
+          src: {
+            clientName: match[1],
+            eventName: match[2]
+          },
+          tgt: {
+            clientName: match[3],
+            eventName: match[4]
+          }
+        }
+      } else {
+        log(`can't parse connection '$data`)
+      }
+      return connection
+    }
+
     function filterNewConnections (connections) {
       return _arrayify(connections)
-        .map((c) => ({ src: c.src, tgt: c.tgt }))
-        .filter((connection) => {
+        .map((c) => {
+          if (typeof c === 'string' || typeof c.data === 'string') {
+            c = c.altered ? c.data : c
+            c = parseConnection(c)
+          } else {
+            return { src: c.src, tgt: c.tgt }
+          }
+        })
+        .filter((connection, index) => {
           if (!isValidConnection(connection)) {
             logError(_fullname(newSocket), 'invalid connection object')
             logErrorData(connection)
