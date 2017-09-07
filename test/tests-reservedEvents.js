@@ -150,3 +150,56 @@ test('Event - getClients', async (t) => {
   }
   t.deepEqual(messages, [ clients ])
 })
+
+test('Connections - add connection with client/event => client/event model', async (t) => {
+  const channelName = 'test-connection-model'
+  // const { sockets } = initServer(channelName)
+  initServer(channelName)
+  const clientEmitter = initClient(channelName, 'clientEmitter')
+  const clientReceiver1 = initClient(channelName, 'clientReceiver')
+  port++
+
+  await sleep(waitTime)
+
+  clientEmitter.emit('addConnections', 'clientEmitter/outMessage => clientReceiver/inMessage')
+  const messages = []
+  clientEmitter.on('connections', data => messages.push(data))
+  await sleep(waitTime)
+  t.deepEqual(messages[0][0].src.eventName, 'outMessage')
+
+  const messagesReceiver1 = []
+  clientReceiver1.on('inMessage', data => messagesReceiver1.push(data))
+
+  const message = {value: 5}
+  clientEmitter.emit('outMessage', message)
+
+  await sleep(waitTime)
+
+  t.deepEqual(messagesReceiver1[0].value, message.value)
+})
+
+test('Connections - two clients with same name, both get events', async (t) => {
+  const channelName = 'test-twoClients'
+  // const { sockets } = initServer(channelName)
+  initServer(channelName)
+  const clientEmitter = initClient(channelName, 'clientEmitter')
+  const clientReceiver1 = initClient(channelName, 'clientReceiver')
+  const clientReceiver2 = initClient(channelName, 'clientReceiver')
+  port++
+
+  await sleep(waitTime)
+
+  clientEmitter.emit('addConnections', 'clientEmitter/outMessage => clientReceiver/inMessage')
+  const messagesReceiver1 = []
+  const messagesReceiver2 = []
+  clientReceiver1.on('inMessage', data => messagesReceiver1.push(data))
+  clientReceiver2.on('inMessage', data => messagesReceiver2.push(data))
+
+  const message = {value: 5}
+  clientEmitter.emit('outMessage', message)
+
+  await sleep(waitTime)
+
+  t.deepEqual(messagesReceiver1[0].value, message.value)
+  t.deepEqual(messagesReceiver2[0].value, message.value)
+})
