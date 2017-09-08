@@ -201,3 +201,35 @@ test('Connections - two clients with same name, both get events', async (t) => {
   t.deepEqual(messagesReceiver1[0].value, message.value)
   t.deepEqual(messagesReceiver2[0].value, message.value)
 })
+
+test('Connections - send an array of regex strings', async (t) => {
+  const channelName = 'test-arraystrings'
+  initServer(channelName)
+  const clientEmitter = initClient(channelName, 'clientEmitter')
+  const clientReceiver1 = initClient(channelName, 'clientReceiver')
+  const clientReceiver2 = initClient(channelName, 'clientReceiver')
+  const clientReceiver3 = initClient(channelName, 'clientReceiver3')
+  port++
+
+  await sleep(waitTime)
+
+  clientEmitter.emit('addConnections', [
+    'clientEmitter/outMessage => clientReceiver/inMessage',
+    'clientEmitter/outMessage => clientReceiver3/inMessage'
+  ])
+  const messagesReceiver1 = []
+  const messagesReceiver2 = []
+  const messagesReceiver3 = []
+  clientReceiver1.on('inMessage', data => messagesReceiver1.push(data))
+  clientReceiver2.on('inMessage', data => messagesReceiver2.push(data))
+  clientReceiver3.on('inMessage', data => messagesReceiver3.push(data))
+
+  const message = {value: 5}
+  clientEmitter.emit('outMessage', message)
+
+  await sleep(waitTime)
+
+  t.deepEqual(messagesReceiver1[0].value, message.value)
+  t.deepEqual(messagesReceiver2[0].value, message.value)
+  t.deepEqual(messagesReceiver3[0].value, message.value)
+})

@@ -308,13 +308,13 @@ module.exports = { init, infos, _initSocketIO }
  */
 
 function _arrayify (data) {
-  data = _objectify(data) || []
+  // data = _objectify(data) || []
 
   if (!Array.isArray(data)) {
     data = [ data ]
   }
 
-  data = data.map(_objectify)
+  // data = data.map(_objectify)
   data = data.filter(item => item != null)
 
   return data

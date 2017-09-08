@@ -103,8 +103,8 @@ test('Message - connection', async (t) => {
   ])
 
   const messages = []
-  client1.on('*', data => t.not(data, 'world'))
-  client2.on('*', data => t.not(data, 'world'))
+  client1.on('*', data => t.deepEqual(data, 'world'))
+  client2.on('*', data => t.deepEqual(data, 'world'))
   client3.on('helloIn', data => messages.push(data))
 
   await sleep(waitTime)
