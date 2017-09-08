@@ -245,10 +245,36 @@ function _initSocketIO(settings, sockets) {
       sendToChannel('new-member', clientDescription);
     });
 
+    function parseConnection(data) {
+      var regex = / ?([^ ]+) ?\/ ?([^ ]+) ?=> ?([^ ]+) ?\/ ?([^ ]+) ?/g;
+      var match = regex.exec(data);
+      var connection = void 0;
+      if (match.length > 4) {
+        connection = {
+          src: {
+            clientName: match[1],
+            eventName: match[2]
+          },
+          tgt: {
+            clientName: match[3],
+            eventName: match[4]
+          }
+        };
+      } else {
+        (0, _loggers.log)('can\'t parse connection \'$data');
+      }
+      return connection;
+    }
+
     function filterNewConnections(connections) {
       return _arrayify(connections).map(function (c) {
-        return { src: c.src, tgt: c.tgt };
-      }).filter(function (connection) {
+        if (typeof c === 'string' || typeof c.data === 'string') {
+          c = c.altered ? c.data : c;
+          return parseConnection(c);
+        } else {
+          return { src: c.src, tgt: c.tgt };
+        }
+      }).filter(function (connection, index) {
         if (!(0, _graph.isValidConnection)(connection)) {
           (0, _loggers.logError)(_fullname(newSocket), 'invalid connection object');
           (0, _loggers.logErrorData)(connection);
@@ -459,10 +485,6 @@ function _initSocketIO(settings, sockets) {
                 (0, _loggers.logError)('could not find target "' + target.clientName + '"');
               }
             }
-            sendTo('spacebroUI', 'connectionUsed', {
-              src: { clientName: newSocket.clientName, eventName: eventName },
-              tgt: target
-            });
           }
         } catch (err) {
           _didIteratorError8 = true;
@@ -478,8 +500,6 @@ function _initSocketIO(settings, sockets) {
             }
           }
         }
-
-        return;
       }
 
       sendToChannel(eventName, args);

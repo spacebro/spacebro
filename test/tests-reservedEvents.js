@@ -153,7 +153,6 @@ test('Event - getClients', async (t) => {
 
 test('Connections - add connection with client/event => client/event model', async (t) => {
   const channelName = 'test-connection-model'
-  // const { sockets } = initServer(channelName)
   initServer(channelName)
   const clientEmitter = initClient(channelName, 'clientEmitter')
   const clientReceiver1 = initClient(channelName, 'clientReceiver')
@@ -180,7 +179,6 @@ test('Connections - add connection with client/event => client/event model', asy
 
 test('Connections - two clients with same name, both get events', async (t) => {
   const channelName = 'test-twoClients'
-  // const { sockets } = initServer(channelName)
   initServer(channelName)
   const clientEmitter = initClient(channelName, 'clientEmitter')
   const clientReceiver1 = initClient(channelName, 'clientReceiver')

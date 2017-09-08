@@ -143,7 +143,7 @@ function getGraph(channelName) {
 }
 
 function isValidConnection(connection) {
-  return (0, _deepEqual2.default)((0, _keys2.default)(connection), ['src', 'tgt']) && (0, _deepEqual2.default)((0, _keys2.default)(connection.src), ['clientName', 'eventName']) && (0, _deepEqual2.default)((0, _keys2.default)(connection.tgt), ['clientName', 'eventName']);
+  return connection && (0, _deepEqual2.default)((0, _keys2.default)(connection), ['src', 'tgt']) && connection.src && (0, _deepEqual2.default)((0, _keys2.default)(connection.src), ['clientName', 'eventName']) && connection.tgt && (0, _deepEqual2.default)((0, _keys2.default)(connection.tgt), ['clientName', 'eventName']);
 }
 
 module.exports = {

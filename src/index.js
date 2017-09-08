@@ -296,12 +296,7 @@ function _initSocketIO (settings, sockets) {
                 logError(`could not find target "${target.clientName}"`)
               }
             }
-            sendTo('spacebroUI', 'connectionUsed', {
-              src: { clientName: newSocket.clientName, eventName },
-              tgt: target
-            })
           }
-          return
         }
 
         sendToChannel(eventName, args)
