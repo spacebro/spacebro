@@ -1,0 +1,9 @@
+{
+  "mute": true,
+  "hidedashboard": true,
+  "service": {
+    "spacebro": {
+      "verbose": false
+    }
+  }
+}

@@ -150,4 +150,35 @@ function setInfos (data) {
   }
 }
 
-module.exports = { init, log, setInfos }
+function observeEvent (infos, eventName, channelName) {
+  if (!_.has(infos, channelName)) {
+    infos[channelName] = { events: [], clients: [] }
+  }
+  infos[channelName].events = _.union(infos[channelName].events, [eventName])
+  setInfos(infos)
+}
+
+function joinChannel (infos, socket, channelName) {
+  infos[channelName] = infos[channelName] || { events: [], clients: [] }
+  infos[channelName].clients = _.union(infos[channelName].clients, [{
+    'clientName': socket.clientName,
+    'ip': socket.handshake.address,
+    'hostname': socket.handshake.headers.host
+  }])
+  setInfos(infos)
+}
+
+function quitChannel (infos, socket, channelName) {
+  infos[channelName] = infos[channelName] || { events: [], clients: [] }
+  _.remove(infos[channelName].clients, s => s.clientName === socket.clientName)
+  setInfos(infos)
+}
+
+module.exports = {
+  init,
+  log,
+  setInfos,
+  observeEvent,
+  joinChannel,
+  quitChannel
+}

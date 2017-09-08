@@ -1,0 +1,38 @@
+{
+  "server": {
+    "port": 36000
+  },
+  "mute": true,
+  "semiverbose": false,
+  "hidedashboard": true,
+  "graph": {
+    "test-saveGraph": {
+      "clients": {
+        "client1": {
+          "name": "client1",
+          "member": "client1"
+        },
+        "client2": {
+          "name": "client2",
+          "member": "client2"
+        },
+        "client3": {
+          "name": "client3",
+          "member": "client3"
+        }
+      },
+      "connections": [
+        {
+          "src": {
+            "clientName": "client1",
+            "eventName": "helloOut"
+          },
+          "tgt": {
+            "clientName": "client3",
+            "eventName": "helloIn"
+          }
+        }
+      ]
+    }
+  }
+}
