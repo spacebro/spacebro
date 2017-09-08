@@ -474,16 +474,12 @@ function _initSocketIO(settings, sockets) {
           for (var _iterator8 = (0, _getIterator3.default)(targets), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
             var target = _step8.value;
 
-            if ((target.clientName || '').startsWith('ui-')) {
-              sendTo('spacebroUI', 'uiEvent', { target: target, args: args });
-            } else {
-              var res = sendTo(target.clientName, target.eventName, args);
+            var res = sendTo(target.clientName, target.eventName, args);
 
-              if (res) {
-                (0, _loggers.log)(_fullname(newSocket) + ' emitted event "' + eventName + '" connected to ' + target.clientName + ' event "' + target.eventName + '"');
-              } else {
-                (0, _loggers.logError)('could not find target "' + target.clientName + '"');
-              }
+            if (res) {
+              (0, _loggers.log)(_fullname(newSocket) + ' emitted event "' + eventName + '" connected to ' + target.clientName + ' event "' + target.eventName + '"');
+            } else {
+              (0, _loggers.logError)('could not find target "' + target.clientName + '"');
             }
           }
         } catch (err) {

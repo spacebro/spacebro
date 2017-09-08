@@ -285,16 +285,12 @@ function _initSocketIO (settings, sockets) {
         const targets = channelGraph().getTargets(newSocket.clientName, eventName)
         if (targets.length) {
           for (const target of targets) {
-            if ((target.clientName || '').startsWith('ui-')) {
-              sendTo('spacebroUI', 'uiEvent', { target, args })
-            } else {
-              const res = sendTo(target.clientName, target.eventName, args)
+            const res = sendTo(target.clientName, target.eventName, args)
 
-              if (res) {
-                log(`${_fullname(newSocket)} emitted event "${eventName}" connected to ${target.clientName} event "${target.eventName}"`)
-              } else {
-                logError(`could not find target "${target.clientName}"`)
-              }
+            if (res) {
+              log(`${_fullname(newSocket)} emitted event "${eventName}" connected to ${target.clientName} event "${target.eventName}"`)
+            } else {
+              logError(`could not find target "${target.clientName}"`)
             }
           }
         }
