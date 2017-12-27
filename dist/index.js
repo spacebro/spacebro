@@ -154,6 +154,8 @@ function saveGraph(channelName) {
 }
 
 function _initSocketIO(settings, sockets) {
+  var _this = this;
+
   var newServer = (0, _socket2.default)(settings.server.port);
 
   function findSockets(channelName, clientName) {
@@ -168,11 +170,15 @@ function _initSocketIO(settings, sockets) {
     sockets.push(newSocket);
 
     function sendBack(eventName, data) {
-      return newServer && newServer.to(newSocket.id).emit(eventName, data);
+      // return newServer && newServer.to(newSocket.id).emit(eventName, data)
+      var args = Array.prototype.slice.call(arguments, 0);
+      return newServer && newServer.to(newSocket.id).emit.apply(newServer.to(newSocket.id), args);
     }
 
     function sendToChannel(eventName, data) {
-      return newServer && newServer.to(newSocket.channelName).emit(eventName, data);
+      // return newServer && newServer.to(newSocket.channelName).emit(eventName, data)
+      var args = Array.prototype.slice.call(arguments, 0);
+      return newServer && newServer.to(newSocket.channelName).emit.apply(newServer.to(newSocket.channelName), args);
     }
 
     var channelGraph = function channelGraph() {
@@ -421,6 +427,7 @@ function _initSocketIO(settings, sockets) {
 
       if (args.altered) {
         args = args.data;
+        data[1] = args;
       }
 
       function sendTo(clientName, eventName, args) {
@@ -437,7 +444,10 @@ function _initSocketIO(settings, sockets) {
           for (var _iterator7 = (0, _getIterator3.default)(targets), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
             var socket = _step7.value;
 
-            newServer && newServer.to(socket.id).emit(eventName, args);
+            var fullArgs = Array.prototype.slice.call(arguments, 3);
+            fullArgs.unshift(eventName, args);
+            // newServer && newServer.to(socket.id).emit(eventName, args)
+            newServer && newServer.to(socket.id).emit.apply(newServer.to(socket.id), fullArgs);
           }
         } catch (err) {
           _didIteratorError7 = true;
@@ -474,7 +484,11 @@ function _initSocketIO(settings, sockets) {
           for (var _iterator8 = (0, _getIterator3.default)(targets), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
             var target = _step8.value;
 
-            var res = sendTo(target.clientName, target.eventName, args);
+            // const res = sendTo(target.clientName, target.eventName, args)
+            var fullArgs = JSON.parse((0, _stringify2.default)(data));
+            fullArgs = fullArgs.slice(2);
+            fullArgs.unshift(target.clientName, target.eventName, args);
+            var res = sendTo.apply(_this, fullArgs);
 
             if (res) {
               (0, _loggers.log)(_fullname(newSocket) + ' emitted event "' + eventName + '" connected to ' + target.clientName + ' event "' + target.eventName + '"');
@@ -498,7 +512,8 @@ function _initSocketIO(settings, sockets) {
         }
       }
 
-      sendToChannel(eventName, args);
+      sendToChannel.apply(_this, data);
+      // sendToChannel(eventName, args)
     });
   });
   return newServer;

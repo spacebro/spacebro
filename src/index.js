@@ -91,11 +91,15 @@ function _initSocketIO (settings, sockets) {
     sockets.push(newSocket)
 
     function sendBack (eventName, data) {
-      return newServer && newServer.to(newSocket.id).emit(eventName, data)
+      // return newServer && newServer.to(newSocket.id).emit(eventName, data)
+      var args = Array.prototype.slice.call(arguments, 0)
+      return newServer && newServer.to(newSocket.id).emit.apply(newServer.to(newSocket.id), args)
     }
 
     function sendToChannel (eventName, data) {
-      return newServer && newServer.to(newSocket.channelName).emit(eventName, data)
+      // return newServer && newServer.to(newSocket.channelName).emit(eventName, data)
+      var args = Array.prototype.slice.call(arguments, 0)
+      return newServer && newServer.to(newSocket.channelName).emit.apply(newServer.to(newSocket.channelName), args)
     }
 
     const channelGraph = () => getGraph(newSocket.channelName)
@@ -261,6 +265,7 @@ function _initSocketIO (settings, sockets) {
 
         if (args.altered) {
           args = args.data
+          data[1] = args
         }
 
         function sendTo (clientName, eventName, args) {
@@ -270,7 +275,10 @@ function _initSocketIO (settings, sockets) {
             return false
           }
           for (const socket of targets) {
-            newServer && newServer.to(socket.id).emit(eventName, args)
+            var fullArgs = Array.prototype.slice.call(arguments, 3)
+            fullArgs.unshift(eventName, args)
+            // newServer && newServer.to(socket.id).emit(eventName, args)
+            newServer && newServer.to(socket.id).emit.apply(newServer.to(socket.id), fullArgs)
           }
           return true
         }
@@ -285,7 +293,11 @@ function _initSocketIO (settings, sockets) {
         const targets = channelGraph().getTargets(newSocket.clientName, eventName)
         if (targets.length) {
           for (const target of targets) {
-            const res = sendTo(target.clientName, target.eventName, args)
+            // const res = sendTo(target.clientName, target.eventName, args)
+            let fullArgs = JSON.parse(JSON.stringify(data))
+            fullArgs = fullArgs.slice(2)
+            fullArgs.unshift(target.clientName, target.eventName, args)
+            const res = sendTo.apply(this, fullArgs)
 
             if (res) {
               log(`${_fullname(newSocket)} emitted event "${eventName}" connected to ${target.clientName} event "${target.eventName}"`)
@@ -295,7 +307,8 @@ function _initSocketIO (settings, sockets) {
           }
         }
 
-        sendToChannel(eventName, args)
+        sendToChannel.apply(this, data)
+        // sendToChannel(eventName, args)
       })
   })
   return newServer
