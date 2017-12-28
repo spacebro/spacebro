@@ -177,8 +177,12 @@ function _initSocketIO(settings, sockets) {
 
     function sendToChannel(eventName, data) {
       // return newServer && newServer.to(newSocket.channelName).emit(eventName, data)
-      var args = Array.prototype.slice.call(arguments, 0);
-      return newServer && newServer.to(newSocket.channelName).emit.apply(newServer.to(newSocket.channelName), args);
+      try {
+        var args = Array.prototype.slice.call(arguments, 0);
+        return newServer && newServer.to(newSocket.channelName).emit.apply(newServer.to(newSocket.channelName), args);
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     var channelGraph = function channelGraph() {
@@ -447,7 +451,8 @@ function _initSocketIO(settings, sockets) {
             var fullArgs = Array.prototype.slice.call(arguments, 3);
             fullArgs.unshift(eventName, args);
             // newServer && newServer.to(socket.id).emit(eventName, args)
-            newServer && newServer.to(socket.id).emit.apply(newServer.to(socket.id), fullArgs);
+            // newServer && newServer.to(socket.id).emit.apply(newServer.to(socket.id), fullArgs)
+            newServer && socket.emit.apply(socket, fullArgs);
           }
         } catch (err) {
           _didIteratorError7 = true;
@@ -485,8 +490,7 @@ function _initSocketIO(settings, sockets) {
             var target = _step8.value;
 
             // const res = sendTo(target.clientName, target.eventName, args)
-            var fullArgs = JSON.parse((0, _stringify2.default)(data));
-            fullArgs = fullArgs.slice(2);
+            var fullArgs = data.slice(2);
             fullArgs.unshift(target.clientName, target.eventName, args);
             var res = sendTo.apply(_this, fullArgs);
 

@@ -98,8 +98,12 @@ function _initSocketIO (settings, sockets) {
 
     function sendToChannel (eventName, data) {
       // return newServer && newServer.to(newSocket.channelName).emit(eventName, data)
-      var args = Array.prototype.slice.call(arguments, 0)
-      return newServer && newServer.to(newSocket.channelName).emit.apply(newServer.to(newSocket.channelName), args)
+      try {
+        var args = Array.prototype.slice.call(arguments, 0)
+        return newServer && newServer.to(newSocket.channelName).emit.apply(newServer.to(newSocket.channelName), args)
+      } catch (e) {
+        console.error(e)
+      }
     }
 
     const channelGraph = () => getGraph(newSocket.channelName)
@@ -278,7 +282,7 @@ function _initSocketIO (settings, sockets) {
             var fullArgs = Array.prototype.slice.call(arguments, 3)
             fullArgs.unshift(eventName, args)
             // newServer && newServer.to(socket.id).emit(eventName, args)
-            newServer && newServer.to(socket.id).emit.apply(newServer.to(socket.id), fullArgs)
+            newServer && socket.emit.apply(socket, fullArgs)
           }
           return true
         }
@@ -294,8 +298,7 @@ function _initSocketIO (settings, sockets) {
         if (targets.length) {
           for (const target of targets) {
             // const res = sendTo(target.clientName, target.eventName, args)
-            let fullArgs = JSON.parse(JSON.stringify(data))
-            fullArgs = fullArgs.slice(2)
+            let fullArgs = data.slice(2)
             fullArgs.unshift(target.clientName, target.eventName, args)
             const res = sendTo.apply(this, fullArgs)
 
