@@ -451,7 +451,6 @@ function _initSocketIO(settings, sockets) {
             var fullArgs = Array.prototype.slice.call(arguments, 3);
             fullArgs.unshift(eventName, args);
             // newServer && newServer.to(socket.id).emit(eventName, args)
-            // newServer && newServer.to(socket.id).emit.apply(newServer.to(socket.id), fullArgs)
             newServer && socket.emit.apply(socket, fullArgs);
           }
         } catch (err) {
