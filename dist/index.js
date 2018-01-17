@@ -60,7 +60,9 @@ var infos = {};
 
 var reservedEvents = ['register', 'addConnections', 'removeConnections', 'replaceConnections', 'getConnections', 'getClients', 'saveGraph'];
 
-function init(options) {
+function init() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
   settings = (0, _assign2.default)(options, settings);
   process.title = 'spacebro';
   settings.verbose = settings.mute === undefined || settings.mute === false;

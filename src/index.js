@@ -19,7 +19,7 @@ let infos = {}
 
 const reservedEvents = [ 'register', 'addConnections', 'removeConnections', 'replaceConnections', 'getConnections', 'getClients', 'saveGraph' ]
 
-function init (options) {
+function init (options = {}) {
   settings = Object.assign(options, settings)
   process.title = 'spacebro'
   settings.verbose = (settings.mute === undefined || settings.mute === false)
