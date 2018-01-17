@@ -1,6 +1,6 @@
 {
   "name": "spacebro",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Spacebro is a socket.io server that provides an API to bind apps together!",
   "keywords": [
     "realtime",
