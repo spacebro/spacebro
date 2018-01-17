@@ -20,6 +20,10 @@ var _getIterator2 = require('babel-runtime/core-js/get-iterator');
 
 var _getIterator3 = _interopRequireDefault(_getIterator2);
 
+var _assign = require('babel-runtime/core-js/object/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
 var _socketioWildcard = require('socketio-wildcard');
 
 var _socketioWildcard2 = _interopRequireDefault(_socketioWildcard);
@@ -56,7 +60,8 @@ var infos = {};
 
 var reservedEvents = ['register', 'addConnections', 'removeConnections', 'replaceConnections', 'getConnections', 'getClients', 'saveGraph'];
 
-function init() {
+function init(options) {
+  settings = (0, _assign2.default)(options, settings);
   process.title = 'spacebro';
   settings.verbose = settings.mute === undefined || settings.mute === false;
   settings.showdashboard = !settings.hidedashboard && process.env.SPACEBRO_BIN;

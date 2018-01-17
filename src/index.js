@@ -11,7 +11,7 @@ import { getGraph, isValidConnection } from './graph'
 import { log, logData, logError, logErrorData } from './loggers'
 
 import { getSettings } from 'standard-settings'
-const settings = getSettings()
+let settings = getSettings()
 
 // Variables
 let sockets = []
@@ -19,7 +19,8 @@ let infos = {}
 
 const reservedEvents = [ 'register', 'addConnections', 'removeConnections', 'replaceConnections', 'getConnections', 'getClients', 'saveGraph' ]
 
-function init () {
+function init (options) {
+  settings = Object.assign(options, settings)
   process.title = 'spacebro'
   settings.verbose = (settings.mute === undefined || settings.mute === false)
   settings.showdashboard = !settings.hidedashboard && process.env.SPACEBRO_BIN
