@@ -156,10 +156,10 @@ function _initSocketIO (settings, sockets) {
       })
 
     function parseConnection (data) {
-      const regex = / ?([^ ]+) ?\/ ?([^ ]+) ?=> ?([^ ]+) ?\/ ?([^ ]+) ?/g
+      const regex = / ?([^/]+) ?\/ ?([^=]+[^ ]) ?=> ?([^/]+) ?\/ ?([^/]+[^ ]) ?/g
       let match = regex.exec(data)
       let connection
-      if (match.length > 4) {
+      if (match && match.length > 4) {
         connection = {
           src: {
             clientName: match[1],
@@ -171,7 +171,7 @@ function _initSocketIO (settings, sockets) {
           }
         }
       } else {
-        log(`can't parse connection '$data`)
+        log('cannot parse connection ' + data)
       }
       return connection
     }

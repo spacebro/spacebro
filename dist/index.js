@@ -256,10 +256,10 @@ function _initSocketIO(settings, sockets) {
     });
 
     function parseConnection(data) {
-      var regex = / ?([^ ]+) ?\/ ?([^ ]+) ?=> ?([^ ]+) ?\/ ?([^ ]+) ?/g;
+      var regex = / ?([^/]+) ?\/ ?([^=]+[^ ]) ?=> ?([^/]+) ?\/ ?([^/]+[^ ]) ?/g;
       var match = regex.exec(data);
       var connection = void 0;
-      if (match.length > 4) {
+      if (match && match.length > 4) {
         connection = {
           src: {
             clientName: match[1],
@@ -271,7 +271,7 @@ function _initSocketIO(settings, sockets) {
           }
         };
       } else {
-        (0, _loggers.log)('can\'t parse connection \'$data');
+        (0, _loggers.log)('cannot parse connection ' + data);
       }
       return connection;
     }
