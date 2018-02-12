@@ -39,11 +39,11 @@ npm i -g spacebro
 ## Run
 
 ```
-spacebro
+spacebro --hidedashboard
 ```
 
 Now spacebro is running on your local machine.  
-Let it reveal its power by running two clients.
+Let's reveal its power by running two clients.
 
 ## Run two clients
 
@@ -65,11 +65,13 @@ for every new file in this folder.
 Let's open a new terminal, install it and tell it to watch the `pictures` folder
 
 ```
+mkdir /tmp/pictures
 git clone https://github.com/soixantecircuits/chokibro
 cd chokibro
 nvm use
+npm i
 node index.js --service.spacebro.host localhost --service.spacebro.port
-36000 --folder ./pictures
+36000 --folder /tmp/pictures
 ```
 
 It is now connected to spacebro and watches the pictures folder.
@@ -77,7 +79,7 @@ It is now connected to spacebro and watches the pictures folder.
 Try chokibro by adding pictures in the folder : let's open a new terminal and
 
 ```
-cd chokibro/pictures
+cd /tmp/pictures
 wget https://loremflickr.com/320/240/cat.jpg
 ```
 
@@ -99,8 +101,12 @@ Let's open a new terminal, install, and run it.
 
 ```
 git clone https://github.com/soixantecircuits/blurrybro
+sudo apt-get install imagemagick
+# or $ brew install imagemagick
+# or $ yaourt imagemagick
 cd blurrybro
 nvm use
+npm i
 node index.js --service.spacebro.host localhost --service.spacebro.port
 36000
 ```
@@ -120,7 +126,7 @@ Stop blurrybro with a ctrl+c and rerun it with a connection:
 
 ```
 node index.js --service.spacebro.host localhost --service.spacebro.port
-36000 --service.spacebro.connection chokibro/outMedia=>blurrybro/inMedia
+36000 --service.spacebro.connection "chokibro/outMedia=>blurrybro/inMedia"
 ```
 
 Notice in spacebro logs that it received the connection.
@@ -130,7 +136,7 @@ it blurred:
 
 
 ```
-cd chokibro/pictures
+cd /tmp/pictures
 wget https://loremflickr.com/320/240/spacecat.jpg
 ```
 
@@ -149,5 +155,9 @@ Open that url to see your blurry cat.
 
 ## What's next?
 
-All set up and good to go? Let's [write our first spacebro client
-app](./starting.md).
+Want more? Let's [write our first spacebro client
+app](./starting.md).  
+Want an exercise? Run the two apps on different machines on your local
+network.  
+Want to know more about common spacebro clients like chokibro and
+blurrybro? Take a [tour](https://medium.com/@emmanuelgeoffray/what-we-built-with-spacebro-so-far)!
