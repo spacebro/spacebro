@@ -52,10 +52,24 @@ will run two clients and connect them.
 
 Let's say we want to apply a blur filter to every image that is written
 in a local folder, we will use
-(chokibro)[https://github.com/soixantecircuits/chokibro] to watch new
+[chokibro](https://github.com/soixantecircuits/chokibro) to watch new
 files in the local folder, and
-(blurrybro)[https://github.com/soixantecircuits/blurrybro] to blur
+[blurrybro](https://github.com/spacebro/blurrybro) to blur
 images.
+
++-----------------------------------------+                        +-----------------------------------------+
+|                                         |                        |                                         |
+|                                         |                        |                                         |
+|                                outMedia +----------------------->+ inMedia                        outMedia |
+|                                         |                        |                                         |
+|                                         |                        |                                         |
+|                CHOKIBRO                 |                        |                BLURRYBRO                |
+|                                         |                        |                                         |
+|                                         |                        |                                         |
+|                                         |                        |                                         |
+|                                         |                        |                                         |
+|                                         |                        |                                         |
++-----------------------------------------+                        +-----------------------------------------+
 
 ### chokibro
 
@@ -145,7 +159,7 @@ object:
 
 ```
 {
-  url: "http://localhost:36002/spacecat.jpg"
+  url: "http://localhost:37200/spacecat.jpg"
 }
 ```
 
