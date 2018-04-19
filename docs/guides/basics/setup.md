@@ -176,4 +176,4 @@ app](./starting.md).
 Want an exercise? Run the two apps on different machines on your local
 network.  
 Want to know more about common spacebro clients like chokibro and
-blurrybro? Take a [tour](https://medium.com/@emmanuelgeoffray/what-we-built-with-spacebro-so-far)!
+blurrybro? Take a [tour](https://github.com/spacebro/awesome-spacebro#apps)!
