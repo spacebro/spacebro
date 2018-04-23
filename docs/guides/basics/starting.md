@@ -118,6 +118,12 @@ app.use(express.static(outputFolder))
 app.listen(port)
 ```
 
+Before running the app, install all modules:
+
+```
+npm i -S gm download express path mkdirp
+```
+
 You can now run the app with `node app.js`.  
 OK it is running now! But we need to feed it with an image to test it!
 
