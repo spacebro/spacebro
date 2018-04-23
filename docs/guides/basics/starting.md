@@ -164,6 +164,6 @@ Open that link in a browser, and 🎉 see the galaxy in sepia
 In this chapter we created our first Spacebro application that receives
 a media and emits one.  
 Want an exercice? Try to write an app with many inputs and outputs.  
-Want to see an production app that uses spacebro? Check
-[etna](https://github.com/soixantecircuits/etna)
+Want to see a production app that uses spacebro? Check
+[etna](https://github.com/soixantecircuits/etna), a brotool to edit videos.
 
