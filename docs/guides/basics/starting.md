@@ -1,9 +1,11 @@
 # Our first Spacebro application
 
 Now that we are [set up](./setup.md) we can create our first Spacebro
-application. We will write a NodeJS app here and write for the browser in a next chapter.
+application. We will write a NodeJS app here for somplicity's sake, but spacebro-client also works in the [browser](https://github.com/spacebro/spacebro-client/blob/master/example/browser-src/index.html).
+
+
 Let's write an app called `sepiabro` that will add a sepia effect to an image.
-First, let's create a new folder for all our examples to run in.
+First, let's create a new folder for our example to run in.
 
 ```
 mkdir sepiabro
@@ -168,7 +170,8 @@ Open that link in a browser, and 🎉 see the galaxy in sepia
 ## What's next?
 
 In this chapter we created our first Spacebro application that receives
-a media and emits one.  
+a media and emits one. Next, let's jump into the [swimming
+pool](./swimming-pool.md).  
 Want an exercice? Try to write an app with many inputs and outputs.  
 Want to see a production app that uses spacebro? Check
 [etna](https://github.com/soixantecircuits/etna), a brotool to edit videos.

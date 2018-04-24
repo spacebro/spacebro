@@ -12,3 +12,6 @@ Learn about what is required to know and install to best learn and get started w
 Create your first Spacebro clients in NodeJS and the
 browser.
 
+[**Swimming Pool**](./swimming-pool.md)
+
+A few advices before juming in the swimming pool.
