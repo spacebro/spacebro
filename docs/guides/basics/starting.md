@@ -51,7 +51,7 @@ Let's throw this in a few lines in a `app.js` file.
 ```js
 const { SpacebroClient } = require('spacebro-client')
 
-const client = new SpacebroClient({
+const spacebroClient = new SpacebroClient({
   host: 'localhost',
   port: 36000,
   channelName: 'media-stream',
