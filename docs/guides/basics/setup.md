@@ -116,7 +116,7 @@ image on its `outMedia` outlet.
 Let's open a new terminal, install, and run it.
 
 ```
-git clone https://github.com/soixantecircuits/blurrybro
+git clone https://github.com/spacebro/blurrybro
 sudo apt-get install imagemagick
 # or $ brew install imagemagick
 # or $ yaourt imagemagick
