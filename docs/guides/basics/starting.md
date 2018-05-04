@@ -97,6 +97,9 @@ let tmpFolder = '/tmp/'
 let host = process.env.HOST || 'localhost'
 let port = process.env.PORT || 8080
 
+mkdirp(tmpFolder)
+mkdirp(outputFolder)
+
 spacebroClient.on('inMedia', media => {
   download(media.url, tmpFolder).then(() => {
     let image = path.join(tmpFolder, path.basename(media.url))
