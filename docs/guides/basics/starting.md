@@ -106,7 +106,7 @@ spacebroClient.on('inMedia', media => {
     .write(outImage, function (err) {
       if (!err) {
         let outMedia = {
-          url: `http://$host:$port/${path.basename(outImage)}`
+          url: `http://${host}:${port}/${path.basename(outImage)}`
         }
         spacebroClient.emit('outMedia', outMedia)
         console.log('emit ' + JSON.stringify(outMedia, null, 2))
