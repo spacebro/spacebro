@@ -1,5 +1,5 @@
 import blessed from 'blessed'
-import moment from 'moment'
+import { format } from 'date-fns'
 import _ from 'lodash'
 
 let screen = null
@@ -132,7 +132,7 @@ function init () {
 
 function log (...args) {
   // logText.log(...args)
-  logText.log(`${moment().format('YYYY:MM:DD-HH:mm:ss')} - `, ...args)
+  logText.log(`${format(new Date(), 'yyyy:MM:dd-HH:mm:ss')} - `, ...args)
 }
 
 function setInfos (data) {

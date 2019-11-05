@@ -4,9 +4,7 @@ var _blessed = require('blessed');
 
 var _blessed2 = _interopRequireDefault(_blessed);
 
-var _moment = require('moment');
-
-var _moment2 = _interopRequireDefault(_moment);
+var _dateFns = require('date-fns');
 
 var _lodash = require('lodash');
 
@@ -150,7 +148,7 @@ function log() {
   }
 
   // logText.log(...args)
-  (_logText = logText).log.apply(_logText, [(0, _moment2.default)().format('YYYY:MM:DD-HH:mm:ss') + ' - '].concat(args));
+  (_logText = logText).log.apply(_logText, [(0, _dateFns.format)(new Date(), 'yyyy:MM:dd-HH:mm:ss') + ' - '].concat(args));
 }
 
 function setInfos(data) {

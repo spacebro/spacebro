@@ -4,9 +4,7 @@ var _jsonColorz = require('json-colorz');
 
 var _jsonColorz2 = _interopRequireDefault(_jsonColorz);
 
-var _moment = require('moment');
-
-var _moment2 = _interopRequireDefault(_moment);
+var _dateFns = require('date-fns');
 
 var _standardSettings = require('standard-settings');
 
@@ -36,7 +34,7 @@ function log() {
   } else {
     var _console;
 
-    (_console = console).log.apply(_console, [(0, _moment2.default)().format('YYYY-MM-DD-HH:mm:ss') + ' - '].concat(args));
+    (_console = console).log.apply(_console, [(0, _dateFns.format)(new Date(), 'yyyy:MM:dd-HH:mm:ss') + ' - '].concat(args));
   }
 }
 
@@ -61,7 +59,7 @@ function logError() {
   } else {
     var _console2;
 
-    (_console2 = console).error.apply(_console2, [(0, _moment2.default)().format('YYYY-MM-DD-HH:mm:ss') + ' - '].concat(args));
+    (_console2 = console).error.apply(_console2, [(0, _dateFns.format)(new Date(), 'yyyy:MM:dd-HH:mm:ss') + ' - '].concat(args));
   }
 }
 

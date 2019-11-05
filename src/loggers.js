@@ -1,7 +1,7 @@
 'use strict'
 
 import jsonColorz from 'json-colorz'
-import moment from 'moment'
+import { format } from 'date-fns'
 import { getSettings } from 'standard-settings'
 import dashboard from './dashboard'
 
@@ -18,7 +18,7 @@ function log (...args) {
   if (showdashboard) {
     dashboard.log(...args)
   } else {
-    console.log(`${moment().format('YYYY-MM-DD-HH:mm:ss')} - `, ...args)
+    console.log(`${format(new Date(), 'yyyy:MM:dd-HH:mm:ss')} - `, ...args)
   }
 }
 
@@ -36,7 +36,7 @@ function logError (...args) {
   if (showdashboard) {
     dashboard.log(...args)
   } else {
-    console.error(`${moment().format('YYYY-MM-DD-HH:mm:ss')} - `, ...args)
+    console.error(`${format(new Date(), 'yyyy:MM:dd-HH:mm:ss')} - `, ...args)
   }
 }
 

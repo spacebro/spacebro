@@ -15,19 +15,21 @@
     "lint": "eslint --ext .js test src",
     "unittest": "SETTINGS=test/settings.tests.json ava --verbose --timeout=16s",
     "testSaveGraph": "gulp compile --silent && cp test/settings.tests.json test/settingsCopy.json && SETTINGS=test/settingsCopy.json node test/saveGraph.js && diff test/settingsCopy.json test/settingsTemplate.json",
-    "build": "gulp compile"
+    "build": "gulp compile",
+    "pack:macos": "pkg ./bin/spacebro -t node8-macos-x64",
+    "pack:win64": "pkg ./bin/spacebro -t node8-win-x64"
   },
   "dependencies": {
-    "babel-runtime": "^6.23.0",
+    "babel-runtime": "^6.26.0",
     "blessed": "^0.1.81",
-    "deep-equal": "^1.0.1",
+    "date-fns": "^2.6.0",
+    "deep-equal": "^1.1.0",
     "json-colorz": "^0.2.7",
-    "lodash": "^4.17.4",
-    "moment": "^2.18.1",
-    "nodemon": "^1.11.0",
-    "socket.io": "^2.0.3",
+    "lodash": "^4.17.15",
+    "nodemon": "^1.19.4",
+    "socket.io": "^2.3.0",
     "socketio-wildcard": "^2.0.0",
-    "standard-settings": "^1.1.9"
+    "standard-settings": "^2.0.3"
   },
   "devDependencies": {
     "ava": "^0.21.0",
@@ -52,6 +54,7 @@
     "gulp-babel": "^6.1.2",
     "gulp-file-cache": "^0.0.1",
     "gulp-nodemon": "^2.2.1",
+    "pkg": "^4.4.0",
     "sleep-promise": "^2.0.0",
     "spacebro-client": "^0.4.2",
     "standard": "^10.0.2"
