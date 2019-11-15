@@ -199,34 +199,46 @@ function _initSocketIO (settings, sockets) {
 
     newSocket
       .on('addConnections', (connections) => {
-        connections = filterNewConnections(connections)
+        if (settings.security.clientCanEditConnections) {
+          connections = filterNewConnections(connections)
 
-        channelGraph().addConnections(connections)
-        sendToChannel('connections', channelGraph().listConnections())
+          channelGraph().addConnections(connections)
+          sendToChannel('connections', channelGraph().listConnections())
 
-        log(`${_fullname(newSocket)} added connections`)
-        logData(connections)
+          log(`${_fullname(newSocket)} added connections`)
+          logData(connections)
+        } else if (Array.isArray(connections) && connections.length > 0) {
+          log(`${_fullname(newSocket)} asked to add connections. But spacebro is in secured mode: connections are not editable.`)
+        }
       })
       .on('removeConnections', (connections) => {
-        connections = filterNewConnections(connections)
+        if (settings.security.clientCanEditConnections) {
+          connections = filterNewConnections(connections)
 
-        for (const connection of connections) {
-          channelGraph().removeConnection(connection)
+          for (const connection of connections) {
+            channelGraph().removeConnection(connection)
+          }
+          sendToChannel('connections', channelGraph().listConnections())
+
+          log(`${_fullname(newSocket)} removed connections`)
+          logData(connections)
+        } else if (Array.isArray(connections) && connections.length > 0) {
+          log(`${_fullname(newSocket)} asked to remove connections. But spacebro is in secured mode: connections are not editable.`)
         }
-        sendToChannel('connections', channelGraph().listConnections())
-
-        log(`${_fullname(newSocket)} removed connections`)
-        logData(connections)
       })
       .on('replaceConnections', (connections) => {
-        connections = filterNewConnections(connections)
+        if (settings.security.clientCanEditConnections) {
+          connections = filterNewConnections(connections)
 
-        channelGraph().clearConnections()
-        channelGraph().addConnections(connections)
-        sendToChannel('connections', channelGraph().listConnections())
+          channelGraph().clearConnections()
+          channelGraph().addConnections(connections)
+          sendToChannel('connections', channelGraph().listConnections())
 
-        log(`${_fullname(newSocket)} replaced connections`)
-        logData(connections)
+          log(`${_fullname(newSocket)} replaced connections`)
+          logData(connections)
+        } else if (Array.isArray(connections) && connections.length > 0) {
+          log(`${_fullname(newSocket)} asked to replace connections. But spacebro is in secured mode: connections are not editable.`)
+        }
       })
       .on('getConnections', (data) => {
         sendBack('connections', channelGraph().listConnections())
