@@ -4,5 +4,8 @@
   },
   "mute": false,
   "semiverbose": false,
-  "hidedashboard": false
+  "hidedashboard": false,
+  "security": {
+    "clientCanEditConnections": true
+  }
 }

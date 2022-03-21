@@ -23,7 +23,8 @@
     "babel-runtime": "^6.26.0",
     "blessed": "^0.1.81",
     "date-fns": "^2.6.0",
-    "deep-equal": "^1.1.0",
+    "deep-equal": "^1.0.1",
+    "deep-iterator": "^1.1.0",
     "json-colorz": "^0.2.7",
     "lodash": "^4.17.15",
     "nodemon": "^1.19.4",
@@ -60,7 +61,7 @@
     "node": ">=4.4.4"
   },
   "contributors": [
-    "emmanuelgeoffray <manuel@soixantecircuits.fr> (https://github.com/emmanuelgeoffray)",
+    "emmanuelgeoffray <emmanuel@soixantecircuits.fr> (https://github.com/emmanuelgeoffray)",
     "gabrielstuff <gabriel@soixantecircuits.fr> (http://twitter.com/gabrielstuff)",
     "hugohil <hugo@soixantecircuits.fr> (https://github.com/hugohil)"
   ],

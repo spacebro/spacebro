@@ -1,0 +1,9 @@
+version: "3"
+services:
+  spacebro:
+      restart: always
+      build: .
+      volumes:
+        - ./settings:/app/settings
+      ports:
+        - "36000:36000"

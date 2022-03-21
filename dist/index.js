@@ -302,54 +302,66 @@ function _initSocketIO(settings, sockets) {
     }
 
     newSocket.on('addConnections', function (connections) {
-      connections = filterNewConnections(connections);
+      if (settings.security.clientCanEditConnections) {
+        connections = filterNewConnections(connections);
 
-      channelGraph().addConnections(connections);
-      sendToChannel('connections', channelGraph().listConnections());
+        channelGraph().addConnections(connections);
+        sendToChannel('connections', channelGraph().listConnections());
 
-      (0, _loggers.log)(_fullname(newSocket) + ' added connections');
-      (0, _loggers.logData)(connections);
-    }).on('removeConnections', function (connections) {
-      connections = filterNewConnections(connections);
-
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
-
-      try {
-        for (var _iterator4 = (0, _getIterator3.default)(connections), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-          var connection = _step4.value;
-
-          channelGraph().removeConnection(connection);
-        }
-      } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion4 && _iterator4.return) {
-            _iterator4.return();
-          }
-        } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
-          }
-        }
+        (0, _loggers.log)(_fullname(newSocket) + ' added connections');
+        (0, _loggers.logData)(connections);
+      } else if (Array.isArray(connections) && connections.length > 0) {
+        (0, _loggers.log)(_fullname(newSocket) + ' asked to add connections. But spacebro is in secured mode: connections are not editable.');
       }
+    }).on('removeConnections', function (connections) {
+      if (settings.security.clientCanEditConnections) {
+        connections = filterNewConnections(connections);
 
-      sendToChannel('connections', channelGraph().listConnections());
+        var _iteratorNormalCompletion4 = true;
+        var _didIteratorError4 = false;
+        var _iteratorError4 = undefined;
 
-      (0, _loggers.log)(_fullname(newSocket) + ' removed connections');
-      (0, _loggers.logData)(connections);
+        try {
+          for (var _iterator4 = (0, _getIterator3.default)(connections), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+            var connection = _step4.value;
+
+            channelGraph().removeConnection(connection);
+          }
+        } catch (err) {
+          _didIteratorError4 = true;
+          _iteratorError4 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion4 && _iterator4.return) {
+              _iterator4.return();
+            }
+          } finally {
+            if (_didIteratorError4) {
+              throw _iteratorError4;
+            }
+          }
+        }
+
+        sendToChannel('connections', channelGraph().listConnections());
+
+        (0, _loggers.log)(_fullname(newSocket) + ' removed connections');
+        (0, _loggers.logData)(connections);
+      } else if (Array.isArray(connections) && connections.length > 0) {
+        (0, _loggers.log)(_fullname(newSocket) + ' asked to remove connections. But spacebro is in secured mode: connections are not editable.');
+      }
     }).on('replaceConnections', function (connections) {
-      connections = filterNewConnections(connections);
+      if (settings.security.clientCanEditConnections) {
+        connections = filterNewConnections(connections);
 
-      channelGraph().clearConnections();
-      channelGraph().addConnections(connections);
-      sendToChannel('connections', channelGraph().listConnections());
+        channelGraph().clearConnections();
+        channelGraph().addConnections(connections);
+        sendToChannel('connections', channelGraph().listConnections());
 
-      (0, _loggers.log)(_fullname(newSocket) + ' replaced connections');
-      (0, _loggers.logData)(connections);
+        (0, _loggers.log)(_fullname(newSocket) + ' replaced connections');
+        (0, _loggers.logData)(connections);
+      } else if (Array.isArray(connections) && connections.length > 0) {
+        (0, _loggers.log)(_fullname(newSocket) + ' asked to replace connections. But spacebro is in secured mode: connections are not editable.');
+      }
     }).on('getConnections', function (data) {
       sendBack('connections', channelGraph().listConnections());
     });

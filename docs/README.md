@@ -10,6 +10,6 @@ Spacebro achieves this by being the glue code between socket.io clients, all cli
 
 You will design and build spacebro clients. Keep in mind that the output of every spacebro client becomes the input to another, as yet unknown, spacebro client.
 
-If you're interested, you can read more about [how and why Spacebro came to be](https://medium.com/@emmanuelgeoffray/why-we-built-spacebro) or find out more about its [ecosystem](https://github.com/spacebro/awesome-spacebro#apps).
+If you're interested, you can read more about [how and why Spacebro came to be](https://medium.com/@egeoffray/how-and-why-spacebro-came-to-be-5bb4eb954285) or find out more about its [ecosystem](https://github.com/spacebro/awesome-spacebro#apps).
 
 If you've decided that Spacebro might be for you, fell free to drive right in and [learn about the basics](./guides/basics/readme.md).

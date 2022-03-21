@@ -1,5 +1,13 @@
 'use strict';
 
+var _stringify = require('babel-runtime/core-js/json/stringify');
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
+var _getIterator2 = require('babel-runtime/core-js/get-iterator');
+
+var _getIterator3 = _interopRequireDefault(_getIterator2);
+
 var _jsonColorz = require('json-colorz');
 
 var _jsonColorz2 = _interopRequireDefault(_jsonColorz);
@@ -19,6 +27,45 @@ var settings = (0, _standardSettings.getSettings)();
 var verbose = !settings.mute;
 var showdashboard = !settings.hidedashboard && process.env.SPACEBRO_BIN;
 var semiverbose = (showdashboard || settings.semiverbose) && verbose;
+var deepIterator = require('deep-iterator').default;
+
+String.prototype.trunc = function (n) {
+  return this.substr(0, n - 1) + (this.length > n ? '...' : '');
+};
+
+var recursiveEllipsis = function recursiveEllipsis(data) {
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = (0, _getIterator3.default)(deepIterator(data)), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var _step$value = _step.value,
+          value = _step$value.value,
+          parent = _step$value.parent,
+          key = _step$value.key;
+
+      if (typeof value === 'string') {
+        parent[key] = value.trunc(80);
+      }
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  return data;
+};
 
 function log() {
   if (!verbose) {
@@ -42,7 +89,8 @@ function logData(data) {
   if (!verbose || semiverbose) {
     return;
   }
-  (0, _jsonColorz2.default)(data);
+
+  (0, _jsonColorz2.default)(recursiveEllipsis(JSON.parse((0, _stringify2.default)(data))));
 }
 
 function logError() {
@@ -67,7 +115,7 @@ function logErrorData(data) {
   if (!verbose || semiverbose) {
     return;
   }
-  (0, _jsonColorz2.default)(data);
+  (0, _jsonColorz2.default)(recursiveEllipsis(JSON.parse((0, _stringify2.default)(data))));
 }
 
 module.exports = {
