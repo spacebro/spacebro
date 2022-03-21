@@ -116,3 +116,6 @@ settings/settings.json
 .vscode
 
 test/settingsCopy.json
+*.exe
+*.zip
+releases/
