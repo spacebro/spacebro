@@ -14,10 +14,10 @@ import { getSettings } from 'standard-settings'
 let settings = getSettings()
 
 // Variables
-let sockets = []
-let infos = {}
+const sockets = []
+const infos = {}
 
-const reservedEvents = [ 'register', 'addConnections', 'removeConnections', 'replaceConnections', 'getConnections', 'getClients', 'saveGraph' ]
+const reservedEvents = ['register', 'addConnections', 'removeConnections', 'replaceConnections', 'getConnections', 'getClients', 'saveGraph']
 
 function init (options = {}) {
   settings = Object.assign(options, settings)
@@ -63,7 +63,7 @@ function saveGraph (channelName) {
     clients: newGraph._clients,
     connections: newGraph._connections
   }))
-  for (let key in _prevGraph[channelName].clients) {
+  for (const key in _prevGraph[channelName].clients) {
     let entry = _prevGraph[channelName].clients[key]
     entry = _.omit(entry, '_isConnected')
     _prevGraph[channelName].clients[key] = entry
@@ -93,14 +93,14 @@ function _initSocketIO (settings, sockets) {
 
     function sendBack (eventName, data) {
       // return newServer && newServer.to(newSocket.id).emit(eventName, data)
-      var args = Array.prototype.slice.call(arguments, 0)
+      const args = Array.prototype.slice.call(arguments, 0)
       return newServer && newServer.to(newSocket.id).emit.apply(newServer.to(newSocket.id), args)
     }
 
     function sendToChannel (eventName, data) {
       // return newServer && newServer.to(newSocket.channelName).emit(eventName, data)
       try {
-        var args = Array.prototype.slice.call(arguments, 0)
+        const args = Array.prototype.slice.call(arguments, 0)
         return newServer && newServer.to(newSocket.channelName).emit.apply(newServer.to(newSocket.channelName), args)
       } catch (e) {
         console.error(e)
@@ -135,7 +135,7 @@ function _initSocketIO (settings, sockets) {
         // legacy
         let clientDescription = data.client || data.clientName || newSocket.id
         if (typeof clientDescription === 'string') {
-          clientDescription = {name: clientDescription}
+          clientDescription = { name: clientDescription }
         }
         // legacy
         clientDescription.member = clientDescription.name
@@ -158,7 +158,7 @@ function _initSocketIO (settings, sockets) {
 
     function parseConnection (data) {
       const regex = / ?([^/]+) ?\/ ?([^=]+[^ ]) ?=> ?([^/]+) ?\/ ?([^/]+[^ ]) ?/g
-      let match = regex.exec(data)
+      const match = regex.exec(data)
       let connection
       if (match && match.length > 4) {
         connection = {
@@ -280,7 +280,7 @@ function _initSocketIO (settings, sockets) {
             return false
           }
           for (const socket of targets) {
-            var fullArgs = Array.prototype.slice.call(arguments, 3)
+            const fullArgs = Array.prototype.slice.call(arguments, 3)
             fullArgs.unshift(eventName, args)
             // newServer && newServer.to(socket.id).emit(eventName, args)
             newServer && socket.emit.apply(socket, fullArgs)
@@ -299,7 +299,7 @@ function _initSocketIO (settings, sockets) {
         if (targets.length) {
           for (const target of targets) {
             // const res = sendTo(target.clientName, target.eventName, args)
-            let fullArgs = data.slice(2)
+            const fullArgs = data.slice(2)
             fullArgs.unshift(target.clientName, target.eventName, args)
             const res = sendTo.apply(this, fullArgs)
 
@@ -328,7 +328,7 @@ function _arrayify (data) {
   // data = _objectify(data) || []
 
   if (!Array.isArray(data)) {
-    data = [ data ]
+    data = [data]
   }
 
   // data = data.map(_objectify)

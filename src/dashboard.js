@@ -6,7 +6,7 @@ let screen = null
 let logText = null
 let clientTable = null
 let eventTable = null
-let clientTableHeader = [['Name', 'IP', 'Host connexion', 'Channel']]
+const clientTableHeader = [['Name', 'IP', 'Host connexion', 'Channel']]
 
 const color = 'blue'
 
@@ -20,7 +20,7 @@ function init () {
     autoPadding: true
   })
 
-  let logBox = blessed.box({
+  const logBox = blessed.box({
     label: 'Log',
     padding: 1,
     width: '100%',
@@ -52,7 +52,7 @@ function init () {
     mouse: true
   })
 
-  let clientBox = blessed.box({
+  const clientBox = blessed.box({
     label: 'Clients',
     tags: true,
     padding: 1,
@@ -86,7 +86,7 @@ function init () {
   })
   screen.append(clientBox)
 
-  let eventBox = blessed.box({
+  const eventBox = blessed.box({
     label: 'Events',
     tags: true,
     padding: 1,
@@ -138,7 +138,7 @@ function log (...args) {
 function setInfos (data) {
   let events = [['Name', 'Channel']]
   let clients = clientTableHeader
-  for (let channelName in data) {
+  for (const channelName in data) {
     events = _.union(events, data[channelName].events.map(e => [e, channelName]))
     clients = _.union(clients, data[channelName].clients.map(client => [client.clientName, client.ip, client.hostname, channelName]))
   }
@@ -161,9 +161,9 @@ function observeEvent (infos, eventName, channelName) {
 function joinChannel (infos, socket, channelName) {
   infos[channelName] = infos[channelName] || { events: [], clients: [] }
   infos[channelName].clients = _.union(infos[channelName].clients, [{
-    'clientName': socket.clientName,
-    'ip': socket.handshake.address,
-    'hostname': socket.handshake.headers.host
+    clientName: socket.clientName,
+    ip: socket.handshake.address,
+    hostname: socket.handshake.headers.host
   }])
   setInfos(infos)
 }

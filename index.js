@@ -1,4 +1,4 @@
 'use strict'
 
-let spacebro = require('.')
+const spacebro = require('.')
 spacebro.init()
