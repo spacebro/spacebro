@@ -1,9 +1,21 @@
-version: "3"
 services:
   spacebro:
-      restart: always
-      build: .
-      volumes:
-        - ./settings:/app/settings
-      ports:
-        - "36000:36000"
+    #image: spacebro:latest
+    build: .
+    container_name: spacebro
+    hostname: spacebro
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Paris
+    volumes:
+      - ./settings:/app/settings:ro
+    ports:
+      - 36000:36000/tcp
+    networks:
+      - spacebro
+      - default
+
+networks:
+  default:
+  spacebro:
+    external: true
