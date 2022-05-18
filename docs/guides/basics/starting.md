@@ -97,6 +97,9 @@ let tmpFolder = '/tmp/'
 let host = process.env.HOST || 'localhost'
 let port = process.env.PORT || 8080
 
+mkdirp(tmpFolder)
+mkdirp(outputFolder)
+
 spacebroClient.on('inMedia', media => {
   download(media.url, tmpFolder).then(() => {
     let image = path.join(tmpFolder, path.basename(media.url))
@@ -106,7 +109,7 @@ spacebroClient.on('inMedia', media => {
     .write(outImage, function (err) {
       if (!err) {
         let outMedia = {
-          url: `http://$host:$port/${path.basename(outImage)}`
+          url: `http://${host}:${port}/${path.basename(outImage)}`
         }
         spacebroClient.emit('outMedia', outMedia)
         console.log('emit ' + JSON.stringify(outMedia, null, 2))
